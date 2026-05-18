@@ -1339,9 +1339,9 @@ function renderTrades(trades){
 
 async function loadTrades() {
 
-  const { data, error } = await supabase
-    .from('trades')
-    .select('*')
+ const { data, error } = await db
+  .from('trades')
+  .select('*')
 
   console.log(data)
 
