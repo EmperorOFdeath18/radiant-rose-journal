@@ -1274,5 +1274,32 @@ function clearAll(){
 updateBadge();
 renderDashboard();
 </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script>
+const supabaseUrl = 'https://hmuuiyfkiofymbcosjdb.supabase.co'
+const supabaseKey = 'sb_publishable_qE02gvVbv3ywxuK4CRUX9Q_aBuJahm4'
+
+const supabase = window.supabase.createClient(
+  supabaseUrl,
+  supabaseKey
+)
+
+async function loadTrades() {
+
+  const { data, error } = await supabase
+    .from('trades')
+    .select('*')
+
+  console.log(data)
+
+  if(error){
+    console.log(error)
+  }
+
+}
+
+loadTrades()
+</script>
 </body>
 </html>
