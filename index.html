@@ -1344,7 +1344,8 @@ function renderTrades(trades){
         trade => trade.status === 'OPEN'
     )
 
-    const openContainer = document.querySelector('#dash-open-list')
+    const dashContainer = document.querySelector('#dash-open-list')
+const openContainer = document.querySelector('#open-list')
 
     if(openTrades.length === 0){
         openContainer.innerHTML = `
@@ -1355,20 +1356,37 @@ function renderTrades(trades){
         return
     }
 
-    openContainer.innerHTML = openTrades.map(trade => `
-        <div class="trade-card">
-            
-            <div>
-                <strong>${trade.pair}</strong>
-                <div>${trade.side}</div>
-            </div>
+    const html = openTrades.map(trade => `
+<div class="trade-card">
 
-            <div>
-                Entry: ${trade.entry}
-            </div>
+    <div>
+        <strong>${trade.pair}</strong>
+        <div>${trade.side}</div>
+    </div>
 
-        </div>
-    `).join('')
+    <div>
+        Entry: ${trade.entry}
+    </div>
+
+</div>
+`).join('')
+
+openContainer.innerHTML = html
+
+dashContainer.innerHTML = openTrades.slice(0,1).map(trade => `
+<div class="trade-card mini-card">
+
+    <div>
+        <strong>${trade.pair}</strong>
+        <div>${trade.side}</div>
+    </div>
+
+    <div>
+        Entry: ${trade.entry}
+    </div>
+
+</div>
+`).join('')
 }
 
 loadTrades()
