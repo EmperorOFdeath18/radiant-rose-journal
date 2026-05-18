@@ -1339,21 +1339,37 @@ const db = window.supabase.createClient(
 }
 
 function renderTrades(trades){
-  const openTrades = trades.filter(
-    trade => trade.status === 'OPEN'
-  )
 
-  const dashContainer = document.querySelector('#dash-open-list')
-const openContainer = document.querySelector('#open-list')
+    const openTrades = trades.filter(
+        trade => trade.status === 'OPEN'
+    )
 
-  if(openTrades.length === 0){
-    openContainer.innerHTML = `
-      <div class="empty-state">
-        Tidak ada open position.
-      </div>
-    `
-    return
-  }
+    const openContainer = document.querySelector('#dash-open-list')
+
+    if(openTrades.length === 0){
+        openContainer.innerHTML = `
+            <div class="empty-state">
+                Tidak ada open position.
+            </div>
+        `
+        return
+    }
+
+    openContainer.innerHTML = openTrades.map(trade => `
+        <div class="trade-card">
+            
+            <div>
+                <strong>${trade.pair}</strong>
+                <div>${trade.side}</div>
+            </div>
+
+            <div>
+                Entry: ${trade.entry}
+            </div>
+
+        </div>
+    `).join('')
+}
 
   const html = openTrades.map(trade => `
 <div class="trade-card" style="
