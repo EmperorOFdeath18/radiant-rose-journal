@@ -1371,44 +1371,6 @@ function renderTrades(trades){
     `).join('')
 }
 
-  const html = openTrades.map(trade => `
-<div class="trade-card" style="
-background: rgba(20,30,60,.65);
-border:1px solid rgba(120,160,255,.12);
-border-radius:16px;
-padding:16px;
-margin-bottom:12px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-backdrop-filter: blur(10px);
-">
-
-<div>
-<div style="font-weight:700;font-size:15px;">
-${trade.pair}
-</div>
-
-<div style="
-font-size:12px;
-opacity:.7;
-margin-top:4px;
-">
-${trade.side}
-</div>
-</div>
-
-<div style="text-align:right">
-<div>Entry: ${trade.entry}</div>
-<div>TP: ${trade.tp}</div>
-<div>SL: ${trade.sl}</div>
-</div>
-
-</div>
-
-openContainer.innerHTML = html
-}
-
 loadTrades()
 </script>
 </body>
