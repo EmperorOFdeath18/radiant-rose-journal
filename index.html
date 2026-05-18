@@ -1280,7 +1280,7 @@ renderDashboard();
 const supabaseUrl = 'https://hmuuiyfkiofymbcosjdb.supabase.co'
 const supabaseKey = 'sb_publishable_qE02gvVbv3ywxuK4CRUX9Q_aBuJahm4'
 
-const db = window.supabase.createClient(
+const db = supabase.createClient(
   supabaseUrl,
   supabaseKey
 )
