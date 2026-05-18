@@ -1304,7 +1304,7 @@ function renderTrades(trades){
     trade => trade.status === 'OPEN'
   )
 
-  const openContainer = document.querySelector('#openPositions')
+  const openContainer = document.querySelector('#dash-open-list')
 
   if(openTrades.length === 0){
     openContainer.innerHTML = `
@@ -1335,20 +1335,6 @@ function renderTrades(trades){
       </div>
     </div>
   `).join('')
-}
-
-async function loadTrades() {
-
- const { data, error } = await db
-  .from('trades')
-  .select('*')
-
-  console.log(data)
-
-  if(error){
-    console.log(error)
-  }
-
 }
 
 loadTrades()
