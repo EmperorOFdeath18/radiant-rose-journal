@@ -1284,6 +1284,58 @@ const supabase = window.supabase.createClient(
   supabaseUrl,
   supabaseKey
 )
+  async function loadTrades() {
+  const { data, error } = await supabase
+    .from('trades')
+    .select('*')
+
+  console.log(data)
+
+  if(error){
+    console.error(error)
+    return
+  }
+
+  renderTrades(data)
+}
+
+function renderTrades(trades){
+  const openTrades = trades.filter(
+    trade => trade.status === 'OPEN'
+  )
+
+  const openContainer = document.querySelector('#openPositions')
+
+  if(openTrades.length === 0){
+    openContainer.innerHTML = `
+      <div class="empty-state">
+        Tidak ada open position.
+      </div>
+    `
+    return
+  }
+
+  openContainer.innerHTML = openTrades.map(trade => `
+    <div class="trade-card">
+      <div>
+        <strong>${trade.pair}</strong>
+        <span>${trade.side}</span>
+      </div>
+
+      <div>
+        Entry: ${trade.entry}
+      </div>
+
+      <div>
+        TP: ${trade.tp}
+      </div>
+
+      <div>
+        SL: ${trade.sl}
+      </div>
+    </div>
+  `).join('')
+}
 
 async function loadTrades() {
 
