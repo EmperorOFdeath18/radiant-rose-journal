@@ -962,7 +962,7 @@ function showPanel(name, btn){
   document.getElementById('panel-'+name).classList.add('active');
   btn.classList.add('active');
   if(name==='dashboard') renderDashboard();
-  if(name==='open')      renderOpen();
+  if(name==='open')      renderTrades(trades);
   if(name==='journal')   renderJournal();
   if(name==='stats')     renderStats();
 }
