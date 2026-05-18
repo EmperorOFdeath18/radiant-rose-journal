@@ -1389,22 +1389,6 @@ ${trade.side}
 </div>
 
 </div>
-`).join('')
-
-dashContainer.innerHTML = openTrades.slice(0,1).map(trade => `
-<div class="trade-card mini-card">
-
-<div>
-<div class="pair">${trade.pair}</div>
-<div class="side">${trade.side}</div>
-</div>
-
-<div class="price-box">
-<div>Entry: ${trade.entry}</div>
-</div>
-
-</div>
-`).join('')
 
 openContainer.innerHTML = html
 }
