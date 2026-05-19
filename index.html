@@ -1349,37 +1349,6 @@ renderOpen()
 renderDashboard()
 updateBadge()
 
-    const html = openTrades.map(trade => `
-        <div class="trade-card">
-
-            <div>
-                <strong>${trade.pair}</strong>
-                <div>${trade.side}</div>
-            </div>
-
-            <div>
-                Entry: ${trade.entry}
-            </div>
-
-        </div>
-    `).join('')
-
-    openContainer.innerHTML = html
-
-    dashContainer.innerHTML = openTrades.slice(0,1).map(trade => `
-        <div class="trade-card mini-card">
-
-            <div>
-                <strong>${trade.pair}</strong>
-                <div>${trade.side}</div>
-            </div>
-
-            <div>
-                Entry: ${trade.entry}
-            </div>
-
-        </div>
-    `).join('')
 }
 
 loadTrades()
