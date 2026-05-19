@@ -1075,9 +1075,9 @@ function confirmCustom(id){
   const exitPrice=parseFloat(document.getElementById('cx-'+id).value);
   const xt2=document.getElementById('cxt-'+id).value;
   if(!exitPrice){alert('Masukkan harga exit.');return;}
-  const n=o.size*o.lev;
+  const n=o.size*o.leverage;
   const ft2=n*fee(o.et)+n*fee(xt2);
-  const m=o.dir==='long'?1:-1;
+  const m=o.side.toLowerCase() === 'long'?1:-1;
   const pnl=n*m*(exitPrice-o.entry)/o.entry-ft2;
   trades.push({...o,pnl,exitPrice,result:pnl>=0?'win':'loss',ft:ft2});
   localStorage.setItem('bj2_trades',JSON.stringify(trades));
@@ -1115,7 +1115,7 @@ function updateBadge(){ document.getElementById('open-badge').textContent=opens.
   }
 
   el.innerHTML = opens.map(o => `
-    <div class="open-card ${o.dir}-card">
+    <div class="open-card ${o.side.toLowerCase()}-card">
 
       <div style="
         display:flex;
@@ -1136,7 +1136,7 @@ function updateBadge(){ document.getElementById('open-badge').textContent=opens.
             opacity:.7;
             margin-top:4px;
           ">
-            ${o.dir.toUpperCase()}
+            ${o.side}
           </div>
         </div>
 
@@ -1236,9 +1236,9 @@ function renderDashboard(){
   openEl.innerHTML=opens.slice(0,3).map(o=>`
     <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--color-border-tertiary)">
       <div style="display:flex;align-items:center;gap:8px">
-        <span class="badge badge-${o.dir}">${o.dir==='long'?'Long':'Short'}</span>
+        <span class="badge badge-${o.side.toLowerCase()}">${o.side}</span>
         <span style="font-weight:700;font-size:13px;font-family:var(--font-mono);letter-spacing:-0.01em">${o.pair}</span>
-        <span style="font-size:10.5px;color:var(--color-text-tertiary);font-family:var(--font-mono)">${o.lev}x · Entry ${Number(o.entry).toLocaleString()}</span>
+        <span style="font-size:10.5px;color:var(--color-text-tertiary);font-family:var(--font-mono)">${o.leverage}x · Entry ${Number(o.entry).toLocaleString()}</span>
       </div>
       <div style="text-align:right;font-size:10.5px;font-family:var(--font-mono)">
         <div style="color:#00BF8F">TP ${Number(o.tp).toLocaleString()}</div>
