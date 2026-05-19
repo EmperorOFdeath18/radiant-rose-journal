@@ -1098,7 +1098,74 @@ renderOpen();
 function updateBadge(){ document.getElementById('open-badge').textContent=opens.length; }
 
   function renderOpen(){
+<div class="open-levels">
 
+  <div class="level-box">
+    <div class="lb">Margin</div>
+    <div class="lv">$${o.size}</div>
+  </div>
+
+  <div class="level-box">
+    <div class="lb">Leverage</div>
+    <div class="lv">${o.lev}x</div>
+  </div>
+
+  <div class="level-box">
+    <div class="lb">Notional</div>
+    <div class="lv">$${o.n.toFixed(0)}</div>
+  </div>
+
+</div>
+    <div class="open-actions">
+
+  <button class="btn-cw"
+    onclick="closeOpen(${o.id},'win')">
+    Hit TP
+  </button>
+
+  <button class="btn-cl"
+    onclick="closeOpen(${o.id},'loss')">
+    Hit SL
+  </button>
+
+  <button class="btn-cc"
+    onclick="closeOpen(${o.id},'custom')">
+    Custom
+  </button>
+
+</div>
+    <div class="close-form" id="cf-${o.id}">
+
+  <div class="close-form-row">
+
+    <div class="field">
+      <label>Harga Exit</label>
+
+      <input
+        type="number"
+        id="cx-${o.id}"
+        placeholder="65000"
+      >
+    </div>
+
+    <div class="field">
+      <label>Exit Type</label>
+
+      <select id="cxt-${o.id}">
+        <option value="taker">Taker</option>
+        <option value="maker">Maker</option>
+      </select>
+    </div>
+
+    <button
+      class="btn-confirm"
+      onclick="confirmCustom(${o.id})">
+      Close
+    </button>
+
+  </div>
+
+</div>
   document.getElementById('open-total-lbl').textContent =
     opens.length + ' posisi'
 
