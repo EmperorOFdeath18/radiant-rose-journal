@@ -1068,17 +1068,87 @@ async function saveOpen(){
   clearForm()
 }
 
-function saveClosed(){
-  const v=getInputs();
-  if(!v.pair||!v.entry||!v.sl||!v.tp||!v.size){alert('Lengkapi semua field wajib.');return;}
-  const c=calc(v.entry,v.sl,v.tp,v.size,v.lev,v.dir,v.et,v.xt);
-  const result=confirm('Apakah trade ini WIN (profit)?\nOK = Win, Cancel = Loss');
-  const pnl=result?c.pNet:c.lNet;
-  const exitPrice=result?v.tp:v.sl;
-  trades.push({id:Date.now(),...v,...c,pnl,exitPrice,result:result?'win':'loss'});
-  
-  alert('Trade selesai disimpan!');
-  clearForm();
+async function saveClosed(){
+
+  const v = getInputs()
+
+  if(
+    !v.pair ||
+    !v.entry ||
+    !v.sl ||
+    !v.tp ||
+    !v.size
+  ){
+    return
+  }
+
+  const c = calc(
+    v.entry,
+    v.sl,
+    v.tp,
+    v.size,
+    v.lev,
+    v.dir,
+    v.et,
+    v.xt
+  )
+
+  const isWin = confirm(
+    'Apakah trade ini WIN?\nOK = WIN\nCancel = LOSS'
+  )
+
+  const pnl =
+    isWin
+      ? c.pNet
+      : c.lNet
+
+  const exitPrice =
+    isWin
+      ? v.tp
+      : v.sl
+
+  const result =
+    isWin
+      ? 'win'
+      : 'loss'
+
+  const { error } = await db
+    .from('trades')
+    .insert([{
+
+      pair: v.pair,
+
+      side: v.dir.toUpperCase(),
+
+      status: 'CLOSED',
+
+      entry: v.entry,
+      sl: v.sl,
+      tp: v.tp,
+
+      margin: v.size,
+      leverage: v.lev,
+
+      pnl: pnl,
+
+      result: result,
+
+      exit_price: exitPrice,
+
+      closed_at: new Date().toISOString(),
+
+      timeframe: '4H'
+
+    }])
+
+  if(error){
+    console.error(error)
+    return
+  }
+
+  await loadTrades()
+
+  clearForm()
 }
 
 function clearForm(){
@@ -1613,7 +1683,22 @@ updateBadge()
 }
 
 loadTrades()
-  setInterval(loadTrades, 3000)
+
+db.channel('trades-live')
+  .on(
+    'postgres_changes',
+    {
+      event: '*',
+      schema: 'public',
+      table: 'trades'
+    },
+    () => {
+
+      loadTrades()
+
+    }
+  )
+  .subscribe()
 </script>
 </body>
 </html>
