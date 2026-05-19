@@ -1144,14 +1144,14 @@ function confirmCustom(id){
   trades.push({...o,pnl,exitPrice,result:pnl>=0?'win':'loss',ft:ft2});
   
   opens.splice(idx,1);
-  .setItem('bj2_opens',JSON.stringify(opens));
+  ;
   updateBadge(); renderOpen(); renderDashboard();
 }
 
 function deleteOpen(id){
   if(!confirm('Hapus open position ini?')) return;
   opens=opens.filter(o=>o.id!==id);
-  .setItem('bj2_opens',JSON.stringify(opens));
+  ;
   updateBadge();
 renderDashboard();
 renderOpen();
@@ -1435,7 +1435,7 @@ function saveSettings(){
   cfg.maker=parseFloat(document.getElementById('s-maker').value)||0.02;
   cfg.taker=parseFloat(document.getElementById('s-taker').value)||0.055;
   cfg.equity=parseFloat(document.getElementById('s-equity').value)||1000;
-  JSON.stringify(cfg));
+  
   alert('Settings disimpan!');
 }
 
