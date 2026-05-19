@@ -1090,63 +1090,68 @@ function deleteOpen(id){
   if(!confirm('Hapus open position ini?')) return;
   opens=opens.filter(o=>o.id!==id);
   localStorage.setItem('bj2_opens',JSON.stringify(opens));
-  updateBadge(); renderOpen();
+  updateBadge();
+renderDashboard();
+renderOpen();
 }
 
 function updateBadge(){ document.getElementById('open-badge').textContent=opens.length; }
 
-    const openTrades = data.filter(
-        trade => trade.status === 'OPEN'
-    )
+  function renderOpen(){
 
-    document.getElementById('open-total-lbl').textContent =
-        openTrades.length + ' posisi'
+  document.getElementById('open-total-lbl').textContent =
+    opens.length + ' posisi'
 
-    const el = document.getElementById('open-list')
-  
-  el.innerHTML=opens.map(o=>`
+  const el = document.getElementById('open-list')
+
+  if(opens.length === 0){
+    el.innerHTML = `
+      <div class="empty-state">
+        <i class="ti ti-player-play"></i>
+        <p>Tidak ada open position.</p>
+      </div>
+    `
+    return
+  }
+
+  el.innerHTML = opens.map(o => `
     <div class="open-card ${o.dir}-card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:15px;font-weight:700;color:var(--color-text-primary);letter-spacing:-0.02em">${o.pair}</span>
-          <span class="badge badge-${o.dir}">${o.dir==='long'?'Long':'Short'}</span>
-          <span class="badge badge-open"><i class="ti ti-player-play" style="font-size:9px" aria-hidden="true"></i> Open</span>
-          <span style="font-size:11px;color:var(--color-text-tertiary);font-family:var(--font-mono)">${o.lev}x · ${o.date||''}</span>
-        </div>
-        <button onclick="deleteOpen(${o.id})" aria-label="Hapus" style="border:none;background:none;cursor:pointer;color:var(--color-text-tertiary);font-size:15px;transition:color .15s" onmouseenter="this.style.color='var(--red)'" onmouseleave="this.style.color='var(--color-text-tertiary)'"><i class="ti ti-trash" aria-hidden="true"></i></button>
-      </div>
-      <div class="open-levels">
-        <div class="level-box"><div class="lb">Entry</div><div class="lv" style="color:#3B9EF5">${Number(o.entry).toLocaleString()}</div></div>
-        <div class="level-box"><div class="lb">Stop Loss</div><div class="lv" style="color:#E84960">${Number(o.sl).toLocaleString()}</div></div>
-        <div class="level-box"><div class="lb">Take Profit</div><div class="lv" style="color:#00BF8F">${Number(o.tp).toLocaleString()}</div></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:11px;color:var(--color-text-secondary);font-family:var(--font-mono)">
-        <div>Modal: <strong style="color:var(--color-text-primary)">$${Number(o.size).toFixed(0)}</strong></div>
-        <div>R:R: <strong style="color:var(--color-text-primary)">1:${Number(o.rr).toFixed(2)}</strong></div>
-        <div>Fee: <strong style="color:var(--red)">-$${Number(o.ft).toFixed(4)}</strong></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;margin-top:6px;font-family:var(--font-mono)">
-        <div style="color:var(--color-text-secondary)">Pot. profit: <strong style="color:#00BF8F">+$${Number(o.pNet).toFixed(4)}</strong></div>
-        <div style="color:var(--color-text-secondary)">Pot. loss: <strong style="color:#E84960">$${Number(o.lNet).toFixed(4)}</strong></div>
-      </div>
-      ${o.note?`<div style="margin-top:8px;font-size:11px;color:var(--color-text-tertiary);font-style:italic;padding:6px 8px;background:var(--color-background-elevated);border-radius:6px;border:1px solid var(--color-border-tertiary)">${o.note}</div>`:''}
-      <div class="open-actions">
-        <button class="btn-cw" onclick="closeOpen(${o.id},'win')"><i class="ti ti-check" aria-hidden="true"></i> Hit TP</button>
-        <button class="btn-cl" onclick="closeOpen(${o.id},'loss')"><i class="ti ti-x" aria-hidden="true"></i> Hit SL</button>
-        <button class="btn-cc" onclick="closeOpen(${o.id},'custom')"><i class="ti ti-adjustments" aria-hidden="true"></i> Custom</button>
-      </div>
-      <div class="close-form" id="cf-${o.id}">
-        <div style="font-size:11px;font-weight:600;color:var(--color-text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:.07em">Close di Harga Custom</div>
-        <div class="close-form-row">
-          <div class="field"><label>Harga Exit</label><input id="cx-${o.id}" type="number" placeholder="${o.dir==='long'?o.tp:o.sl}" step="any"></div>
-          <div class="field"><label>Tipe Exit</label><select id="cxt-${o.id}"><option value="taker">Market (taker)</option><option value="maker">Limit (maker)</option></select></div>
-          <button class="btn-confirm" onclick="confirmCustom(${o.id})"><i class="ti ti-check" aria-hidden="true"></i> Konfirmasi</button>
-        </div>
-      </div>
-    </div>
-  `).join('');
-}
 
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+      ">
+
+        <div>
+          <div style="
+            font-size:15px;
+            font-weight:700;
+          ">
+            ${o.pair}
+          </div>
+
+          <div style="
+            font-size:12px;
+            opacity:.7;
+            margin-top:4px;
+          ">
+            ${o.dir.toUpperCase()}
+          </div>
+        </div>
+
+        <div style="text-align:right">
+          <div>Entry: ${o.entry}</div>
+          <div>TP: ${o.tp}</div>
+          <div>SL: ${o.sl}</div>
+        </div>
+
+      </div>
+
+    </div>
+  `).join('')
+}
+  
 function renderJournal(){
   const filter=document.getElementById('filter-res').value;
   const list=filter==='all'?trades:trades.filter(t=>t.result===filter);
