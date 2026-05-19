@@ -924,7 +924,7 @@ Chart.defaults.font.family = "'JetBrains Mono', monospace";
 Chart.defaults.font.size = 10;
 
 let trades = JSON.parse(localStorage.getItem('bj2_trades')||'[]');
-let opens  = JSON.parse(localStorage.getItem('bj2_opens')||'[]');
+let opens = []
 let cfg    = JSON.parse(localStorage.getItem('bj2_cfg')||'{"maker":0.02,"taker":0.055,"equity":1000}');
 let eqC1=null, eqC2=null, pnlC=null;
 
@@ -1422,23 +1422,30 @@ opens = data
   .filter(t => t.status === 'OPEN')
   .map(t => {
 
-    const dir = (t.dir || t.side || '').toLowerCase()
+    const dir = (t.side || '').toLowerCase()
+
+    const margin = Number(t.margin || 0)
+    const leverage = Number(t.leverage || 1)
 
     const c = calc(
       Number(t.entry),
       Number(t.sl),
       Number(t.tp),
-      Number(t.size),
-      Number(t.lev),
+      margin,
+      leverage,
       dir,
-      t.et || 'maker',
-      t.xt || 'taker'
+      'maker',
+      'taker'
     )
 
     return {
       ...t,
-      ...c,
-      dir
+
+      dir,
+      size: margin,
+      lev: leverage,
+
+      ...c
     }
   })
 
