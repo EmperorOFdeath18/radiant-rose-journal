@@ -1094,16 +1094,6 @@ function deleteOpen(id){
 }
 
 function updateBadge(){ document.getElementById('open-badge').textContent=opens.length; }
-async function renderOpen(){
-
-    const { data, error } = await db
-        .from('trades')
-        .select('*')
-
-    if(error){
-        console.error(error)
-        return
-    }
 
     const openTrades = data.filter(
         trade => trade.status === 'OPEN'
@@ -1403,53 +1393,63 @@ function renderTrades(trades){
         trade => trade.status === 'OPEN'
     )
 
-    const dashContainer = document.querySelector('#dash-open-list')
-const openContainer = document.querySelector('#open-list')
+    const dashContainer =
+        document.querySelector('#dash-open-list')
+
+    const openContainer =
+        document.querySelector('#open-list')
 
     if(openTrades.length === 0){
+
+        dashContainer.innerHTML = `
+            <div class="empty-state">
+                Tidak ada open position.
+            </div>
+        `
+
         openContainer.innerHTML = `
             <div class="empty-state">
                 Tidak ada open position.
             </div>
         `
+
         return
     }
 
     const html = openTrades.map(trade => `
-<div class="trade-card">
+        <div class="trade-card">
 
-    <div>
-        <strong>${trade.pair}</strong>
-        <div>${trade.side}</div>
-    </div>
+            <div>
+                <strong>${trade.pair}</strong>
+                <div>${trade.side}</div>
+            </div>
 
-    <div>
-        Entry: ${trade.entry}
-    </div>
+            <div>
+                Entry: ${trade.entry}
+            </div>
 
-</div>
-`).join('')
+        </div>
+    `).join('')
 
-openContainer.innerHTML = html
+    openContainer.innerHTML = html
 
-dashContainer.innerHTML = openTrades.slice(0,1).map(trade => `
-<div class="trade-card mini-card">
+    dashContainer.innerHTML = openTrades.slice(0,1).map(trade => `
+        <div class="trade-card mini-card">
 
-    <div>
-        <strong>${trade.pair}</strong>
-        <div>${trade.side}</div>
-    </div>
+            <div>
+                <strong>${trade.pair}</strong>
+                <div>${trade.side}</div>
+            </div>
 
-    <div>
-        Entry: ${trade.entry}
-    </div>
+            <div>
+                Entry: ${trade.entry}
+            </div>
 
-</div>
-`).join('')
+        </div>
+    `).join('')
 }
 
 loadTrades()
-  renderOpen()
 </script>
 </body>
 </html>
