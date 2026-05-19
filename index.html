@@ -925,7 +925,11 @@ Chart.defaults.font.size = 10;
 
 let trades = []
 let opens = []
-let cfg    = JSON.parse(.getItem('bj2_cfg')||'{"maker":0.02,"taker":0.055,"equity":1000}');
+let cfg = {
+  maker: 0.02,
+  taker: 0.055,
+  equity: 1000
+}
 let eqC1=null, eqC2=null, pnlC=null;
 
 document.getElementById('s-maker').value  = cfg.maker;
@@ -1068,7 +1072,7 @@ function saveClosed(){
   const pnl=result?c.pNet:c.lNet;
   const exitPrice=result?v.tp:v.sl;
   trades.push({id:Date.now(),...v,...c,pnl,exitPrice,result:result?'win':'loss'});
-  .setItem('bj2_trades',JSON.stringify(trades));
+  
   alert('Trade selesai disimpan!');
   clearForm();
 }
@@ -1098,8 +1102,8 @@ async function closeOpen(id, mode){
 
   const result =
     mode === 'win'
-      ? 'WIN'
-      : 'LOSS'
+  ? 'win'
+: 'loss'
 
   const { error } = await db
     .from('trades')
@@ -1138,7 +1142,7 @@ function confirmCustom(id){
   const m=o.dir.toLowerCase() === 'long'?1:-1;
   const pnl=n*m*(exitPrice-o.entry)/o.entry-ft2;
   trades.push({...o,pnl,exitPrice,result:pnl>=0?'win':'loss',ft:ft2});
-  .setItem('bj2_trades',JSON.stringify(trades));
+  
   opens.splice(idx,1);
   .setItem('bj2_opens',JSON.stringify(opens));
   updateBadge(); renderOpen(); renderDashboard();
@@ -1296,7 +1300,7 @@ function renderJournal(){
   ? new Date(t.closed_at).toLocaleDateString('id-ID')
   : '—'}</td>
       <td style="font-weight:600;font-family:var(--font-mono)">${t.pair}</td>
-      <td><span class="badge badge-${t.dir}">${t.dir==='long'?'Long':'Short'}</span></td>
+      <td><span class="badge badge-${(t.dir || t.side).toLowerCase()}">${t.dir==='long'?'Long':'Short'}</span></td>
       <td>${Number(t.entry).toLocaleString()}</td>
       <td>${t.exitPrice?Number(t.exitPrice).toLocaleString():'—'}</td>
       <td>$${Number(t.size).toFixed(0)}</td>
@@ -1312,7 +1316,7 @@ function renderJournal(){
 function deleteTrade(id){
   if(!confirm('Hapus trade ini?')) return;
   trades=trades.filter(t=>t.id!==id);
-  .setItem('bj2_trades',JSON.stringify(trades));
+  
   renderJournal();
 }
 
@@ -1431,7 +1435,7 @@ function saveSettings(){
   cfg.maker=parseFloat(document.getElementById('s-maker').value)||0.02;
   cfg.taker=parseFloat(document.getElementById('s-taker').value)||0.055;
   cfg.equity=parseFloat(document.getElementById('s-equity').value)||1000;
-  .setItem('bj2_cfg',JSON.stringify(cfg));
+  JSON.stringify(cfg));
   alert('Settings disimpan!');
 }
 
@@ -1447,7 +1451,6 @@ function exportCSV(){
 function clearAll(){
   if(!confirm('Hapus SEMUA data? Tidak bisa dibatalkan.')) return;
   trades=[]; opens=[];
-  .removeItem('bj2_trades'); .removeItem('bj2_opens');
   updateBadge(); renderDashboard(); renderJournal();
   alert('Semua data dihapus.');
 }
