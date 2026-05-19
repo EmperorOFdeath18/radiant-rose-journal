@@ -923,9 +923,9 @@ Chart.defaults.borderColor = '#172030';
 Chart.defaults.font.family = "'JetBrains Mono', monospace";
 Chart.defaults.font.size = 10;
 
-let trades = JSON.parse(localStorage.getItem('bj2_trades')||'[]');
+let trades = []
 let opens = []
-let cfg    = JSON.parse(localStorage.getItem('bj2_cfg')||'{"maker":0.02,"taker":0.055,"equity":1000}');
+let cfg    = JSON.parse(.getItem('bj2_cfg')||'{"maker":0.02,"taker":0.055,"equity":1000}');
 let eqC1=null, eqC2=null, pnlC=null;
 
 document.getElementById('s-maker').value  = cfg.maker;
@@ -1021,15 +1021,43 @@ function getInputs(){
   };
 }
 
-function saveOpen(){
-  const v=getInputs();
-  if(!v.pair||!v.entry||!v.sl||!v.tp||!v.size){alert('Lengkapi semua field wajib.');return;}
-  const c=calc(v.entry,v.sl,v.tp,v.size,v.lev,v.dir,v.et,v.xt);
-  opens.push({id:Date.now(),...v,...c});
-  localStorage.setItem('bj2_opens',JSON.stringify(opens));
-  updateBadge();
-  alert('Disimpan sebagai open position!');
-  clearForm();
+async function saveOpen(){
+
+  const v = getInputs()
+
+  if(!v.pair || !v.entry || !v.sl || !v.tp || !v.size){
+    alert('Lengkapi semua field wajib.')
+    return
+  }
+
+  const { error } = await db
+    .from('trades')
+    .insert([{
+      pair: v.pair,
+      side: v.dir.toUpperCase(),
+      status: 'OPEN',
+
+      entry: v.entry,
+      sl: v.sl,
+      tp: v.tp,
+
+      margin: v.size,
+      leverage: v.lev,
+
+      timeframe: '4H'
+    }])
+
+  if(error){
+    console.error(error)
+    alert('Gagal simpan trade')
+    return
+  }
+
+  await loadTrades()
+
+  alert('Trade open berhasil disimpan!')
+
+  clearForm()
 }
 
 function saveClosed(){
@@ -1040,7 +1068,7 @@ function saveClosed(){
   const pnl=result?c.pNet:c.lNet;
   const exitPrice=result?v.tp:v.sl;
   trades.push({id:Date.now(),...v,...c,pnl,exitPrice,result:result?'win':'loss'});
-  localStorage.setItem('bj2_trades',JSON.stringify(trades));
+  .setItem('bj2_trades',JSON.stringify(trades));
   alert('Trade selesai disimpan!');
   clearForm();
 }
@@ -1110,16 +1138,16 @@ function confirmCustom(id){
   const m=o.dir.toLowerCase() === 'long'?1:-1;
   const pnl=n*m*(exitPrice-o.entry)/o.entry-ft2;
   trades.push({...o,pnl,exitPrice,result:pnl>=0?'win':'loss',ft:ft2});
-  localStorage.setItem('bj2_trades',JSON.stringify(trades));
+  .setItem('bj2_trades',JSON.stringify(trades));
   opens.splice(idx,1);
-  localStorage.setItem('bj2_opens',JSON.stringify(opens));
+  .setItem('bj2_opens',JSON.stringify(opens));
   updateBadge(); renderOpen(); renderDashboard();
 }
 
 function deleteOpen(id){
   if(!confirm('Hapus open position ini?')) return;
   opens=opens.filter(o=>o.id!==id);
-  localStorage.setItem('bj2_opens',JSON.stringify(opens));
+  .setItem('bj2_opens',JSON.stringify(opens));
   updateBadge();
 renderDashboard();
 renderOpen();
@@ -1264,7 +1292,9 @@ function renderJournal(){
   empty.style.display='none';
   body.innerHTML=[...list].reverse().map(t=>`
     <tr>
-      <td style="color:var(--color-text-tertiary)">${t.date||'—'}</td>
+      <td style="color:var(--color-text-tertiary)">${t.closed_at
+  ? new Date(t.closed_at).toLocaleDateString('id-ID')
+  : '—'}</td>
       <td style="font-weight:600;font-family:var(--font-mono)">${t.pair}</td>
       <td><span class="badge badge-${t.dir}">${t.dir==='long'?'Long':'Short'}</span></td>
       <td>${Number(t.entry).toLocaleString()}</td>
@@ -1282,7 +1312,7 @@ function renderJournal(){
 function deleteTrade(id){
   if(!confirm('Hapus trade ini?')) return;
   trades=trades.filter(t=>t.id!==id);
-  localStorage.setItem('bj2_trades',JSON.stringify(trades));
+  .setItem('bj2_trades',JSON.stringify(trades));
   renderJournal();
 }
 
@@ -1401,7 +1431,7 @@ function saveSettings(){
   cfg.maker=parseFloat(document.getElementById('s-maker').value)||0.02;
   cfg.taker=parseFloat(document.getElementById('s-taker').value)||0.055;
   cfg.equity=parseFloat(document.getElementById('s-equity').value)||1000;
-  localStorage.setItem('bj2_cfg',JSON.stringify(cfg));
+  .setItem('bj2_cfg',JSON.stringify(cfg));
   alert('Settings disimpan!');
 }
 
@@ -1417,7 +1447,7 @@ function exportCSV(){
 function clearAll(){
   if(!confirm('Hapus SEMUA data? Tidak bisa dibatalkan.')) return;
   trades=[]; opens=[];
-  localStorage.removeItem('bj2_trades'); localStorage.removeItem('bj2_opens');
+  .removeItem('bj2_trades'); .removeItem('bj2_opens');
   updateBadge(); renderDashboard(); renderJournal();
   alert('Semua data dihapus.');
 }
