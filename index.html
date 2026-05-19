@@ -962,7 +962,7 @@ function showPanel(name, btn){
   document.getElementById('panel-'+name).classList.add('active');
   btn.classList.add('active');
   if(name==='dashboard') renderDashboard();
-  if(name==='open')      renderTrades(trades);
+  if(name==='open')      renderOpen();
   if(name==='journal')   renderJournal();
   if(name==='stats')     renderStats();
 }
@@ -1319,6 +1319,7 @@ function clearAll(){
 
 updateBadge();
 renderDashboard();
+renderOpen();
 </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
@@ -1342,37 +1343,11 @@ const db = window.supabase.createClient(
     return
   }
 
-  renderTrades(data)
-}
+opens = data.filter(t => t.status === 'OPEN')
 
-function renderTrades(trades){
-
-    const openTrades = trades.filter(
-        trade => trade.status === 'OPEN'
-    )
-
-    const dashContainer =
-        document.querySelector('#dash-open-list')
-
-    const openContainer =
-        document.querySelector('#open-list')
-
-    if(openTrades.length === 0){
-
-        dashContainer.innerHTML = `
-            <div class="empty-state">
-                Tidak ada open position.
-            </div>
-        `
-
-        openContainer.innerHTML = `
-            <div class="empty-state">
-                Tidak ada open position.
-            </div>
-        `
-
-        return
-    }
+renderOpen()
+renderDashboard()
+updateBadge()
 
     const html = openTrades.map(trade => `
         <div class="trade-card">
