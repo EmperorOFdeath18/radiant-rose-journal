@@ -1097,75 +1097,134 @@ renderOpen();
 
 function updateBadge(){ document.getElementById('open-badge').textContent=opens.length; }
 
-  function renderOpen(){
-<div class="open-levels">
+function renderOpen(){
 
-  <div class="level-box">
-    <div class="lb">Margin</div>
-    <div class="lv">$${o.size}</div>
-  </div>
+  document.getElementById('open-total-lbl').textContent =
+    opens.length + ' posisi'
 
-  <div class="level-box">
-    <div class="lb">Leverage</div>
-    <div class="lv">${o.lev}x</div>
-  </div>
+  const el = document.getElementById('open-list')
 
-  <div class="level-box">
-    <div class="lb">Notional</div>
-    <div class="lv">$${o.n.toFixed(0)}</div>
-  </div>
+  if(opens.length === 0){
+    el.innerHTML = `
+      <div class="empty-state">
+        <i class="ti ti-player-play"></i>
+        <p>Tidak ada open position.</p>
+      </div>
+    `
+    return
+  }
 
-</div>
-    <div class="open-actions">
+  el.innerHTML = opens.map(o => `
+    
+    <div class="open-card ${o.side.toLowerCase()}-card">
 
-  <button class="btn-cw"
-    onclick="closeOpen(${o.id},'win')">
-    Hit TP
-  </button>
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+      ">
 
-  <button class="btn-cl"
-    onclick="closeOpen(${o.id},'loss')">
-    Hit SL
-  </button>
+        <div>
+          <div style="
+            font-size:15px;
+            font-weight:700;
+          ">
+            ${o.pair}
+          </div>
 
-  <button class="btn-cc"
-    onclick="closeOpen(${o.id},'custom')">
-    Custom
-  </button>
+          <div style="
+            font-size:12px;
+            opacity:.7;
+            margin-top:4px;
+          ">
+            ${o.side}
+          </div>
+        </div>
 
-</div>
-    <div class="close-form" id="cf-${o.id}">
+        <div style="text-align:right">
+          <div>Entry: ${o.entry}</div>
+          <div>TP: ${o.tp}</div>
+          <div>SL: ${o.sl}</div>
+        </div>
 
-  <div class="close-form-row">
+      </div>
 
-    <div class="field">
-      <label>Harga Exit</label>
+      <div class="open-levels">
 
-      <input
-        type="number"
-        id="cx-${o.id}"
-        placeholder="65000"
-      >
+        <div class="level-box">
+          <div class="lb">Margin</div>
+          <div class="lv">$${o.size}</div>
+        </div>
+
+        <div class="level-box">
+          <div class="lb">Leverage</div>
+          <div class="lv">${o.lev}x</div>
+        </div>
+
+        <div class="level-box">
+          <div class="lb">Notional</div>
+          <div class="lv">$${o.n.toFixed(0)}</div>
+        </div>
+
+      </div>
+
+      <div class="open-actions">
+
+        <button class="btn-cw"
+          onclick="closeOpen(${o.id},'win')">
+          Hit TP
+        </button>
+
+        <button class="btn-cl"
+          onclick="closeOpen(${o.id},'loss')">
+          Hit SL
+        </button>
+
+        <button class="btn-cc"
+          onclick="closeOpen(${o.id},'custom')">
+          Custom
+        </button>
+
+      </div>
+
+      <div class="close-form" id="cf-${o.id}">
+
+        <div class="close-form-row">
+
+          <div class="field">
+            <label>Harga Exit</label>
+
+            <input
+              type="number"
+              id="cx-${o.id}"
+              placeholder="65000"
+            >
+          </div>
+
+          <div class="field">
+            <label>Exit Type</label>
+
+            <select id="cxt-${o.id}">
+              <option value="taker">Taker</option>
+              <option value="maker">Maker</option>
+            </select>
+          </div>
+
+          <button
+            class="btn-confirm"
+            onclick="confirmCustom(${o.id})">
+            Close
+          </button>
+
+        </div>
+
+      </div>
+
     </div>
 
-    <div class="field">
-      <label>Exit Type</label>
-
-      <select id="cxt-${o.id}">
-        <option value="taker">Taker</option>
-        <option value="maker">Maker</option>
-      </select>
-    </div>
-
-    <button
-      class="btn-confirm"
-      onclick="confirmCustom(${o.id})">
-      Close
-    </button>
-
-  </div>
-
-</div>
+  `).join('')
+}
+  
   document.getElementById('open-total-lbl').textContent =
     opens.length + ' posisi'
 
