@@ -1148,13 +1148,27 @@ function confirmCustom(id){
   updateBadge(); renderOpen(); renderDashboard();
 }
 
-function deleteOpen(id){
-  if(!confirm('Hapus open position ini?')) return;
-  opens=opens.filter(o=>o.id!==id);
-  ;
-  updateBadge();
-renderDashboard();
-renderOpen();
+async function deleteOpen(id){
+
+  if(!confirm('Hapus open position ini?')){
+    return
+  }
+
+  const { error } = await db
+    .from('trades')
+    .delete()
+    .eq('id', id)
+
+  if(error){
+    console.error(error)
+    return
+  }
+
+  opens = opens.filter(o => o.id !== id)
+
+  updateBadge()
+  renderDashboard()
+  renderOpen()
 }
 
 function updateBadge(){ document.getElementById('open-badge').textContent=opens.length; }
@@ -1313,11 +1327,27 @@ function renderJournal(){
   `).join('');
 }
 
-function deleteTrade(id){
-  if(!confirm('Hapus trade ini?')) return;
-  trades=trades.filter(t=>t.id!==id);
-  
-  renderJournal();
+async function deleteTrade(id){
+
+  if(!confirm('Hapus trade ini?')){
+    return
+  }
+
+  const { error } = await db
+    .from('trades')
+    .delete()
+    .eq('id', id)
+
+  if(error){
+    console.error(error)
+    return
+  }
+
+  trades = trades.filter(t => t.id !== id)
+
+  renderJournal()
+  renderDashboard()
+  renderStats()
 }
 
 function buildEqData(){
@@ -1449,11 +1479,30 @@ function exportCSV(){
   a.download='bybit_journal.csv'; a.click();
 }
 
-function clearAll(){
-  if(!confirm('Hapus SEMUA data? Tidak bisa dibatalkan.')) return;
-  trades=[]; opens=[];
-  updateBadge(); renderDashboard(); renderJournal();
-  alert('Semua data dihapus.');
+async function clearAll(){
+
+  if(!confirm('Hapus SEMUA data?')){
+    return
+  }
+
+  const { error } = await db
+    .from('trades')
+    .delete()
+    .neq('id', 0)
+
+  if(error){
+    console.error(error)
+    return
+  }
+
+  trades = []
+  opens = []
+
+  updateBadge()
+  renderDashboard()
+  renderJournal()
+  renderOpen()
+  renderStats()
 }
 
 updateBadge();
