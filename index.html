@@ -931,7 +931,11 @@ let cfg = {
   equity: 1000
 }
 let eqC1=null, eqC2=null, pnlC=null;
+const savedCfg = localStorage.getItem('rr_settings')
 
+if(savedCfg){
+  cfg = JSON.parse(savedCfg)
+}
 document.getElementById('s-maker').value  = cfg.maker;
 document.getElementById('s-taker').value  = cfg.taker;
 document.getElementById('s-equity').value = cfg.equity;
@@ -1122,11 +1126,13 @@ async function closeOpen(id, mode){
     return
   }
 
-  opens.splice(idx,1)
+  await loadTrades()
 
-  renderOpen()
-  renderDashboard()
-  updateBadge()
+renderOpen()
+renderDashboard()
+renderJournal()
+renderStats()
+updateBadge()
 
 }
 
@@ -1143,9 +1149,13 @@ function confirmCustom(id){
   const pnl=n*m*(exitPrice-o.entry)/o.entry-ft2;
   trades.push({...o,pnl,exitPrice,result:pnl>=0?'win':'loss',ft:ft2});
   
-  opens.splice(idx,1);
-  ;
-  updateBadge(); renderOpen(); renderDashboard();
+await loadTrades()
+
+renderOpen()
+renderDashboard()
+renderJournal()
+renderStats()
+updateBadge()
 }
 
 async function deleteOpen(id){
@@ -1314,7 +1324,9 @@ function renderJournal(){
   ? new Date(t.closed_at).toLocaleDateString('id-ID')
   : '—'}</td>
       <td style="font-weight:600;font-family:var(--font-mono)">${t.pair}</td>
-      <td><span class="badge badge-${(t.dir || t.side).toLowerCase()}">${t.dir==='long'?'Long':'Short'}</span></td>
+      <td><span class="badge badge-${(t.dir || t.side).toLowerCase()}">${(t.dir || t.side).toLowerCase()==='long'
+  ? 'Long'
+  : 'Short'}</span></td>
       <td>${Number(t.entry).toLocaleString()}</td>
       <td>${t.exitPrice?Number(t.exitPrice).toLocaleString():'—'}</td>
       <td>$${Number(t.size).toFixed(0)}</td>
@@ -1462,12 +1474,26 @@ function renderStats(){
 }
 
 function saveSettings(){
-  cfg.maker=parseFloat(document.getElementById('s-maker').value)||0.02;
-  cfg.taker=parseFloat(document.getElementById('s-taker').value)||0.055;
-  cfg.equity=parseFloat(document.getElementById('s-equity').value)||1000;
-  
-  renderDashboard();
-renderStats();
+
+  cfg.maker =
+    parseFloat(document.getElementById('s-maker').value)
+    || 0.02
+
+  cfg.taker =
+    parseFloat(document.getElementById('s-taker').value)
+    || 0.055
+
+  cfg.equity =
+    parseFloat(document.getElementById('s-equity').value)
+    || 1000
+
+  localStorage.setItem(
+    'rr_settings',
+    JSON.stringify(cfg)
+  )
+
+  renderDashboard()
+  renderStats()
 }
 
 function exportCSV(){
