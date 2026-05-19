@@ -1075,9 +1075,9 @@ function confirmCustom(id){
   const exitPrice=parseFloat(document.getElementById('cx-'+id).value);
   const xt2=document.getElementById('cxt-'+id).value;
   if(!exitPrice){alert('Masukkan harga exit.');return;}
-  const n=o.size*o.leverage;
+  const n=o.size*o.lev;
   const ft2=n*fee(o.et)+n*fee(xt2);
-  const m=o.side.toLowerCase() === 'long'?1:-1;
+  const m=o.dir.toLowerCase() === 'long'?1:-1;
   const pnl=n*m*(exitPrice-o.entry)/o.entry-ft2;
   trades.push({...o,pnl,exitPrice,result:pnl>=0?'win':'loss',ft:ft2});
   localStorage.setItem('bj2_trades',JSON.stringify(trades));
@@ -1116,7 +1116,7 @@ function renderOpen(){
 
   el.innerHTML = opens.map(o => `
     
-    <div class="open-card ${o.side.toLowerCase()}-card">
+    <div class="open-card ${o.dir.toLowerCase()}-card">
 
       <div style="
         display:flex;
@@ -1137,7 +1137,7 @@ function renderOpen(){
             opacity:.7;
             margin-top:4px;
           ">
-            ${o.side}
+            ${o.dir}
           </div>
         </div>
 
@@ -1225,59 +1225,6 @@ function renderOpen(){
   `).join('')
 }
   
-  document.getElementById('open-total-lbl').textContent =
-    opens.length + ' posisi'
-
-  const el = document.getElementById('open-list')
-
-  if(opens.length === 0){
-    el.innerHTML = `
-      <div class="empty-state">
-        <i class="ti ti-player-play"></i>
-        <p>Tidak ada open position.</p>
-      </div>
-    `
-    return
-  }
-
-  el.innerHTML = opens.map(o => `
-    <div class="open-card ${o.side.toLowerCase()}-card">
-
-      <div style="
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-      ">
-
-        <div>
-          <div style="
-            font-size:15px;
-            font-weight:700;
-          ">
-            ${o.pair}
-          </div>
-
-          <div style="
-            font-size:12px;
-            opacity:.7;
-            margin-top:4px;
-          ">
-            ${o.side}
-          </div>
-        </div>
-
-        <div style="text-align:right">
-          <div>Entry: ${o.entry}</div>
-          <div>TP: ${o.tp}</div>
-          <div>SL: ${o.sl}</div>
-        </div>
-
-      </div>
-
-    </div>
-  `).join('')
-}
-  
 function renderJournal(){
   const filter=document.getElementById('filter-res').value;
   const list=filter==='all'?trades:trades.filter(t=>t.result===filter);
@@ -1362,9 +1309,9 @@ function renderDashboard(){
   openEl.innerHTML=opens.slice(0,3).map(o=>`
     <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--color-border-tertiary)">
       <div style="display:flex;align-items:center;gap:8px">
-        <span class="badge badge-${o.side.toLowerCase()}">${o.side}</span>
+        <span class="badge badge-${o.dir.toLowerCase()}">${o.dir}</span>
         <span style="font-weight:700;font-size:13px;font-family:var(--font-mono);letter-spacing:-0.01em">${o.pair}</span>
-        <span style="font-size:10.5px;color:var(--color-text-tertiary);font-family:var(--font-mono)">${o.leverage}x · Entry ${Number(o.entry).toLocaleString()}</span>
+        <span style="font-size:10.5px;color:var(--color-text-tertiary);font-family:var(--font-mono)">${o.lev}x · Entry ${Number(o.entry).toLocaleString()}</span>
       </div>
       <div style="text-align:right;font-size:10.5px;font-family:var(--font-mono)">
         <div style="color:#00BF8F">TP ${Number(o.tp).toLocaleString()}</div>
