@@ -1359,11 +1359,7 @@ async function deleteTrade(id){
     return
   }
 
-  trades = trades.filter(t => t.id !== id)
-
-  renderJournal()
-  renderDashboard()
-  renderStats()
+ await loadTrades()
 }
 
 function buildEqData(){
@@ -1617,6 +1613,7 @@ updateBadge()
 }
 
 loadTrades()
+  setInterval(loadTrades, 3000)
 </script>
 </body>
 </html>
