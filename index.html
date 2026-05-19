@@ -1050,22 +1050,52 @@ function clearForm(){
   document.getElementById('i-lev').value='10';
 }
 
-function closeOpen(id, mode){
-  const idx=opens.findIndex(o=>o.id===id);
-  if(idx<0) return;
-  const o=opens[idx];
-  if(mode==='win'||mode==='loss'){
-    const pnl=mode==='win'?o.pNet:o.lNet;
-    const exitPrice=mode==='win'?o.tp:o.sl;
-    trades.push({...o,pnl,exitPrice,result:mode});
-    localStorage.setItem('bj2_trades',JSON.stringify(trades));
-    opens.splice(idx,1);
-    localStorage.setItem('bj2_opens',JSON.stringify(opens));
-    updateBadge(); renderOpen(); renderDashboard();
-  } else {
-    const cf=document.getElementById('cf-'+id);
-    cf.classList.toggle('visible');
+async function closeOpen(id, mode){
+
+  const idx = opens.findIndex(o => o.id === id)
+
+  if(idx < 0) return
+
+  const o = opens[idx]
+
+  const pnl =
+    mode === 'win'
+      ? o.pNet
+      : o.lNet
+
+  const exitPrice =
+    mode === 'win'
+      ? o.tp
+      : o.sl
+
+  const result =
+    mode === 'win'
+      ? 'WIN'
+      : 'LOSS'
+
+  const { error } = await db
+    .from('trades')
+    .update({
+      status: 'CLOSED',
+      result: result,
+      pnl: pnl,
+      exit_price: exitPrice,
+      closed_at: new Date().toISOString()
+    })
+    .eq('id', id)
+
+  if(error){
+    console.error(error)
+    alert('Gagal update trade')
+    return
   }
+
+  opens.splice(idx,1)
+
+  renderOpen()
+  renderDashboard()
+  updateBadge()
+
 }
 
 function confirmCustom(id){
@@ -1417,6 +1447,22 @@ const db = window.supabase.createClient(
     console.error(error)
     return
   }
+
+trades = data
+  .filter(t => t.status === 'CLOSED')
+  .map(t => ({
+
+    ...t,
+
+    dir: (t.side || '').toLowerCase(),
+
+    size: Number(t.margin || 0),
+
+    lev: Number(t.leverage || 1),
+
+    exitPrice: t.exit_price
+
+  }))
 
 opens = data
   .filter(t => t.status === 'OPEN')
