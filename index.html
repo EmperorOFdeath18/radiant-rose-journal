@@ -1136,7 +1136,7 @@ updateBadge()
 
 }
 
-function confirmCustom(id){
+async function confirmCustom(id){
   const idx=opens.findIndex(o=>o.id===id);
   if(idx<0) return;
   const o=opens[idx];
@@ -1266,10 +1266,14 @@ function renderOpen(){
           Hit SL
         </button>
 
-        <button class="btn-cc"
-          onclick="closeOpen(${o.id},'custom')">
-          Custom
-        </button>
+       <button class="btn-cc"
+  onclick="
+    document
+      .getElementById('cf-${o.id}')
+      .classList.toggle('visible')
+  ">
+  Custom
+</button>
 
       </div>
 
@@ -1606,6 +1610,8 @@ opens = data
 
 renderOpen()
 renderDashboard()
+renderJournal()
+renderStats()
 updateBadge()
 
 }
