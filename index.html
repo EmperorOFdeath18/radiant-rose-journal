@@ -1116,7 +1116,7 @@ function renderOpen(){
 
   el.innerHTML = opens.map(o => `
     
-    <div class="open-card ${o.dir.toLowerCase()}-card">
+    <div class="open-card ${(o.dir || o.side).toLowerCase()}-card">
 
       <div style="
         display:flex;
@@ -1137,7 +1137,7 @@ function renderOpen(){
             opacity:.7;
             margin-top:4px;
           ">
-            ${o.dir}
+            ${o.dir || o.side}
           </div>
         </div>
 
@@ -1309,7 +1309,7 @@ function renderDashboard(){
   openEl.innerHTML=opens.slice(0,3).map(o=>`
     <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--color-border-tertiary)">
       <div style="display:flex;align-items:center;gap:8px">
-        <span class="badge badge-${o.dir.toLowerCase()}">${o.dir}</span>
+        <span class="badge badge-${(o.dir || o.side).toLowerCase()}</span>
         <span style="font-weight:700;font-size:13px;font-family:var(--font-mono);letter-spacing:-0.01em">${o.pair}</span>
         <span style="font-size:10.5px;color:var(--color-text-tertiary);font-family:var(--font-mono)">${o.lev}x · Entry ${Number(o.entry).toLocaleString()}</span>
       </div>
@@ -1416,7 +1416,12 @@ const db = window.supabase.createClient(
     return
   }
 
-opens = data.filter(t => t.status === 'OPEN')
+opens = data
+  .filter(t => t.status === 'OPEN')
+  .map(t => ({
+    ...t,
+    dir: (t.dir || t.side || '').toLowerCase()
+  }))
 
 renderOpen()
 renderDashboard()
