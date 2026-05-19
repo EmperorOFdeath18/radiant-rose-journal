@@ -1070,28 +1070,29 @@ async function saveOpen(){
 
 async function saveClosed(){
 
-  const v = getInputs()
+ const { error } = await db
+  .from('trades')
+  .insert([{
 
-  if(
-    !v.pair ||
-    !v.entry ||
-    !v.sl ||
-    !v.tp ||
-    !v.size
-  ){
-    return
-  }
+    pair: v.pair,
 
-  const c = calc(
-    v.entry,
-    v.sl,
-    v.tp,
-    v.size,
-    v.lev,
-    v.dir,
-    v.et,
-    v.xt
-  )
+    side: v.dir.toUpperCase(),
+
+    status: 'CLOSED',
+
+    entry: v.entry,
+    sl: v.sl,
+    tp: v.tp,
+
+    margin: v.size,
+    leverage: v.lev,
+
+    pnl: pnl,
+
+    ft: c.ft,
+    rr: c.rr,
+
+    result: result,
 
   const isWin = confirm(
     'Apakah trade ini WIN?\nOK = WIN\nCancel = LOSS'
@@ -1458,7 +1459,66 @@ function makeEqChart(canvasId,existing){
     }
   });
 }
+function makePnlChart(){
 
+  if(pnlC){
+    pnlC.destroy()
+  }
+
+  if(trades.length === 0){
+    return
+  }
+
+  pnlC = new Chart(
+    document.getElementById('pnl-chart'),
+    {
+      type:'bar',
+
+      data:{
+        labels: trades.map(t => t.pair),
+
+        datasets:[{
+          data: trades.map(t => t.pnl),
+
+          backgroundColor: trades.map(t =>
+            t.pnl >= 0
+              ? 'rgba(0,191,143,.7)'
+              : 'rgba(232,73,96,.7)'
+          ),
+
+          borderRadius:6
+        }]
+      },
+
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+
+        plugins:{
+          legend:{display:false}
+        },
+
+        scales:{
+          x:{
+            grid:{
+              color:'rgba(23,32,48,0.4)'
+            }
+          },
+
+          y:{
+            grid:{
+              color:'rgba(23,32,48,0.4)'
+            },
+
+            ticks:{
+              callback:v => '$'+v
+            }
+          }
+        }
+      }
+    }
+  )
+}
 function renderDashboard(){
 
   const wins =
@@ -1696,11 +1756,14 @@ function renderStats(){
   document.getElementById('s-rr').textContent =
     '1:' + avgRR.toFixed(2)
 
-  document.getElementById('s-fee').textContent =
-    'Included'
+ const totalFee =
+  trades.reduce((s,t)=>s + Number(t.ft || 0),0)
+
+document.getElementById('s-fee').textContent =
+  '$' + totalFee.toFixed(2)
 
   eqC2 = makeEqChart('eq-chart2', eqC2)
-
+makePnlChart()
 }
 
 function saveSettings(){
