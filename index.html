@@ -1094,14 +1094,73 @@ function deleteOpen(id){
 }
 
 function updateBadge(){ document.getElementById('open-badge').textContent=opens.length; }
+async function renderOpen(){
 
-function renderOpen(){
-  document.getElementById('open-total-lbl').textContent=opens.length+' posisi';
-  const el=document.getElementById('open-list');
-  if(opens.length===0){
-    el.innerHTML='<div class="empty-state"><i class="ti ti-player-play" aria-hidden="true"></i><p>Tidak ada open position.</p></div>';
-    return;
-  }
+    const { data, error } = await db
+        .from('trades')
+        .select('*')
+
+    if(error){
+        console.error(error)
+        return
+    }
+
+    const openTrades = data.filter(
+        trade => trade.status === 'OPEN'
+    )
+
+    document.getElementById('open-total-lbl').textContent =
+        openTrades.length + ' posisi'
+
+    const el = document.getElementById('open-list')
+
+    if(openTrades.length === 0){
+        el.innerHTML = `
+        <div class="empty-state">
+            <i class="ti ti-player-play"></i>
+            <p>Tidak ada open position.</p>
+        </div>
+        `
+        return
+    }
+
+    el.innerHTML = openTrades.map(trade => `
+        <div class="open-card">
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+            ">
+
+                <div>
+                    <div style="
+                        font-size:16px;
+                        font-weight:700;
+                    ">
+                        ${trade.pair}
+                    </div>
+
+                    <div style="
+                        opacity:.7;
+                        margin-top:4px;
+                    ">
+                        ${trade.side}
+                    </div>
+                </div>
+
+                <div style="text-align:right">
+                    <div>Entry: ${trade.entry}</div>
+                    <div>TP: ${trade.tp}</div>
+                    <div>SL: ${trade.sl}</div>
+                </div>
+
+            </div>
+
+        </div>
+    `).join('')
+}
+  
   el.innerHTML=opens.map(o=>`
     <div class="open-card ${o.dir}-card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -1390,6 +1449,7 @@ dashContainer.innerHTML = openTrades.slice(0,1).map(trade => `
 }
 
 loadTrades()
+  renderOpen()
 </script>
 </body>
 </html>
