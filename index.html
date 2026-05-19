@@ -1059,7 +1059,7 @@ async function saveOpen(){
 
   await loadTrades()
 
-  alert('Trade open berhasil disimpan!')
+  
 
   clearForm()
 }
@@ -1436,7 +1436,8 @@ function saveSettings(){
   cfg.taker=parseFloat(document.getElementById('s-taker').value)||0.055;
   cfg.equity=parseFloat(document.getElementById('s-equity').value)||1000;
   
-  alert('Settings disimpan!');
+  renderDashboard();
+renderStats();
 }
 
 function exportCSV(){
