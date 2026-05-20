@@ -1299,25 +1299,82 @@ updateBadge()
 }
 
 async function confirmCustom(id){
-  const idx=opens.findIndex(o=>o.id===id);
-  if(idx<0) return;
-  const o=opens[idx];
-  const exitPrice=parseFloat(document.getElementById('cx-'+id).value);
-  const xt2=document.getElementById('cxt-'+id).value;
-  if(!exitPrice){alert('Masukkan harga exit.');return;}
-  const n=o.size*o.lev;
-  const ft2=n*fee(o.et)+n*fee(xt2);
-  const m=o.dir.toLowerCase() === 'long'?1:-1;
-  const pnl=n*m*(exitPrice-o.entry)/o.entry-ft2;
-  trades.push({...o,pnl,exitPrice,result:pnl>=0?'win':'loss',ft:ft2});
-  
-await loadTrades()
 
-renderOpen()
-renderDashboard()
-renderJournal()
-renderStats()
-updateBadge()
+  const idx = opens.findIndex(o => o.id === id)
+
+  if(idx < 0) return
+
+  const o = opens[idx]
+
+  const exitPrice =
+    parseFloat(
+      document.getElementById('cx-'+id).value
+    )
+
+  const xt2 =
+    document.getElementById('cxt-'+id).value
+
+  if(!exitPrice){
+    alert('Masukkan harga exit.')
+    return
+  }
+
+  const n = o.size * o.lev
+
+  const ft2 =
+    n * fee(o.et) +
+    n * fee(xt2)
+
+  const m =
+    (o.dir || o.side).toLowerCase() === 'long'
+      ? 1
+      : -1
+
+  const pnl =
+    (
+      n *
+      m *
+      (exitPrice - o.entry) /
+      o.entry
+    ) - ft2
+
+  const result =
+    pnl >= 0
+      ? 'win'
+      : 'loss'
+
+  const { error } = await db
+    .from('trades')
+    .update({
+
+      status: 'CLOSED',
+
+      result: result,
+
+      pnl: pnl,
+
+      ft: ft2,
+
+      exit_price: exitPrice,
+
+      closed_at: new Date().toISOString()
+
+    })
+    .eq('id', id)
+
+  if(error){
+    console.error(error)
+    alert('Gagal custom close')
+    return
+  }
+
+  await loadTrades()
+
+  renderOpen()
+  renderDashboard()
+  renderJournal()
+  renderStats()
+  updateBadge()
 }
 
 async function deleteOpen(id){
@@ -1542,7 +1599,7 @@ async function deleteTrade(id){
 
 function buildEqData(){
   const sorted=[...trades]
-  .slice(-20).sort((a,b)=>(a.date||'')>(b.date||'')?1:-1);
+  .slice(-10).sort((a,b)=>(a.date||'')>(b.date||'')?1:-1);
   let eq=cfg.equity;
   const labels=['Start'],vals=[parseFloat(eq.toFixed(2))];
   sorted.forEach(t=>{eq+=(t.pnl||0);labels.push(t.pair);vals.push(parseFloat(eq.toFixed(2)));});
@@ -1583,12 +1640,16 @@ function makePnlChart(){
       type:'bar',
 
       data:{
-        labels: trades.slice(-20).map(t => t.pair),
+        labels: trades.slice(-10).map(t => t.pair),
 
         datasets:[{
-          data: trades.slice(-20).map(t => t.pnl),
+          barThickness: 42,
+maxBarThickness: 42,
+categoryPercentage: 0.7,
+barPercentage: 0.9,
+          data: trades.slice(-10).map(t => t.pnl),
 
-          backgroundColor: trades.slice(-20).map(t =>
+          backgroundColor: trades.slice(-10).map(t =>
             t.pnl >= 0
               ? 'rgba(0,191,143,.7)'
               : 'rgba(232,73,96,.7)'
@@ -1601,6 +1662,7 @@ function makePnlChart(){
       options:{
         responsive:true,
         maintainAspectRatio:false,
+        animation:false,
 
         plugins:{
           legend:{display:false}
@@ -1608,6 +1670,7 @@ function makePnlChart(){
 
         scales:{
           x:{
+            offset: true,
             grid:{
               color:'rgba(23,32,48,0.4)'
             }
