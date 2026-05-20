@@ -1376,16 +1376,6 @@ console.log({
 
       pnl: pnl,
 
-    const { error } = await db
-  .from('trades')
-  .update({
-
-    status: 'CLOSED',
-
-    result: result,
-
-    pnl: pnl,
-
     exit_price: exitPrice,
 
     closed_at: new Date().toISOString()
