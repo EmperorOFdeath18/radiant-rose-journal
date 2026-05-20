@@ -765,6 +765,13 @@ padding:14px;
       <span id="open-badge" style="background:rgba(239,160,32,0.15);color:#EFA020;border-radius:10px;padding:0 7px;font-size:10.5px;font-weight:700;margin-left:2px">0</span>
     </button>
     <button class="nav-btn" onclick="showPanel('input',this)"><i class="ti ti-plus" aria-hidden="true"></i>Input</button>
+   <button
+  class="nav-btn"
+  onclick="showPanel('donation',this)"
+>
+  <i class="ti ti-heart-handshake"></i>
+  Donasi
+</button>
     <button class="nav-btn" onclick="showPanel('journal',this)"><i class="ti ti-list" aria-hidden="true"></i>Jurnal</button>
     <button class="nav-btn" onclick="showPanel('stats',this)"><i class="ti ti-chart-bar" aria-hidden="true"></i>Statistik</button>
     <button class="nav-btn" onclick="showPanel('settings',this)"><i class="ti ti-settings" aria-hidden="true"></i>Settings</button>
@@ -778,13 +785,6 @@ padding:14px;
   <div class="val" id="d-pnl">$0.00</div>
   <div class="sub">
     Realized Profit
-    <button
-  class="btn-sm"
-  style="margin-top:10px"
-  onclick="markDonationSent()"
->
-  Tandai Sudah Disalurkan
-</button>
   </div>
 </div>
 <div class="metric-card" id="donation-card">
@@ -806,7 +806,13 @@ padding:14px;
   >
     Belum disalurkan
   </div>
-
+<button
+  class="btn-sm"
+  style="margin-top:10px"
+  onclick="markDonationSent()"
+>
+  Tandai Sudah Disalurkan
+</button>
 </div>
 <div class="metric-card">
   <div class="lbl">Total Balance</div>
@@ -946,6 +952,31 @@ padding:14px;
   </div>
 
   <!-- JOURNAL -->
+  <!-- DONATION -->
+<div id="panel-donation" class="panel">
+
+  <div class="card">
+
+    <div class="card-header">
+
+      <div class="card-title">
+        <i class="ti ti-heart-handshake"></i>
+        Donasi Bulanan
+      </div>
+
+    </div>
+
+    <div
+      id="donation-list"
+      style="
+        display:grid;
+        gap:12px;
+      "
+    ></div>
+
+  </div>
+
+</div>
   <div id="panel-journal" class="panel">
     <div class="card">
       <div class="card-header">
@@ -1170,6 +1201,7 @@ function showPanel(name, btn){
   if(name==='dashboard') renderDashboard();
   if(name==='open')      renderOpen();
   if(name==='journal')   renderJournal();
+  if(name==='donation') renderDonation();
   if(name==='stats')     renderStats();
 }
 
@@ -1738,7 +1770,76 @@ function renderOpen(){
 
   select.value = current
 }
-  
+  function renderDonation(){
+
+  const el =
+    document.getElementById('donation-list')
+
+  const monthly = {}
+
+  trades.forEach(t => {
+
+    if(!t.closed_at) return
+
+    const d = new Date(t.closed_at)
+
+    const key =
+      d.getFullYear() + '-' +
+      String(d.getMonth()+1).padStart(2,'0')
+
+    if(!monthly[key]){
+      monthly[key] = 0
+    }
+
+    monthly[key] += Number(t.donation || 0)
+
+  })
+
+  const rows =
+    Object.entries(monthly)
+      .sort()
+      .reverse()
+
+  if(rows.length === 0){
+
+    el.innerHTML = `
+      <div class="empty-state">
+        <i class="ti ti-heart"></i>
+        <p>Belum ada data donasi.</p>
+      </div>
+    `
+
+    return
+  }
+
+  el.innerHTML =
+    rows.map(([month,val]) => {
+
+      const [y,m] = month.split('-')
+
+      const name =
+        new Date(y,m-1)
+        .toLocaleString('id-ID',{
+          month:'long',
+          year:'numeric'
+        })
+
+      return `
+        <div class="metric-card">
+
+          <div class="lbl">
+            ${name}
+          </div>
+
+          <div class="val pos">
+            $${val.toFixed(2)}
+          </div>
+
+        </div>
+      `
+
+    }).join('')
+}
   function renderJournal(){
 
   const resFilter =
@@ -1989,11 +2090,6 @@ function renderDashboard(){
   const net =
     trades.reduce((s,t)=>s + Number(t.pnl || 0),0)
   
-  const totalDonation =
-  trades.reduce(
-    (s,t)=>s + Number(t.donation || 0),
-    0
-  )
 const now = new Date()
 
 const currentMonth =
