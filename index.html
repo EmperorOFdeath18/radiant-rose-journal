@@ -885,13 +885,47 @@ padding:14px;
     <div class="card">
       <div class="card-header">
         <div class="card-title"><i class="ti ti-list" aria-hidden="true"></i>Riwayat Trade</div>
-        <select id="filter-res" onchange="renderJournal()" style="font-size:12px;padding:6px 9px;border-radius:7px;border:1px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-secondary);outline:none;font-family:var(--font-sans)">
-          <option value="all">Semua</option>
-          <option value="win">Win</option>
-          <option value="loss">Loss</option>
-       <select id="filter-month" onchange="renderJournal()">
-  <option value="all">Semua Bulan</option>
-</select>
+        <div style="display:flex;gap:8px">
+
+  <select
+    id="filter-month"
+    onchange="renderJournal()"
+    style="
+      font-size:12px;
+      padding:6px 9px;
+      border-radius:7px;
+      border:1px solid var(--color-border-secondary);
+      background:var(--color-background-secondary);
+      color:var(--color-text-secondary);
+      outline:none;
+      font-family:var(--font-sans)
+    "
+  >
+    <option value="all">
+      Semua Bulan
+    </option>
+  </select>
+
+  <select
+    id="filter-res"
+    onchange="renderJournal()"
+    style="
+      font-size:12px;
+      padding:6px 9px;
+      border-radius:7px;
+      border:1px solid var(--color-border-secondary);
+      background:var(--color-background-secondary);
+      color:var(--color-text-secondary);
+      outline:none;
+      font-family:var(--font-sans)
+    "
+  >
+    <option value="all">Semua</option>
+    <option value="win">Win</option>
+    <option value="loss">Loss</option>
+  </select>
+
+</div>
       </div>
       <div style="
   overflow-x:auto;
@@ -1597,49 +1631,127 @@ function renderJournal(){
 
   // render table lanjut...
 }
-  function populateMonthFilter(){
+  function renderJournal(){
 
-  const el =
-    document.getElementById('filter-month')
+  const resFilter =
+    document.getElementById('filter-res').value
 
-  const months = [
-    ...new Set(
-      trades.map(t => {
+  const monthFilter =
+    document.getElementById('filter-month').value
 
-        if(!t.closed_at) return null
+  let list = [...trades]
 
-        const d = new Date(t.closed_at)
-
-        return (
-          d.getFullYear() + '-' +
-          String(d.getMonth()+1).padStart(2,'0')
-        )
-
-      }).filter(Boolean)
+  if(resFilter !== 'all'){
+    list = list.filter(
+      t => t.result === resFilter
     )
-  ]
+  }
 
-  el.innerHTML =
-    '<option value="all">Semua Bulan</option>'
+  if(monthFilter !== 'all'){
 
-  months.reverse().forEach(m => {
+    list = list.filter(t => {
 
-    const opt =
-      document.createElement('option')
+      if(!t.closed_at) return false
 
-    opt.value = m
+      const d = new Date(t.closed_at)
 
-    opt.textContent = m
+      const key =
+        d.getFullYear() + '-' +
+        String(d.getMonth()+1).padStart(2,'0')
 
-    el.appendChild(opt)
-  })
-}
-</td>
-      <td style="font-weight:600;color:${(t.pnl||0)>=0?'#00BF8F':'#E84960'}">${(t.pnl||0)>=0?'+':''}$${Number(t.pnl||0).toFixed(3)}</td>
-      <td><span class="badge badge-${t.result}">${t.result==='win'?'Win':'Loss'}</span></td>
-      <td><button onclick="deleteTrade(${t.id})" aria-label="Hapus" style="border:none;background:none;cursor:pointer;color:var(--color-text-tertiary);font-size:13px;transition:color .15s" onmouseenter="this.style.color='var(--red)'" onmouseleave="this.style.color='var(--color-text-tertiary)'"><i class="ti ti-x" aria-hidden="true"></i></button></td>
-    </tr>
-  `).join('');
+      return key === monthFilter
+    })
+  }
+
+  const body =
+    document.getElementById('journal-body')
+
+  const empty =
+    document.getElementById('journal-empty')
+
+  if(list.length === 0){
+
+    body.innerHTML = ''
+
+    empty.style.display = 'block'
+
+    return
+  }
+
+  empty.style.display = 'none'
+
+  body.innerHTML =
+    list.reverse().map(t => `
+
+      <tr>
+
+        <td>
+          ${new Date(
+            t.closed_at || Date.now()
+          ).toLocaleDateString('id-ID')}
+        </td>
+
+        <td>${t.pair}</td>
+
+        <td>
+          <span class="
+            badge
+            badge-${String(t.side).toLowerCase()}
+          ">
+            ${t.side}
+          </span>
+        </td>
+
+        <td>${t.entry}</td>
+
+        <td>${t.exit_price || '-'}</td>
+
+        <td>$${t.margin}</td>
+
+        <td>${t.leverage}x</td>
+
+        <td>
+          1:${Number(t.rr || 0).toFixed(2)}
+        </td>
+
+        <td style="
+          font-weight:600;
+          color:${(t.pnl||0)>=0
+            ? '#00BF8F'
+            : '#E84960'}
+        ">
+          ${(t.pnl||0)>=0?'+':''}
+          $${Number(t.pnl||0).toFixed(3)}
+        </td>
+
+        <td>
+          <span class="
+            badge
+            badge-${t.result}
+          ">
+            ${t.result === 'win'
+              ? 'Win'
+              : 'Loss'}
+          </span>
+        </td>
+
+        <td>
+          <button
+            onclick="deleteTrade(${t.id})"
+            style="
+              border:none;
+              background:none;
+              cursor:pointer;
+              color:var(--color-text-tertiary)
+            "
+          >
+            ✕
+          </button>
+        </td>
+
+      </tr>
+
+    `).join('')
 }
 
 async function deleteTrade(id){
