@@ -618,11 +618,11 @@ transform:translateY(-1px);
     }
 
 .stat-mini .vl{
-font-size:32px;
+font-size:22px;
 font-weight:700;
-line-height:1;
+line-height:1.1;
 font-family:var(--font-mono);
-letter-spacing:-0.03em;
+letter-spacing:-0.02em;
 }
 
     /* ── SETTINGS ── */
@@ -1056,6 +1056,7 @@ document.querySelectorAll('input[name="dir"]').forEach(r => {
 });
 
 function showPanel(name, btn){
+  localStorage.setItem('rr_last_panel', name)
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('panel-'+name).classList.add('active');
@@ -1918,6 +1919,28 @@ async function clearAll(){
 updateBadge();
 renderDashboard();
 renderOpen();
+  const lastPanel =
+  localStorage.getItem('rr_last_panel')
+
+if(lastPanel){
+
+  const btns =
+    document.querySelectorAll('.nav-btn')
+
+  const map = {
+    dashboard: 0,
+    open: 1,
+    input: 2,
+    journal: 3,
+    stats: 4,
+    settings: 5
+  }
+
+  showPanel(
+    lastPanel,
+    btns[map[lastPanel]]
+  )
+}
 </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
