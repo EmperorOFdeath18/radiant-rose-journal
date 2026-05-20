@@ -1150,59 +1150,6 @@ async function saveClosed(){
   clearForm()
 }
 
-  const pnl =
-    isWin
-      ? c.pNet
-      : c.lNet
-
-  const exitPrice =
-    isWin
-      ? v.tp
-      : v.sl
-
-  const result =
-    isWin
-      ? 'win'
-      : 'loss'
-
-  const { error } = await db
-    .from('trades')
-    .insert([{
-
-      pair: v.pair,
-
-      side: v.dir.toUpperCase(),
-
-      status: 'CLOSED',
-
-      entry: v.entry,
-      sl: v.sl,
-      tp: v.tp,
-
-      margin: v.size,
-      leverage: v.lev,
-
-      pnl: pnl,
-
-      result: result,
-
-      exit_price: exitPrice,
-
-      closed_at: new Date().toISOString(),
-
-      timeframe: '4H'
-
-    }])
-
-  if(error){
-    console.error(error)
-    return
-  }
-
-  await loadTrades()
-
-  clearForm()
-}
 
 function clearForm(){
   ['i-pair','i-entry','i-sl','i-tp','i-size','i-note'].forEach(id=>document.getElementById(id).value='');
