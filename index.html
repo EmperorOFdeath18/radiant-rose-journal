@@ -736,7 +736,6 @@ padding:14px;
   <div id="panel-dashboard" class="panel active">
     <div class="metrics-row">
 <div class="metric-card">
-  <div class="lbl">Avg R:R</div>
   <div class="lbl">Net P&L</div>
   <div class="val" id="d-pnl">$0.00</div>
   <div class="sub">
@@ -1329,30 +1328,52 @@ async function closeOpen(id, mode){
 
   const result =
     mode === 'win'
-  ? 'win'
-: 'loss'
+      ? 'win'
+      : 'loss'
 
+  const donation =
+    pnl > 0
+      ? pnl * 0.05
+      : 0
 
-if(error){
+  const { error } = await db
+    .from('trades')
+    .update({
 
-  console.error(error)
+      status: 'CLOSED',
 
-  alert(
-    'Gagal custom close:\n' +
-    JSON.stringify(error)
-  )
+      result: result,
 
-  return
-}
+      pnl: pnl,
+
+      donation: donation,
+
+      exit_price: exitPrice,
+
+      closed_at: new Date().toISOString()
+
+    })
+    .eq('id', id)
+
+  if(error){
+
+    console.error(error)
+
+    alert(
+      'Gagal close trade:\n' +
+      JSON.stringify(error)
+    )
+
+    return
+  }
 
   await loadTrades()
 
-renderOpen()
-renderDashboard()
-renderJournal()
-renderStats()
-updateBadge()
-
+  renderOpen()
+  renderDashboard()
+  renderJournal()
+  renderStats()
+  updateBadge()
 }
 
 async function confirmCustom(id){
@@ -1742,7 +1763,11 @@ function renderOpen(){
         <td>${t.leverage}x</td>
 
         <td>
-          1:${Number(t.rr || 0).toFixed(2)}
+          ${
+  t.rr
+    ? '1:' + Number(t.rr).toFixed(2)
+    : '-'
+}
         </td>
 
         <td style="
@@ -1985,15 +2010,13 @@ function renderDashboard(){
       losses.reduce((s,t)=>s + Number(t.pnl || 0),0)
     )
 
-  document.getElementById('d-pf').textContent =
-    
-    document.getElementById('d-donation')
-.textContent =
+ document.getElementById('d-pf').textContent =
+  grossLoss > 0
+    ? (grossWin / grossLoss).toFixed(2)
+    : '0.00'
+
+document.getElementById('d-donation').textContent =
   '$' + totalDonation.toFixed(2)
-  
-    grossLoss > 0
-      ? (grossWin / grossLoss).toFixed(2)
-      : '0.00'
 
   eqC1 = makeEqChart('eq-chart1', eqC1)
 
