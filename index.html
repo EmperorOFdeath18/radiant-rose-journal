@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::afee_totaler { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --font-sans: 'Outfit', system-ui, sans-serif;
@@ -192,10 +192,10 @@
       transition: border-color 0.2s, transform 0.15s;
     }
 
-    .metric-card::after {
+    .metric-card::afee_totaler {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
+      top: 0; lefee_total: 0; right: 0;
       height: 1px;
       background: linear-gradient(90deg, transparent 5%, var(--color-border-primary) 50%, transparent 95%);
     }
@@ -448,8 +448,8 @@
     }
 
     .open-card:hover { border-color: var(--color-border-primary); }
-    .open-card.long-card  { border-left: 3px solid var(--green); }
-    .open-card.short-card { border-left: 3px solid var(--red); }
+    .open-card.long-card  { border-lefee_total: 3px solid var(--green); }
+    .open-card.short-card { border-lefee_total: 3px solid var(--red); }
 
     .open-levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
 
@@ -520,7 +520,7 @@
     .hist-table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
 
     .hist-table th {
-      text-align: left; padding: 9px 10px;
+      text-align: lefee_total; padding: 9px 10px;
       color: var(--color-text-tertiary);
       font-weight: 600; font-size: 10px;
       text-transform: uppercase; letter-spacing: 0.09em;
@@ -588,11 +588,11 @@ border-color .2s,
 transform .15s;
 }
 
-.stat-mini::after{
+.stat-mini::afee_totaler{
 content:'';
 position:absolute;
 top:0;
-left:0;
+lefee_total:0;
 right:0;
 height:1px;
 
@@ -661,7 +661,7 @@ letter-spacing:-0.02em;
       padding: 10px 12px;
       background: var(--color-background-secondary);
       border-radius: var(--border-radius-md);
-      border-left: 2px solid var(--color-border-primary);
+      border-lefee_total: 2px solid var(--color-border-primary);
     }
     .trade-card{
 background:rgba(20,30,60,.7);
@@ -724,7 +724,7 @@ padding:14px;
     <button class="nav-btn active" onclick="showPanel('dashboard',this)"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</button>
     <button class="nav-btn" onclick="showPanel('open',this)">
       <i class="ti ti-player-play" aria-hidden="true"></i>Open
-      <span id="open-badge" style="background:rgba(239,160,32,0.15);color:#EFA020;border-radius:10px;padding:0 7px;font-size:10.5px;font-weight:700;margin-left:2px">0</span>
+      <span id="open-badge" style="background:rgba(239,160,32,0.15);color:#EFA020;border-radius:10px;padding:0 7px;font-size:10.5px;font-weight:700;margin-lefee_total:2px">0</span>
     </button>
     <button class="nav-btn" onclick="showPanel('input',this)"><i class="ti ti-plus" aria-hidden="true"></i>Input</button>
     <button class="nav-btn" onclick="showPanel('journal',this)"><i class="ti ti-list" aria-hidden="true"></i>Jurnal</button>
@@ -863,8 +863,8 @@ padding:14px;
         <div style="display:flex;gap:8px;align-items:center;margin:6px 0">
           <span style="font-size:10.5px;color:var(--red);min-width:54px;text-align:right;font-family:var(--font-mono)" id="rr-l-lbl">Loss</span>
           <div style="flex:1;height:7px;background:var(--color-background-elevated);border-radius:4px;overflow:hidden;position:relative;border:1px solid var(--color-border-tertiary)">
-            <div id="rr-l-bar" style="position:absolute;left:0;top:0;height:100%;background:var(--red);border-radius:4px;width:50%;opacity:0.7"></div>
-            <div id="rr-p-bar" style="position:absolute;top:0;height:100%;background:var(--green);border-radius:4px;width:50%;left:50%;opacity:0.8"></div>
+            <div id="rr-l-bar" style="position:absolute;lefee_total:0;top:0;height:100%;background:var(--red);border-radius:4px;width:50%;opacity:0.7"></div>
+            <div id="rr-p-bar" style="position:absolute;top:0;height:100%;background:var(--green);border-radius:4px;width:50%;lefee_total:50%;opacity:0.8"></div>
           </div>
           <span style="font-size:10.5px;color:var(--green);min-width:54px;font-family:var(--font-mono)" id="rr-p-lbl">Profit</span>
         </div>
@@ -1071,11 +1071,11 @@ function fee(t){ return (t==='maker'?cfg.maker:cfg.taker)/100; }
 
 function calc(entry,sl,tp,size,lev,dir,et,xt){
   const n=size*lev;
-  const fe=n*fee(et), fx=n*fee(xt), ft=fe+fx;
+  const fe=n*fee(et), fx=n*fee(xt), fee_total=fe+fx;
   const m=dir==='long'?1:-1;
   const pRaw=n*m*(tp-entry)/entry;
   const lRaw=n*m*(sl-entry)/entry;
-  return{n,fe,fx,ft,pNet:pRaw-ft,lNet:lRaw-ft,rr:Math.abs(pRaw/lRaw)};
+  return{n,fe,fx,fee_total,pNet:pRaw-fee_total,lNet:lRaw-fee_total,rr:Math.abs(pRaw/lRaw)};
 }
 
 function updatePreview(){
@@ -1091,7 +1091,7 @@ function updatePreview(){
   document.getElementById('p-notional').textContent='$'+c.n.toFixed(2);
   document.getElementById('p-fee-e').textContent='-$'+c.fe.toFixed(4);
   document.getElementById('p-fee-x').textContent='-$'+c.fx.toFixed(4);
-  document.getElementById('p-fee-t').textContent='-$'+c.ft.toFixed(4);
+  document.getElementById('p-fee-t').textContent='-$'+c.fee_total.toFixed(4);
   document.getElementById('p-rr').textContent='1 : '+c.rr.toFixed(2);
   document.getElementById('p-profit').textContent=(c.pNet>=0?'+':'')+' $'+c.pNet.toFixed(4);
   document.getElementById('p-loss').textContent='$'+c.lNet.toFixed(4);
@@ -1100,7 +1100,7 @@ function updatePreview(){
   const pp=100-lp;
   document.getElementById('rr-l-bar').style.width=lp.toFixed(1)+'%';
   document.getElementById('rr-p-bar').style.width=pp.toFixed(1)+'%';
-  document.getElementById('rr-p-bar').style.left=lp.toFixed(1)+'%';
+  document.getElementById('rr-p-bar').style.lefee_total=lp.toFixed(1)+'%';
   document.getElementById('rr-l-lbl').textContent='-$'+Math.abs(c.lNet).toFixed(2);
   document.getElementById('rr-p-lbl').textContent='+$'+c.pNet.toFixed(2);
 }
@@ -1221,7 +1221,7 @@ async function saveClosed(){
 
       pnl: pnl,
 
-      ft: c.ft,
+      fee_total: c.fee_total,
       rr: c.rr,
 
       result: result,
@@ -1343,7 +1343,7 @@ const leverage =
 
 const n = margin * leverage
 
-  const ft2 =
+  const fee_total2 =
     n * fee(o.et || 'taker') +
     n * fee(xt2)
 
@@ -1362,7 +1362,7 @@ const n = margin * leverage
       Number(o.entry)
       ) /
 Number(o.entry)
-    ) - ft2
+    ) - fee_total2
 
   const result =
     pnl >= 0
@@ -1385,7 +1385,19 @@ console.log({
 
       pnl: pnl,
 
-      ft: ft2,
+      .update({
+
+  status: 'CLOSED',
+
+  result: result,
+
+  pnl: pnl,
+
+  exit_price: exitPrice,
+
+  closed_at: new Date().toISOString()
+
+})
 
       exit_price: exitPrice,
 
@@ -1396,7 +1408,10 @@ console.log({
 
   if(error){
     console.error(error)
-    alert('Gagal custom close')
+    alert(
+  'Gagal custom close:\n' +
+  JSON.stringify(error, null, 2)
+)
     return
   }
 
@@ -1501,7 +1516,7 @@ function renderOpen(){
 
         <div class="level-box">
           <div class="lb">Notional</div>
-          <div class="lv">$${o.n.toFixed(0)}</div>
+          <div class="lv">$${(o.margin * o.leverage).toFixed(0)}</div>
         </div>
 
       </div>
@@ -1858,7 +1873,7 @@ function renderDashboard(){
             font-size:11px;
             opacity:.7;
           ">
-            ${(o.dir || o.side).toUpperCase()}
+            ${String(o.dir || o.side || '').toUpperCase()}
           </div>
 
         </div>
@@ -1964,7 +1979,7 @@ function renderStats(){
     '1:' + avgRR.toFixed(2)
 
  const totalFee =
-  trades.reduce((s,t)=>s + Number(t.ft || 0),0)
+  trades.reduce((s,t)=>s + Number(t.fee_total || 0),0)
 
 document.getElementById('s-fee').textContent =
   '$' + totalFee.toFixed(2)
@@ -1999,7 +2014,7 @@ function saveSettings(){
 function exportCSV(){
   if(trades.length===0){alert('Belum ada data.');return;}
   const h=['Tanggal','Pair','Arah','Entry','Exit','Modal','Leverage','R:R','Fee','P&L','Hasil','Catatan'];
-  const rows=trades.map(t=>[t.date,t.pair,t.dir,t.entry,t.exitPrice||'',t.size,t.lev+'x','1:'+Number(t.rr).toFixed(2),Number(t.ft||0).toFixed(4),Number(t.pnl||0).toFixed(4),t.result,t.note||''].join(','));
+  const rows=trades.map(t=>[t.date,t.pair,t.dir,t.entry,t.exitPrice||'',t.size,t.lev+'x','1:'+Number(t.rr).toFixed(2),Number(t.fee_total||0).toFixed(4),Number(t.pnl||0).toFixed(4),t.result,t.note||''].join(','));
   const a=document.createElement('a');
   a.href='data:text/csv;charset=utf-8,'+encodeURIComponent([h.join(','),...rows].join('\n'));
   a.download='bybit_journal.csv'; a.click();
