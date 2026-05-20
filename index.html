@@ -1288,11 +1288,17 @@ async function closeOpen(id, mode){
     })
     .eq('id', id)
 
-  if(error){
-    console.error(error)
-    alert('Gagal update trade')
-    return
-  }
+if(error){
+
+  console.error(error)
+
+  alert(
+    'Gagal custom close:\n' +
+    JSON.stringify(error)
+  )
+
+  return
+}
 
   await loadTrades()
 
