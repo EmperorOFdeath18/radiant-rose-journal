@@ -1277,7 +1277,6 @@ async function closeOpen(id, mode){
   ? 'win'
 : 'loss'
 
-    .eq('id', id)
 
 if(error){
 
@@ -1381,7 +1380,7 @@ console.log({
     closed_at: new Date().toISOString()
 
   })
-
+.eq('id', id)
   if(error){
     console.error(error)
     alert(
