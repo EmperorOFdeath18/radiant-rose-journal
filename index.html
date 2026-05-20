@@ -1385,19 +1385,22 @@ console.log({
 
       pnl: pnl,
 
-      .update({
+    const { error } = await db
+  .from('trades')
+  .update({
 
-  status: 'CLOSED',
+    status: 'CLOSED',
 
-  result: result,
+    result: result,
 
-  pnl: pnl,
+    pnl: pnl,
 
-  exit_price: exitPrice,
+    exit_price: exitPrice,
 
-  closed_at: new Date().toISOString()
+    closed_at: new Date().toISOString()
 
-})
+  })
+  .eq('id', id)
 
       exit_price: exitPrice,
 
