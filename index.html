@@ -177,7 +177,7 @@
     /* ── METRIC CARDS ── */
     .metrics-row {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 10px;
       margin-bottom: 1.25rem;
     }
@@ -215,7 +215,7 @@
     }
 
     .metric-card .val {
-      font-size: 23px;
+      font-size: 20px;
       font-weight: 600;
       color: var(--color-text-primary);
       font-family: var(--font-mono);
@@ -689,11 +689,21 @@ padding:14px;
   <!-- DASHBOARD -->
   <div id="panel-dashboard" class="panel active">
     <div class="metrics-row">
-      <div class="metric-card">
-        <div class="lbl">Net P&L</div>
-        <div class="val" id="d-pnl">$0.00</div>
-        <div class="sub" id="d-pnl-pct">+0.0% dari modal</div>
-      </div>
+    <div class="metric-card">
+  <div class="lbl">Net P&L</div>
+  <div class="val" id="d-pnl">$0.00</div>
+  <div class="sub">
+    Realized Profit
+  </div>
+</div>
+
+<div class="metric-card">
+  <div class="lbl">Total Balance</div>
+  <div class="val pos" id="d-balance">$0.00</div>
+  <div class="sub">
+    Total saldo akun
+  </div>
+</div>
       <div class="metric-card">
         <div class="lbl">Winrate</div>
         <div class="val" id="d-wr">—</div>
@@ -866,6 +876,10 @@ padding:14px;
       <div class="stat-mini"><div class="lb">Total Closed</div><div class="vl" id="s-total">0</div></div>
       <div class="stat-mini"><div class="lb">Winrate</div><div class="vl pos" id="s-wr">—</div></div>
       <div class="stat-mini"><div class="lb">Net P&L</div><div class="vl" id="s-pnl">—</div></div>
+      <div class="stat-mini">
+  <div class="lb">Total Balance</div>
+  <div class="vl pos" id="s-balance">$0.00</div>
+</div>
     </div>
     <div class="stat-row">
       <div class="stat-mini"><div class="lb">Profit Factor</div><div class="vl" id="s-pf">—</div></div>
@@ -1543,9 +1557,8 @@ function renderDashboard(){
   pnlEl.className =
     'val ' + (net >= 0 ? 'pos':'neg')
 
-  document.getElementById('d-pnl-pct').textContent =
-    '$' + totalBalance.toFixed(2) +
-    ' total saldo'
+ document.getElementById('d-balance').textContent =
+  '$' + totalBalance.toFixed(2)
 
   const wr =
     trades.length
@@ -1748,6 +1761,8 @@ function renderStats(){
 
   pnlEl.className =
     'vl ' + (net >= 0 ? 'pos':'neg')
+  document.getElementById('s-balance').textContent =
+  '$' + totalBalance.toFixed(2)
 
   document.getElementById('s-pf').textContent =
     pf.toFixed(2)
