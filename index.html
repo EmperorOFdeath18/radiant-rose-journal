@@ -1325,16 +1325,21 @@ async function confirmCustom(id){
     return
   }
 
-  const n =
-  Number(o.margin) *
-  Number(o.leverage)
+  const margin =
+  Number(o.margin || o.size || 0)
+
+const leverage =
+  Number(o.leverage || o.lev || 1)
+
+const n = margin * leverage
 
   const ft2 =
     n * fee(o.et || 'taker') +
     n * fee(xt2)
 
   const m =
-    (o.dir || o.side).toLowerCase() === 'long'
+    String(o.dir || o.side || '')
+.toLowerCase() === 'long'
       ? 1
       : -1
 
@@ -1353,7 +1358,13 @@ Number(o.entry)
     pnl >= 0
       ? 'win'
       : 'loss'
-
+console.log({
+  id,
+  exitPrice,
+  xt2,
+  pnl,
+  result
+})
   const { error } = await db
     .from('trades')
     .update({
@@ -1432,7 +1443,8 @@ function renderOpen(){
 
   el.innerHTML = opens.map(o => `
     
-    <div class="open-card ${(o.dir || o.side).toLowerCase()}-card">
+    <div class="open-card ${String(o.dir || o.side || '')
+.toLowerCase()}-card">
 
       <div style="
         display:flex;
@@ -1469,12 +1481,12 @@ function renderOpen(){
 
         <div class="level-box">
           <div class="lb">Margin</div>
-          <div class="lv">$${o.size}</div>
+          <div class="lv">$${o.margin}</div>
         </div>
 
         <div class="level-box">
           <div class="lb">Leverage</div>
-          <div class="lv">${o.lev}x</div>
+          <div class="lv">${o.leverage}x</div>
         </div>
 
         <div class="level-box">
