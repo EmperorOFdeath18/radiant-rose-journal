@@ -460,6 +460,20 @@ justify-content:center;
     .badge-open  { background: var(--amber-dim); color: var(--amber); }
     .badge-win   { background: var(--green-dim); color: var(--green); }
     .badge-loss  { background: var(--red-dim);   color: var(--red); }
+    .donation-red{
+  border-color: rgba(232,73,96,.35) !important;
+  background: rgba(232,73,96,.05);
+}
+
+.donation-yellow{
+  border-color: rgba(239,160,32,.35) !important;
+  background: rgba(239,160,32,.05);
+}
+
+.donation-green{
+  border-color: rgba(0,191,143,.35) !important;
+  background: rgba(0,191,143,.05);
+}
 
     /* ── OPEN CARDS ── */
     .open-card {
@@ -764,18 +778,35 @@ padding:14px;
   <div class="val" id="d-pnl">$0.00</div>
   <div class="sub">
     Realized Profit
+    <button
+  class="btn-sm"
+  style="margin-top:10px"
+  onclick="markDonationSent()"
+>
+  Tandai Sudah Disalurkan
+</button>
   </div>
 </div>
-<div class="metric-card">
-  <div class="lbl">Donasi Pending</div>
+<div class="metric-card" id="donation-card">
 
-  <div class="val pos" id="d-donation">
+  <div class="lbl">
+    Donasi Bulan Ini
+  </div>
+
+  <div
+    class="val"
+    id="d-donation"
+  >
     $0.00
   </div>
 
-  <div class="sub">
-    5% profit terkumpul
+  <div
+    class="sub"
+    id="d-donation-status"
+  >
+    Belum disalurkan
   </div>
+
 </div>
 <div class="metric-card">
   <div class="lbl">Total Balance</div>
@@ -1096,6 +1127,7 @@ let cfg = {
   equity: 1000
 }
 let eqC1=null, eqC2=null, pnlC=null;
+  let donatedAmount = 0
 const savedCfg = localStorage.getItem('rr_settings')
 
 if(savedCfg){
@@ -1962,7 +1994,43 @@ function renderDashboard(){
     (s,t)=>s + Number(t.donation || 0),
     0
   )
+const now = new Date()
 
+const currentMonth =
+  now.getMonth()
+
+const currentYear =
+  now.getFullYear()
+
+const monthlyTrades =
+  trades.filter(t => {
+
+    if(!t.closed_at) return false
+
+    const d = new Date(t.closed_at)
+
+    return (
+      d.getMonth() === currentMonth &&
+      d.getFullYear() === currentYear
+    )
+
+  })
+
+const totalDonation =
+  monthlyTrades.reduce(
+    (s,t)=>s + Number(t.donation || 0),
+    0
+  )
+  const donationKey =
+  'rr_donation_' +
+  currentYear +
+  '_' +
+  currentMonth
+
+donatedAmount =
+  Number(
+    localStorage.getItem(donationKey) || 0
+  )
   const totalBalance =
     cfg.equity + net
 
@@ -2041,6 +2109,51 @@ function renderDashboard(){
 
 document.getElementById('d-donation').textContent =
   '$' + totalDonation.toFixed(2)
+
+const card =
+  document.getElementById('donation-card')
+
+const status =
+  document.getElementById('d-donation-status')
+
+card.classList.remove(
+  'donation-red',
+  'donation-yellow',
+  'donation-green'
+)
+
+if(totalDonation <= 0){
+
+  card.classList.add('donation-green')
+
+  status.textContent =
+    'Tidak ada pending'
+
+}
+else if(donatedAmount <= 0){
+
+  card.classList.add('donation-red')
+
+  status.textContent =
+    'Belum disalurkan'
+
+}
+else if(donatedAmount < totalDonation){
+
+  card.classList.add('donation-yellow')
+
+  status.textContent =
+    'Disalurkan sebagian'
+
+}
+else{
+
+  card.classList.add('donation-green')
+
+  status.textContent =
+    'Sudah disalurkan'
+
+}
 
   eqC1 = makeEqChart('eq-chart1', eqC1)
 
@@ -2382,6 +2495,25 @@ db.channel('trades-live')
     }
   )
   .subscribe()
+  function markDonationSent(){
+
+  const now = new Date()
+
+  const key =
+    'rr_donation_' +
+    now.getFullYear() +
+    '_' +
+    now.getMonth()
+
+  localStorage.setItem(
+    key,
+    totalDonation
+  )
+
+  donatedAmount = totalDonation
+
+  renderDashboard()
+}
 </script>
 </body>
 </html>
