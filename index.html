@@ -735,14 +735,25 @@ padding:14px;
   <!-- DASHBOARD -->
   <div id="panel-dashboard" class="panel active">
     <div class="metrics-row">
-    <div class="metric-card">
+<div class="metric-card">
+  <div class="lbl">Avg R:R</div>
   <div class="lbl">Net P&L</div>
   <div class="val" id="d-pnl">$0.00</div>
   <div class="sub">
     Realized Profit
   </div>
 </div>
+<div class="metric-card">
+  <div class="lbl">Donasi</div>
 
+  <div class="val pos" id="d-donation">
+    $0.00
+  </div>
+
+  <div class="sub">
+    5% profit terkumpul
+  </div>
+</div>
 <div class="metric-card">
   <div class="lbl">Total Balance</div>
   <div class="val pos" id="d-balance">$0.00</div>
@@ -1231,6 +1242,10 @@ async function saveClosed(){
     isWin
       ? c.pNet
       : c.lNet
+  const donation =
+  pnl > 0
+    ? pnl * 0.05
+    : 0
 
   const exitPrice =
     isWin
@@ -1260,7 +1275,7 @@ async function saveClosed(){
       leverage: v.lev,
 
       pnl: pnl,
-
+donation: donation,
       fee_total: c.fee_total,
       rr: c.rr,
 
@@ -1892,6 +1907,12 @@ function renderDashboard(){
 
   const net =
     trades.reduce((s,t)=>s + Number(t.pnl || 0),0)
+  
+  const totalDonation =
+  trades.reduce(
+    (s,t)=>s + Number(t.donation || 0),
+    0
+  )
 
   const totalBalance =
     cfg.equity + net
@@ -1965,6 +1986,11 @@ function renderDashboard(){
     )
 
   document.getElementById('d-pf').textContent =
+    
+    document.getElementById('d-donation')
+.textContent =
+  '$' + totalDonation.toFixed(2)
+  
     grossLoss > 0
       ? (grossWin / grossLoss).toFixed(2)
       : '0.00'
