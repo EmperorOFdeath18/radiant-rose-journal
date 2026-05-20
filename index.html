@@ -1144,7 +1144,10 @@ async function saveOpen(){
       margin: v.size,
       leverage: v.lev,
 
-      timeframe: '4H'
+      timeframe: '4H',
+
+et: v.et,
+xt: v.xt
     }])
 
   if(error){
@@ -1227,7 +1230,10 @@ async function saveClosed(){
 
       closed_at: new Date().toISOString(),
 
-      timeframe: '4H'
+      timeframe: '4H',
+
+et: v.et,
+xt: v.xt
 
     }])
 
@@ -1319,10 +1325,12 @@ async function confirmCustom(id){
     return
   }
 
-  const n = o.size * o.lev
+  const n =
+  Number(o.margin) *
+  Number(o.leverage)
 
   const ft2 =
-    n * fee(o.et) +
+    n * fee(o.et || 'taker') +
     n * fee(xt2)
 
   const m =
@@ -1334,8 +1342,11 @@ async function confirmCustom(id){
     (
       n *
       m *
-      (exitPrice - o.entry) /
-      o.entry
+      (
+      Number(exitPrice) -
+      Number(o.entry)
+      ) /
+Number(o.entry)
     ) - ft2
 
   const result =
