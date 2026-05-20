@@ -1070,33 +1070,85 @@ async function saveOpen(){
 
 async function saveClosed(){
 
- const { error } = await db
-  .from('trades')
-  .insert([{
+  const v = getInputs()
 
-    pair: v.pair,
+  if(!v.pair || !v.entry || !v.sl || !v.tp || !v.size){
+    alert('Lengkapi semua field wajib.')
+    return
+  }
 
-    side: v.dir.toUpperCase(),
-
-    status: 'CLOSED',
-
-    entry: v.entry,
-    sl: v.sl,
-    tp: v.tp,
-
-    margin: v.size,
-    leverage: v.lev,
-
-    pnl: pnl,
-
-    ft: c.ft,
-    rr: c.rr,
-
-    result: result,
+  const c = calc(
+    v.entry,
+    v.sl,
+    v.tp,
+    v.size,
+    v.lev,
+    v.dir,
+    v.et,
+    v.xt
+  )
 
   const isWin = confirm(
     'Apakah trade ini WIN?\nOK = WIN\nCancel = LOSS'
   )
+
+  const pnl =
+    isWin
+      ? c.pNet
+      : c.lNet
+
+  const exitPrice =
+    isWin
+      ? v.tp
+      : v.sl
+
+  const result =
+    isWin
+      ? 'win'
+      : 'loss'
+
+  const { error } = await db
+    .from('trades')
+    .insert([{
+
+      pair: v.pair,
+
+      side: v.dir.toUpperCase(),
+
+      status: 'CLOSED',
+
+      entry: v.entry,
+      sl: v.sl,
+      tp: v.tp,
+
+      margin: v.size,
+      leverage: v.lev,
+
+      pnl: pnl,
+
+      ft: c.ft,
+      rr: c.rr,
+
+      result: result,
+
+      exit_price: exitPrice,
+
+      closed_at: new Date().toISOString(),
+
+      timeframe: '4H'
+
+    }])
+
+  if(error){
+    console.error(error)
+    alert('Gagal simpan trade')
+    return
+  }
+
+  await loadTrades()
+
+  clearForm()
+}
 
   const pnl =
     isWin
