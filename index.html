@@ -1318,18 +1318,22 @@ async function confirmCustom(id){
 
   const o = opens[idx]
 
-  const exitPrice =
-    parseFloat(
-      document.getElementById('cx-'+id).value
-    )
+const exitPrice =
+  Number(
+    document
+      .getElementById('cx-'+id)
+      .value
+      .replace(',', '.')
+      .trim()
+  )
 
   const xt2 =
     document.getElementById('cxt-'+id).value
 
-  if(!exitPrice){
-    alert('Masukkan harga exit.')
-    return
-  }
+if(!Number.isFinite(exitPrice)){
+  alert('Masukkan harga exit.')
+  return
+}
 
   const margin =
   Number(o.margin || o.size || 0)
@@ -1533,7 +1537,7 @@ function renderOpen(){
             <label>Harga Exit</label>
 
             <input
-              type="number"
+              type="text"
               id="cx-${o.id}"
               placeholder="65000"
             >
