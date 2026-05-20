@@ -1562,9 +1562,11 @@ function renderJournal(){
   ? 'Long'
   : 'Short'}</span></td>
       <td>${Number(t.entry).toLocaleString()}</td>
-      <td>${t.exitPrice?Number(t.exitPrice).toLocaleString():'—'}</td>
-      <td>$${Number(t.size).toFixed(0)}</td>
-      <td>${t.lev}x</td>
+      <td>${t.exit_price
+  ? Number(t.exit_price).toLocaleString()
+  : '—'}</td>
+      <td>$${Number(t.margin).toFixed(0)}</td>
+<td>${t.leverage}x</td>
       <td>
 ${
 (() => {
