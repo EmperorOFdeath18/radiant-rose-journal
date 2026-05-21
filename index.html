@@ -2449,7 +2449,7 @@ async function startApp(){
 
 startApp()
   
- async function markDonationSent(){
+async function markDonationSent(){
 
   alert('Fitur donasi belum aktif')
 
@@ -2512,8 +2512,13 @@ startApp()
     return
   }
 
-  alert('Donasi berhasil ditandai terkirim')
+  await loadDonations()
 
+  renderDonation()
+
+  renderDashboard()
+
+  alert('Donasi berhasil ditandai terkirim')
 }
 
   await loadDonations()
