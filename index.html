@@ -2373,15 +2373,20 @@ const db = supabase.createClient(
     return
   }
 
-    console.log(data)
+  console.log(data)
 
-}
-  
-  trades =
-    data.filter(t => t.status === 'CLOSED')
+  trades = data
+    .filter(t => t.status === 'CLOSED')
+    .map(t => ({
+      ...t,
+      dir: (t.side || '').toLowerCase(),
+      size: Number(t.margin || 0),
+      lev: Number(t.leverage || 1),
+      exitPrice: t.exit_price
+    }))
 
-  opens =
-    data.filter(t => t.status === 'OPEN')
+  opens = data
+    .filter(t => t.status === 'OPEN')
 
   renderDashboard()
   renderOpen()
@@ -2389,22 +2394,6 @@ const db = supabase.createClient(
   renderStats()
   updateBadge()
 }
-
-trades = data
-  .filter(t => t.status === 'CLOSED')
-  .map(t => ({
-
-    ...t,
-
-    dir: (t.side || '').toLowerCase(),
-
-    size: Number(t.margin || 0),
-
-    lev: Number(t.leverage || 1),
-
-    exitPrice: t.exit_price
-
-  }))
 
 opens = data
   .filter(t => t.status === 'OPEN')
