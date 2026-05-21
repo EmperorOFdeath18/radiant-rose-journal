@@ -1213,8 +1213,7 @@ let cfg = {
   equity: 100
 }
 let eqC1=null, eqC2=null, pnlC=null;
-  let donatedAmount = 0
-  let donations = []
+let donatedAmount = 0
 const savedCfg = localStorage.getItem('rr_settings')
 
 if(savedCfg){
@@ -1264,24 +1263,52 @@ function showPanel(name, btn){
 function fee(t){ return (t==='maker'?cfg.maker:cfg.taker)/100; }
 
 function calc(entry,sl,tp,size,lev,dir,et,xt){
-  const n=size*lev;
-  const fe=n*fee(et), fx=n*fee(xt), fee_total=fe+fx;
-  
-  const isLong = dir === 'long'
 
-const pRaw = isLong
-  ? n * ((tp - entry) / entry)
-  : n * ((entry - tp) / entry)
+  const n = size * lev
 
-const lRaw = isLong
-  ? n * ((entry - sl) / entry)
-  : n * ((sl - entry) / entry)
-  
-  return{n,fe,fx,fee_total,pNet:pRaw-fee_total,lNet:lRaw-fee_total,
-  rr:
-  lRaw > 0
-    ? pRaw / lRaw
-    : null
+  const fe =
+    n * fee(et)
+
+  const fx =
+    n * fee(xt)
+
+  const fee_total =
+    fe + fx
+
+  const isLong =
+    dir === 'long'
+
+  const pRaw = isLong
+    ? n * ((tp - entry) / entry)
+    : n * ((entry - tp) / entry)
+
+  const lRaw = isLong
+    ? n * ((entry - sl) / entry)
+    : n * ((sl - entry) / entry)
+
+  return {
+
+    n,
+
+    fe,
+
+    fx,
+
+    fee_total,
+
+    pNet:
+      pRaw - fee_total,
+
+    lNet:
+      lRaw - fee_total,
+
+    rr:
+      lRaw > 0
+        ? pRaw / lRaw
+        : null
+
+  }
+
 }
 
 function updatePreview(){
