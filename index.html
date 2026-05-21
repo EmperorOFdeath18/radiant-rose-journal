@@ -1764,191 +1764,6 @@ function renderOpen(){
 
   select.value = current
 }
-  function renderDonation(){
-
-  const el =
-    document.getElementById('donation-list')
-
-  if(donations.length === 0){
-
-    el.innerHTML = `
-      <div class="empty-state">
-        <i class="ti ti-heart"></i>
-        <p>Belum ada data donasi.</p>
-      </div>
-    `
-
-    return
-  }
-
-  el.innerHTML =
-    donations.map(d => `
-
-      <div class="metric-card">
-
-        <div class="lbl">
-          ${d.month}
-        </div>
-
-        <div class="val pos">
-          $${Number(d.total).toFixed(2)}
-        </div>
-
-        <div class="sub">
-          Sudah disalurkan:
-          $${Number(d.sent).toFixed(2)}
-        </div>
-
-        <div class="sub">
-          Belum disalurkan:
-          $${Number(d.pending).toFixed(2)}
-        </div>
-
-        ${
-          d.proof
-          ? `
-            <a
-              href="${d.proof}"
-              target="_blank"
-              class="btn-sm"
-              style="margin-top:10px;display:inline-flex"
-            >
-              Bukti Penyaluran
-            </a>
-          `
-          : ''
-        }
-
-      </div>
-
-    `).join('')
-}
-  function renderJournal(){
-
-  const resFilter =
-    document.getElementById('filter-res').value
-
-  const monthFilter =
-    document.getElementById('filter-month').value
-
-  let list = [...trades]
-
-  if(resFilter !== 'all'){
-    list = list.filter(
-      t => t.result === resFilter
-    )
-  }
-
-  if(monthFilter !== 'all'){
-
-    list = list.filter(t => {
-
-      if(!t.closed_at) return false
-
-      const d = new Date(t.closed_at)
-
-      const key =
-        d.getFullYear() + '-' +
-        String(d.getMonth()+1).padStart(2,'0')
-
-      return key === monthFilter
-    })
-  }
-
-  const body =
-    document.getElementById('journal-body')
-
-  const empty =
-    document.getElementById('journal-empty')
-
-  if(list.length === 0){
-
-    body.innerHTML = ''
-
-    empty.style.display = 'block'
-
-    return
-  }
-
-  empty.style.display = 'none'
-
-  body.innerHTML =
-    list.reverse().map(t => `
-
-      <tr>
-
-        <td>
-          ${new Date(
-            t.closed_at || Date.now()
-          ).toLocaleDateString('id-ID')}
-        </td>
-
-        <td>${t.pair}</td>
-
-        <td>
-          <span class="
-            badge
-            badge-${String(t.side).toLowerCase()}
-          ">
-            ${t.side}
-          </span>
-        </td>
-
-        <td>${t.entry}</td>
-
-        <td>${t.exit_price || '-'}</td>
-
-        <td>$${t.margin}</td>
-
-        <td>${t.leverage}x</td>
-
-        <td>
-          ${
-  t.rr
-    ? '1:' + Number(t.rr).toFixed(2)
-    : '-'
-}
-        </td>
-
-        <td style="
-          font-weight:600;
-          color:${(t.pnl||0)>=0
-            ? '#00BF8F'
-            : '#E84960'}
-        ">
-          ${(t.pnl||0)>=0?'+':''}
-          $${Number(t.pnl||0).toFixed(3)}
-        </td>
-
-        <td>
-          <span class="
-            badge
-            badge-${t.result}
-          ">
-            ${t.result === 'win'
-              ? 'Win'
-              : 'Loss'}
-          </span>
-        </td>
-
-        <td>
-          <button
-            onclick="deleteTrade(${t.id})"
-            style="
-              border:none;
-              background:none;
-              cursor:pointer;
-              color:var(--color-text-tertiary)
-            "
-          >
-            ✕
-          </button>
-        </td>
-
-      </tr>
-
-    `).join('')
-}
 
 async function deleteTrade(id){
 
@@ -2198,40 +2013,14 @@ eqC1 = makeEqChart('eq-chart1', eqC1)
   const pendingDonation =
     totalDonation - sentDonation
 
-  const pnlEl =
-    document.getElementById('d-pnl')
-
-  pnlEl.textContent =
-    (net >= 0 ? '+' : '') +
-    '$' + net.toFixed(2)
-
-  pnlEl.className =
-    'val ' + (net >= 0 ? 'pos' : 'neg')
-
-  document.getElementById('d-balance').textContent =
-    '$' + totalBalance.toFixed(2)
-
-  document.getElementById('d-wr').textContent =
-    wr.toFixed(1) + '%'
-
-  document.getElementById('d-wr-sub').textContent =
-    wins.length + ' win / ' +
-    losses.length + ' loss'
-
-  document.getElementById('d-total').textContent =
-    closed.length
-
-  document.getElementById('d-open-sub').textContent =
-    opens.length + ' open'
-
-  document.getElementById('d-rr').textContent =
-    '1:' + avgRR.toFixed(2)
-
-  document.getElementById('d-pf').textContent =
-    pf.toFixed(2)
-
-  document.getElementById('d-donation').textContent =
+  const donationEl =
+    document.getElementById('d-donation')
+    
+  donationEl.textContent =
     '$' + pendingDonation.toFixed(2)
+    
+  donationEl.className =
+    'val ' + (pendingDonation <= 0 ? 'pos' : 'neg')
 
   const donationCard =
     document.getElementById('donation-card')
@@ -2254,14 +2043,14 @@ eqC1 = makeEqChart('eq-chart1', eqC1)
     donationStatus.textContent =
       'Sudah disalurkan'
 
-  } else if(pendingDonation < 5){
+  } else if(pendingDonation < totalDonation / 2){
 
     donationCard.classList.add(
       'donation-yellow'
     )
 
     donationStatus.textContent =
-      'Sebagian terkumpul'
+      'Sebagian disalurkan'
 
   } else {
 
@@ -2280,11 +2069,6 @@ eqC1 = makeEqChart('eq-chart1', eqC1)
       'eq-chart1',
       eqC1
     )
-}
-  async function markDonationSent(){
-
-  alert('Fitur donasi belum aktif')
-
 }
   
 function renderStats(){
@@ -2374,6 +2158,29 @@ document.getElementById('s-fee').textContent =
 
   eqC2 = makeEqChart('eq-chart2', eqC2)
 makePnlChart()
+}
+
+function renderDonation(){
+  const listEl = document.getElementById('donation-list')
+  if(!donations || donations.length === 0) {
+    listEl.innerHTML = '<div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i><p>Belum ada riwayat donasi.</p></div>'
+    return
+  }
+  
+  listEl.innerHTML = donations.map(d => `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">${d.month}</div>
+        <div style="font-size:11.5px;color:var(--color-text-tertiary);font-family:var(--font-mono)">${d.total ? '$' + Number(d.total).toFixed(2) : '-'}</div>
+      </div>
+      <div class="preview-box">
+        <div class="preview-row"><span class="k">Total Dana</span><span class="v">$${Number(d.total || 0).toFixed(2)}</span></div>
+        <div class="preview-row"><span class="k">Sudah Disalurkan</span><span class="v pos">$${Number(d.sent || 0).toFixed(2)}</span></div>
+        <div class="preview-row"><span class="k">Kurang Disalurkan</span><span class="v neg">$${Number((d.total - d.sent) || 0).toFixed(2)}</span></div>
+        ${d.proof ? `<div class="preview-row"><span class="k">Bukti</span><span class="v" style="word-break:break-all"><a href="${d.proof}" target="_blank" style="color:var(--blue)">Lihat bukti</a></span></div>` : ''}
+      </div>
+    </div>
+  `).join('')
 }
 
 function saveSettings(){
@@ -2473,124 +2280,35 @@ const SUPABASE_KEY = 'sb_publishable_qE02gvVbv3ywxuK4CRUX9Q_aBuJahm4'
 
 const db = supabase.createClient(
   SUPABASE_URL,
-  SUPABASE_ANON_KEY
+  SUPABASE_KEY
 )
-  async function loadTrades(){
 
-  const { data, error } =
-    await db
-      .from('trades')
-      .select('*')
-      .order('id', { ascending:false })
+async function loadDonations(){
+  const { data, error } = await db
+    .from('donations')
+    .select('*')
+    .order('created_at', { ascending: false })
 
   if(error){
     console.error(error)
     return
   }
 
-  trades =
-    data.filter(t => t.status === 'CLOSED')
-
-  opens =
-    data.filter(t => t.status === 'OPEN')
-
-  renderDashboard()
-  renderOpen()
-  renderJournal()
-  renderStats()
-  updateBadge()
-}
-
-trades = data
-  .filter(t => t.status === 'CLOSED')
-  .map(t => ({
-
-    ...t,
-
-    dir: (t.side || '').toLowerCase(),
-
-    size: Number(t.margin || 0),
-
-    lev: Number(t.leverage || 1),
-
-    exitPrice: t.exit_price
-
-  }))
-
-opens = data
-  .filter(t => t.status === 'OPEN')
-  .map(t => {
-
-    const dir = (t.side || '').toLowerCase()
-
-    const margin = Number(t.margin || 0)
-    const leverage = Number(t.leverage || 1)
-
-    const c = calc(
-      Number(t.entry),
-      Number(t.sl),
-      Number(t.tp),
-      margin,
-      leverage,
-      dir,
-      'maker',
-      'taker'
-    )
-
-    return {
-      ...t,
-
-      dir,
-      size: margin,
-      lev: leverage,
-
-      ...c
-    }
-  })
-
-renderOpen()
-renderDashboard()
-renderJournal()
-renderStats()
-updateBadge()
-    populateMonthFilter()
-
-async function startApp(){
-
-  await loadTrades()
-  await loadDonations()
-
-  renderDashboard()
-  renderOpen()
-  renderJournal()
+  donations = data || []
   renderDonation()
-  renderStats()
-  updateBadge()
-
 }
 
-startApp()
-  
- async function markDonationSent(){
-
-  alert('Fitur donasi belum aktif')
-
-}
-
+async function markDonationSent(){
   const now = new Date()
 
   const monthlyTrades =
     trades.filter(t => {
-
       if(!t.closed_at) return false
-
       const d = new Date(t.closed_at)
-
       return (
         d.getMonth() === now.getMonth() &&
         d.getFullYear() === now.getFullYear()
       )
-
     })
 
   const totalDonation =
@@ -2637,170 +2355,123 @@ startApp()
   }
 
   await loadDonations()
+  renderDashboard()
 
   alert('Donasi berhasil ditandai')
 }
-  donations.push({
-    month: currentMonth,
-    total: totalDonation,
-    sent: totalDonation,
-    pending: 0,
-    proof: ''
-  })
 
-  localStorage.setItem(
-    'rr_donations',
-    JSON.stringify(donations)
-  )
-
-  renderDonation()
-  renderDashboard()
-
-  alert('Donasi ditandai sudah disalurkan')
-}
-  const proof =
-    prompt(
-      'Masukkan link bukti penyaluran'
-    )
-
-  const { error } = await db
-    .from('donations')
-    .insert([{
-
-      month: currentMonth,
-
-      total: totalDonation,
-
-      sent: pending,
-
-      pending: 0,
-
-      proof: proof || ''
-
-    }])
-
-  if(error){
-
-    console.error(error)
-
-    alert(
-      'Gagal simpan donasi'
-    )
-
-    return
-  }
-
-  await loadDonations()
-
-  renderDashboard()
-
-  renderDonation()
-
-  alert(
-    'Donasi berhasil disalurkan'
-  )
-
-
-  async function loadDonations(){
-
-  const { data, error } = await db
-    .from('donations')
-    .select('*')
-    .order('created_at', {
-      ascending:false
-    })
-
-  if(error){
-    console.error(error)
-    return
-  }
-
-  donations = data || []
-
-  renderDonation()
-    async function markDonationSent(){
-
-  alert('Fitur donasi belum aktif')
-
-}
-  const now = new Date()
-
-  const month =
-    now.toLocaleString('id-ID',{
-      month:'long',
-      year:'numeric'
-    })
-
-  const monthlyTrades =
-    trades.filter(t => {
-
-      if(!t.closed_at) return false
-
+function populateMonthFilter(){
+  const trades_by_month = {}
+  trades.forEach(t => {
+    if(t.closed_at){
       const d = new Date(t.closed_at)
+      const month = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0')
+      if(!trades_by_month[month]) trades_by_month[month] = []
+      trades_by_month[month].push(t)
+    }
+  })
+  
+  const filterEl = document.getElementById('filter-month')
+  Object.keys(trades_by_month).sort().reverse().forEach(month => {
+    if(![...filterEl.options].some(o => o.value === month)){
+      const opt = document.createElement('option')
+      opt.value = month
+      const d = new Date(month + '-01')
+      opt.textContent = d.toLocaleString('id-ID', {month: 'long', year: 'numeric'})
+      filterEl.appendChild(opt)
+    }
+  })
+}
+  async function loadTrades(){
 
-      return (
-        d.getMonth() === now.getMonth() &&
-        d.getFullYear() === now.getFullYear()
-      )
-
-    })
-
-  const total =
-    monthlyTrades.reduce(
-      (s,t)=>s + Number(t.donation || 0),
-      0
-    )
-
-  const { error } = await db
-    .from('donations')
-    .insert([{
-      month,
-      total,
-      sent: total,
-      pending: 0
-    }])
+  const { data, error } =
+    await db
+      .from('trades')
+      .select('*')
+      .order('id', { ascending:false })
 
   if(error){
     console.error(error)
-    alert('Gagal update donasi')
     return
   }
 
+  trades =
+    data.filter(t => t.status === 'CLOSED')
+
+  opens =
+    data.filter(t => t.status === 'OPEN')
+
+  renderDashboard()
+  renderOpen()
+  renderJournal()
+  renderStats()
+  updateBadge()
+  populateMonthFilter()
+}
+
+function renderJournal(){
+  const monthFilter = document.getElementById('filter-month').value
+  const resFilter = document.getElementById('filter-res').value
+  
+  let filtered = trades
+  
+  if(monthFilter !== 'all'){
+    filtered = filtered.filter(t => {
+      if(!t.closed_at) return false
+      const d = new Date(t.closed_at)
+      const tMonth = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0')
+      return tMonth === monthFilter
+    })
+  }
+  
+  if(resFilter !== 'all'){
+    filtered = filtered.filter(t => t.result === resFilter)
+  }
+  
+  const tbody = document.getElementById('journal-body')
+  const emptyEl = document.getElementById('journal-empty')
+  
+  if(filtered.length === 0){
+    tbody.innerHTML = ''
+    emptyEl.style.display = 'block'
+    return
+  }
+  
+  emptyEl.style.display = 'none'
+  tbody.innerHTML = filtered.map(t => `
+    <tr>
+      <td>${new Date(t.closed_at).toLocaleDateString('id-ID')}</td>
+      <td>${t.pair || '-'}</td>
+      <td>${(t.side || '').toUpperCase()}</td>
+      <td>$${Number(t.entry || 0).toFixed(2)}</td>
+      <td>$${Number(t.exit_price || 0).toFixed(2)}</td>
+      <td>$${Number(t.margin || 0).toFixed(2)}</td>
+      <td>${t.leverage || 1}x</td>
+      <td>${t.rr ? '1:' + Number(t.rr).toFixed(2) : '-'}</td>
+      <td style="font-weight:600;color:${(t.pnl||0)>=0 ? '#00BF8F' : '#E84960'}">
+        ${(t.pnl||0)>=0?'+':''} $${Number(t.pnl||0).toFixed(3)}
+      </td>
+      <td><span class="badge badge-${t.result}">${t.result === 'win' ? 'Win' : 'Loss'}</span></td>
+      <td><button onclick="deleteTrade(${t.id})" style="border:none;background:none;cursor:pointer;color:var(--color-text-tertiary)">✕</button></td>
+    </tr>
+  `).join('')
+}
+
+async function startApp(){
+
+  await loadTrades()
   await loadDonations()
 
   renderDashboard()
+  renderOpen()
+  renderJournal()
+  renderDonation()
+  renderStats()
+  updateBadge()
 
-  alert('Donasi berhasil disalurkan')
 }
 
-  const month =
-    now.toLocaleString('id-ID',{
-      month:'long',
-      year:'numeric'
-    })
-
-  const { error } = await db
-    .from('donations')
-    .insert([{
-      month,
-      total: totalDonation,
-      sent: pending,
-      pending: 0,
-      proof: '',
-      note: ''
-    }])
-
-  if(error){
-    console.error(error)
-    alert('Gagal update donasi')
-    return
-  }
-
-  await loadDonations()
-
-  alert('Donasi berhasil disalurkan')
-}
-}
+startApp()
 
 db.channel('trades-live')
   .on(
@@ -2811,10 +2482,8 @@ db.channel('trades-live')
       table: 'trades'
     },
     () => {
-
       loadTrades()
-loadDonations()
-
+      loadDonations()
     }
   )
   .subscribe()
