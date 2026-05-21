@@ -1978,9 +1978,20 @@ async function deleteTrade(id){
 }
 
 function buildEqData(){
-  const sorted=[...trades]
-  .slice(-10).sort((a,b)=>(a.date||'')>(b.date||'')?1:-1);
-  let eq=cfg.equity;
+ const sorted = [...trades]
+  .filter(t => t.status === 'CLOSED')
+  .sort(
+    (a,b) =>
+      new Date(a.closed_at) -
+      new Date(b.closed_at)
+  )
+  const net =
+  trades.reduce(
+    (s,t)=>s + Number(t.pnl || 0),
+    0
+  )
+
+let eq = cfg.equity
   const labels=['Start'],vals=[parseFloat(eq.toFixed(2))];
   sorted.forEach(t=>{eq+=(t.pnl||0);labels.push(t.pair);vals.push(parseFloat(eq.toFixed(2)));});
   return{labels,vals};
@@ -2601,18 +2612,9 @@ async function startApp(){
 
 startApp()
   
-  async function markDonationSent(){
+ async function markDonationSent(){
 
   const now = new Date()
-
-  const currentMonth =
-    now.toLocaleString(
-      'id-ID',
-      {
-        month:'long',
-        year:'numeric'
-      }
-    )
 
   const monthlyTrades =
     trades.filter(t => {
@@ -2634,24 +2636,65 @@ startApp()
       0
     )
 
-  const alreadySent =
+  const sentDonation =
     donations.reduce(
       (s,d)=>s + Number(d.sent || 0),
       0
     )
 
   const pending =
-    totalDonation - alreadySent
+    totalDonation - sentDonation
 
   if(pending <= 0){
-
-    alert(
-      'Tidak ada donasi yang perlu disalurkan.'
-    )
-
+    alert('Tidak ada donasi pending')
     return
   }
 
+  const month =
+    now.toLocaleString('id-ID',{
+      month:'long',
+      year:'numeric'
+    })
+
+  const { error } = await db
+    .from('donations')
+    .insert([{
+      month,
+      total: totalDonation,
+      sent: pending,
+      pending: 0,
+      proof: '',
+      note: ''
+    }])
+
+  if(error){
+    console.error(error)
+    alert('Gagal update donasi')
+    return
+  }
+
+  await loadDonations()
+
+  alert('Donasi berhasil ditandai')
+}
+  donations.push({
+    month: currentMonth,
+    total: totalDonation,
+    sent: totalDonation,
+    pending: 0,
+    proof: ''
+  })
+
+  localStorage.setItem(
+    'rr_donations',
+    JSON.stringify(donations)
+  )
+
+  renderDonation()
+  renderDashboard()
+
+  alert('Donasi ditandai sudah disalurkan')
+}
   const proof =
     prompt(
       'Masukkan link bukti penyaluran'
