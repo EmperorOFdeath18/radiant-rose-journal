@@ -1767,6 +1767,7 @@ function renderOpen(){
   select.value = current
 }
   function renderDonation(){
+    
 
   const el =
     document.getElementById('donation-list')
@@ -1825,6 +1826,13 @@ function renderOpen(){
 
     `).join('')
 }
+
+  async function markDonationSent(){
+
+  alert('Fitur donasi belum aktif')
+
+}
+  
   function renderJournal(){
 
   const resFilter =
@@ -2126,17 +2134,18 @@ barPercentage: 0.9,
     )
 
   const pf =
-   const pf =
-  grossLoss > 0
-    ? grossWin / grossLoss
-    : grossWin > 0
-      ? grossWin
-      : 0
+    grossLoss > 0
+      ? grossWin / grossLoss
+      : grossWin > 0
+        ? grossWin
+        : 0
 
   const wr =
     closed.length
       ? (wins.length / closed.length) * 100
       : 0
+
+}
 
   document.getElementById('d-pnl').textContent =
     (net >= 0 ? '+' : '') +
@@ -2177,12 +2186,6 @@ barPercentage: 0.9,
     '$' + donationTotal.toFixed(2)
 
   renderOpen()
-}
-  
-  async function markDonationSent(){
-
-  alert('Fitur donasi belum aktif')
-
 }
   
 function renderStats(){
@@ -2609,6 +2612,7 @@ startApp()
   alert('Fitur donasi belum aktif')
 
 }
+    
   const now = new Date()
 
   const month =
