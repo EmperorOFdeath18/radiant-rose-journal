@@ -962,11 +962,63 @@ padding:14px;
     <div class="card-header">
 
       <div class="card-title">
-        <i class="ti ti-heart-handshake"></i>
         Donasi Bulanan
       </div>
 
     </div>
+
+    <!-- FORM -->
+
+    <div class="form-grid">
+
+      <div class="field">
+
+        <label>Jumlah Disalurkan</label>
+
+        <input
+          id="donate-amount"
+          type="number"
+          step="0.01"
+          placeholder="5"
+        >
+
+      </div>
+
+      <div class="field">
+
+        <label>Disalurkan Ke</label>
+
+        <input
+          id="donate-to"
+          type="text"
+          placeholder="Panti asuhan..."
+        >
+
+      </div>
+
+    </div>
+
+    <div class="field" style="margin-bottom:14px">
+
+      <label>Catatan</label>
+
+      <input
+        id="donate-note"
+        type="text"
+        placeholder="Santunan Jumat..."
+      >
+
+    </div>
+
+    <button
+      class="btn-primary"
+      onclick="submitDonation()"
+      style="margin-bottom:20px"
+    >
+      Salurkan Donasi
+    </button>
+
+    <!-- LIST -->
 
     <div
       id="donation-list"
@@ -1154,6 +1206,7 @@ Chart.defaults.font.size = 10;
 
 let trades = []
 let opens = []
+  let donations = []
 let cfg = {
   maker: 0.02,
   taker: 0.055,
@@ -1213,13 +1266,22 @@ function fee(t){ return (t==='maker'?cfg.maker:cfg.taker)/100; }
 function calc(entry,sl,tp,size,lev,dir,et,xt){
   const n=size*lev;
   const fe=n*fee(et), fx=n*fee(xt), fee_total=fe+fx;
-  const m=dir==='long'?1:-1;
-  const pRaw=n*m*(tp-entry)/entry;
-  const lRaw=n*m*(sl-entry)/entry;
-  return{n,fe,fx,fee_total,pNet:pRaw-fee_total,lNet:lRaw-fee_total,rr:
-  lRaw !== 0
-    ? Math.abs(pRaw / lRaw)
-    : 0};
+  
+  const isLong = dir === 'long'
+
+const pRaw = isLong
+  ? n * ((tp - entry) / entry)
+  : n * ((entry - tp) / entry)
+
+const lRaw = isLong
+  ? n * ((entry - sl) / entry)
+  : n * ((sl - entry) / entry)
+  
+  return{n,fe,fx,fee_total,pNet:pRaw-fee_total,lNet:lRaw-fee_total,
+  rr:
+  lRaw > 0
+    ? pRaw / lRaw
+    : null
 }
 
 function updatePreview(){
@@ -1393,6 +1455,7 @@ xt: v.xt
   }
 
   await loadTrades()
+  await loadDonations()
 
   clearForm()
 }
@@ -1455,6 +1518,7 @@ async function closeOpen(id, mode){
   }
 
   await loadTrades()
+  await loadDonations()
 
   renderOpen()
   renderDashboard()
@@ -1554,6 +1618,7 @@ console.log({
   }
 
   await loadTrades()
+  await loadDonations()
 
   renderOpen()
   renderDashboard()
@@ -1846,59 +1911,173 @@ function renderOpen(){
 
   }).join('')
 }
+  async function submitDonation(){
+
+  const amount =
+    Number(
+      document.getElementById(
+        'donate-amount'
+      ).value
+    )
+
+  const receiver =
+    document.getElementById(
+      'donate-to'
+    ).value.trim()
+
+  const note =
+    document.getElementById(
+      'donate-note'
+    ).value.trim()
+
+  if(!amount || !receiver){
+
+    alert(
+      'Lengkapi data donasi'
+    )
+
+    return
+  }
+
+  const month =
+    new Date().toLocaleDateString(
+      'id-ID',
+      {
+        month:'long',
+        year:'numeric'
+      }
+    )
+
+  const current =
+    donations.find(
+      d => d.month === month
+    )
+
+  if(!current){
+
+    alert(
+      'Data bulan belum ada'
+    )
+
+    return
+  }
+
+  const newSent =
+    Number(current.sent || 0)
+    + amount
+
+  const newPending =
+    Number(current.total || 0)
+    - newSent
+
+  const { error } = await db
+    .from('donations')
+    .update({
+
+      sent:newSent,
+
+      pending:newPending,
+
+      receiver:receiver,
+
+      note:note
+
+    })
+    .eq('id', current.id)
+
+  if(error){
+
+    console.error(error)
+
+    alert('Gagal update')
+
+    return
+  }
+
+  alert(
+    'Donasi berhasil disalurkan'
+  )
+
+  document.getElementById(
+    'donate-amount'
+  ).value = ''
+
+  document.getElementById(
+    'donate-to'
+  ).value = ''
+
+  document.getElementById(
+    'donate-note'
+  ).value = ''
+
+  await loadDonations()
+}
   
 function renderDonation(){
 
   const el =
-    document.getElementById('donation-list')
+    document.getElementById(
+      'donation-list'
+    )
 
-  const wins = trades.filter(
-    t =>
-      t.status === 'CLOSED' &&
-      Number(t.donation || 0) > 0
-  )
-
-  if(wins.length === 0){
+  if(!donations.length){
 
     el.innerHTML = `
       <div class="empty-state">
-        <p>Belum ada donasi tercatat.</p>
+        Tidak ada data donasi
       </div>
     `
 
     return
   }
 
-  const total =
-    wins.reduce(
-      (s,t)=>s + Number(t.donation || 0),
-      0
-    )
+  const d = donations[0]
+
+  const status =
+    Number(d.pending) <= 0
 
   el.innerHTML = `
 
-    <div class="trade-card">
+    <div class="
+      trade-card
+      ${
+        status
+          ? 'donation-green'
+          : 'donation-yellow'
+      }
+    ">
 
       <div>
 
         <div class="pair">
-          Total Donasi
+          ${d.month}
         </div>
 
         <div class="side">
-          Akumulasi 5% profit
+          ${
+            status
+              ? 'Sudah tersalurkan'
+              : 'Belum full tersalurkan'
+          }
         </div>
 
       </div>
 
       <div class="price-box">
 
-        <div style="
-          color:#00BF8F;
-          font-size:22px;
-          font-weight:700;
-        ">
-          $${total.toFixed(2)}
+        <div>
+          Total:
+          <b>$${Number(d.total).toFixed(2)}</b>
+        </div>
+
+        <div>
+          Sent:
+          <b>$${Number(d.sent).toFixed(2)}</b>
+        </div>
+
+        <div>
+          Pending:
+          <b>$${Number(d.pending).toFixed(2)}</b>
         </div>
 
       </div>
@@ -1906,6 +2085,37 @@ function renderDonation(){
     </div>
 
   `
+
+  if(d.receiver){
+
+    el.innerHTML += `
+
+      <div class="trade-card">
+
+        <div>
+
+          <div class="pair">
+            Disalurkan Ke
+          </div>
+
+          <div class="side">
+            ${d.receiver}
+          </div>
+
+        </div>
+
+        <div class="price-box">
+
+          <div>
+            ${d.note || '-'}
+          </div>
+
+        </div>
+
+      </div>
+
+    `
+  }
 }
   
   async function markDonationSent(){
@@ -2049,6 +2259,7 @@ async function deleteTrade(id){
   }
 
  await loadTrades()
+  await loadDonations()
 }
 
 function buildEqData(){
@@ -2537,7 +2748,27 @@ trades =
   renderStats()
   updateBadge()
 }
+async function loadDonations(){
 
+  const { data, error } = await db
+    .from('donations')
+    .select('*')
+    .order('created_at',{
+      ascending:false
+    })
+
+  if(error){
+
+    console.error(error)
+
+    return
+  }
+
+  donations = data || []
+
+  renderDonation()
+}
+  
 async function startApp(){
 
   await loadTrades()
