@@ -759,32 +759,37 @@ padding:14px;
   </div>
 
   <div class="nav">
-    <button class="nav-btn active" onclick="showPanel('dashboard',this)"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</button>
+    <button class="nav-btn active" onclick="showPanel('dashboard',this)"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dasbor</button>
     <button class="nav-btn" onclick="showPanel('open',this)">
-      <i class="ti ti-player-play" aria-hidden="true"></i>Open
-      <span id="open-badge" style="background:rgba(239,160,32,0.15);color:#EFA020;border-radius:10px;padding:0 7px;font-size:10.5px;font-weight:700;margin-left:2px">0</span>
+      <i class="ti ti-player-play" aria-hidden="true"></i>Posisi Terbuka
     </button>
     <button class="nav-btn" onclick="showPanel('input',this)"><i class="ti ti-plus" aria-hidden="true"></i>Input</button>
-   <button
-  class="nav-btn"
-  onclick="showPanel('donation',this)"
->
-  <i class="ti ti-heart-handshake"></i>
-  Donasi
-</button>
-    <button class="nav-btn" onclick="showPanel('journal',this)"><i class="ti ti-list" aria-hidden="true"></i>Jurnal</button>
-    <button class="nav-btn" onclick="showPanel('stats',this)"><i class="ti ti-chart-bar" aria-hidden="true"></i>Statistik</button>
-    <button class="nav-btn" onclick="showPanel('settings',this)"><i class="ti ti-settings" aria-hidden="true"></i>Settings</button>
+    <button class="nav-btn" onclick="showPanel('journal',this)">
+      <i class="ti ti-book" aria-hidden="true"></i>Jurnal
+    </button>
+    <button class="nav-btn" onclick="showPanel('donation',this)"><i class="ti ti-heart" aria-hidden="true"></i>Donasi</button>
+    <button class="nav-btn" onclick="showPanel('stats',this)"><i class="ti ti-chart-line" aria-hidden="true"></i>Statistik</button>
+    <button class="nav-btn" onclick="showPanel('settings',this)"><i class="ti ti-settings" aria-hidden="true"></i>Pengaturan</button>
   </div>
 
   <!-- DASHBOARD -->
   <div id="panel-dashboard" class="panel active">
-    <div class="metrics-row">
-<div class="metric-card">
-  <div class="lbl">Net P&L</div>
-  <div class="val" id="d-pnl">$0.00</div>
-  <div class="sub">
-    Realized Profit
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="lbl">LABA BERSIH</div>
+      <div id="d-pnl" class="val">$0.00</div>
+      <div class="sub">Laba yang Terealisasi</div>
+    </div>
+    <div class="metric-card">
+      <div class="lbl">BULAN INI</div>
+      <div id="d-donation" class="val">$0.00</div>
+      <div class="sub">Donasi Tertunda</div>
+    </div>
+    <div class="metric-card">
+      <div class="lbl">SALDO TOTAL</div>
+      <div id="d-balance" class="val pos">$0.00</div>
+      <div class="sub">Total saldo ekuitas</div>
+    </div>
   </div>
 </div>
 <div class="metric-card" id="donation-card">
@@ -814,40 +819,40 @@ padding:14px;
   Tandai Sudah Disalurkan
 </button>
 </div>
-<div class="metric-card">
-  <div class="lbl">Total Balance</div>
-  <div class="val pos" id="d-balance">$0.00</div>
-  <div class="sub">
-    Total saldo akun
-  </div>
-</div>
       <div class="metric-card">
-        <div class="lbl">Winrate</div>
+        <div class="lbl">SALDO TOTAL</div>
+        <div class="val pos" id="d-balance">$0.00</div>
+        <div class="sub">
+          Total saldo akun
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="lbl">TINGKAT KEMENANGAN</div>
         <div class="val" id="d-wr">—</div>
-        <div class="sub" id="d-wr-sub">0 win / 0 loss</div>
+        <div class="sub" id="d-wr-sub">0 menang / 0 kalah</div>
       </div>
       <div class="metric-card">
-        <div class="lbl">Total trade</div>
+        <div class="lbl">TOTAL PERDAGANGAN</div>
         <div class="val" id="d-total">0</div>
-        <div class="sub" id="d-open-sub">0 open</div>
+        <div class="sub" id="d-open-sub">0 terbuka</div>
       </div>
       <div class="metric-card">
-        <div class="lbl">Avg R:R</div>
+        <div class="lbl">Rata-rata R:R</div>
         <div class="val" id="d-rr">—</div>
-        <div class="sub">PF: <span id="d-pf">—</span></div>
+        <div class="sub">FK: <span id="d-pf">—</span></div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-header">
-        <div class="card-title"><i class="ti ti-trending-up" aria-hidden="true"></i>Equity Curve</div>
+        <div class="card-title"><i class="ti ti-trending-up" aria-hidden="true"></i>Kurva Ekuitas</div>
       </div>
-      <div style="position:relative;height:200px"><canvas id="eq-chart1" role="img" aria-label="Equity curve">Belum ada data.</canvas></div>
+      <div style="position:relative;height:200px"><canvas id="eq-chart1" role="img" aria-label="Kurva ekuitas">Belum ada data.</canvas></div>
     </div>
 
     <div class="card">
       <div class="card-header">
-        <div class="card-title"><i class="ti ti-player-play" aria-hidden="true"></i>Open Positions</div>
+        <div class="card-title"><i class="ti ti-player-play" aria-hidden="true"></i>Posisi Terbuka</div>
         <button class="btn-sm" onclick="showPanel('open',document.querySelectorAll('.nav-btn')[1])">Lihat semua</button>
       </div>
       <div id="dash-open-list"></div>
@@ -874,7 +879,7 @@ padding:14px;
 
       <div class="form-grid">
         <div class="field">
-          <label>Pair</label>
+          <label>Pasangan</label>
           <input id="i-pair" type="text" placeholder="BTCUSDT" oninput="this.value=this.value.toUpperCase()">
         </div>
         <div class="field">
@@ -882,11 +887,11 @@ padding:14px;
           <div class="dir-wrap">
             <input type="radio" name="dir" id="dir-long" value="long" class="dir-opt" checked onchange="updatePreview()">
             <label for="dir-long" class="dir-label dir-label-long" id="lbl-long" style="background:rgba(0,191,143,0.12);color:#00BF8F;border-color:rgba(0,191,143,0.4)">
-              <i class="ti ti-arrow-up" aria-hidden="true"></i> Long
+              <i class="ti ti-arrow-up" aria-hidden="true"></i> Naik
             </label>
             <input type="radio" name="dir" id="dir-short" value="short" class="dir-opt" onchange="updatePreview()">
             <label for="dir-short" class="dir-label dir-label-short" id="lbl-short">
-              <i class="ti ti-arrow-down" aria-hidden="true"></i> Short
+              <i class="ti ti-arrow-down" aria-hidden="true"></i> Turun
             </label>
           </div>
         </div>
@@ -894,7 +899,7 @@ padding:14px;
 
       <div class="form-grid3">
         <div class="field"><label>Entry (USDT)</label><input id="i-entry" type="number" placeholder="65000" step="any" oninput="updatePreview()"></div>
-        <div class="field"><label>Stop Loss</label><input id="i-sl" type="number" placeholder="63000" step="any" oninput="updatePreview()"></div>
+        <div class="field"><label>Stoploss</label><input id="i-sl" type="number" placeholder="63000" step="any" oninput="updatePreview()"></div>
         <div class="field"><label>Take Profit</label><input id="i-tp" type="number" placeholder="70000" step="any" oninput="updatePreview()"></div>
       </div>
       <div class="form-grid3">
@@ -904,14 +909,14 @@ padding:14px;
       </div>
       <div class="form-grid">
         <div class="field">
-          <label>Order Entry</label>
+          <label>Perintah Entry</label>
           <select id="i-etype" onchange="updatePreview()">
             <option value="maker">Limit — maker (0.02%)</option>
             <option value="taker">Market — taker (0.055%)</option>
           </select>
         </div>
         <div class="field">
-          <label>Order Exit</label>
+          <label>Perintah Exit</label>
           <select id="i-xtype" onchange="updatePreview()">
             <option value="taker">Market/TP — taker (0.055%)</option>
             <option value="maker">Limit — maker (0.02%)</option>
@@ -920,33 +925,33 @@ padding:14px;
       </div>
       <div class="field" style="margin-bottom:10px">
         <label>Catatan</label>
-        <input id="i-note" type="text" placeholder="Setup, copy master, dll...">
+        <input id="i-note" type="text" placeholder="Setup, kopikan master, dll...">
       </div>
 
       <div class="preview-box">
-        <div class="preview-header">Preview Kalkulasi</div>
+        <div class="preview-header">Pratinjau Kalkulasi</div>
         <div class="preview-row"><span class="k">Nilai posisi (modal × leverage)</span><span class="v" id="p-notional">—</span></div>
-        <div class="preview-row"><span class="k">Fee entry</span><span class="v neg" id="p-fee-e">—</span></div>
-        <div class="preview-row"><span class="k">Fee exit</span><span class="v neg" id="p-fee-x">—</span></div>
-        <div class="preview-row"><span class="k">Total fee</span><span class="v neg" id="p-fee-t">—</span></div>
+        <div class="preview-row"><span class="k">Biaya entry</span><span class="v neg" id="p-fee-e">—</span></div>
+        <div class="preview-row"><span class="k">Biaya exit</span><span class="v neg" id="p-fee-x">—</span></div>
+        <div class="preview-row"><span class="k">Total biaya</span><span class="v neg" id="p-fee-t">—</span></div>
         <hr class="preview-divider">
-        <div class="preview-row"><span class="k">R:R ratio</span><span class="v" id="p-rr">—</span></div>
+        <div class="preview-row"><span class="k">Rasio R:R</span><span class="v" id="p-rr">—</span></div>
         <div style="display:flex;gap:8px;align-items:center;margin:6px 0">
-          <span style="font-size:10.5px;color:var(--red);min-width:54px;text-align:right;font-family:var(--font-mono)" id="rr-l-lbl">Loss</span>
+          <span style="font-size:10.5px;color:var(--red);min-width:54px;text-align:right;font-family:var(--font-mono)" id="rr-l-lbl">Rugi</span>
           <div style="flex:1;height:7px;background:var(--color-background-elevated);border-radius:4px;overflow:hidden;position:relative;border:1px solid var(--color-border-tertiary)">
             <div id="rr-l-bar" style="position:absolute;left:0;top:0;height:100%;background:var(--red);border-radius:4px;width:50%;opacity:0.7"></div>
             <div id="rr-p-bar" style="position:absolute;top:0;height:100%;background:var(--green);border-radius:4px;width:50%;left:50%;opacity:0.8"></div>
           </div>
-          <span style="font-size:10.5px;color:var(--green);min-width:54px;font-family:var(--font-mono)" id="rr-p-lbl">Profit</span>
+          <span style="font-size:10.5px;color:var(--green);min-width:54px;font-family:var(--font-mono)" id="rr-p-lbl">Keuntungan</span>
         </div>
         <hr class="preview-divider">
-        <div class="preview-row"><span class="k">Potensi profit (hit TP, setelah fee)</span><span class="v pos" id="p-profit">—</span></div>
-        <div class="preview-row"><span class="k">Potensi loss (hit SL, setelah fee)</span><span class="v neg" id="p-loss">—</span></div>
+        <div class="preview-row"><span class="k">Potensi keuntungan (hit TP, setelah biaya)</span><span class="v pos" id="p-profit">—</span></div>
+        <div class="preview-row"><span class="k">Potensi rugi (hit SL, setelah biaya)</span><span class="v neg" id="p-loss">—</span></div>
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <button class="btn-amber" onclick="saveOpen()"><i class="ti ti-player-play" aria-hidden="true"></i> Simpan sebagai Open</button>
-        <button class="btn-primary" onclick="saveClosed()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Simpan Trade Selesai</button>
+        <button class="btn-amber" onclick="saveOpen()"><i class="ti ti-player-play" aria-hidden="true"></i> Simpan Posisi Terbuka</button>
+        <button class="btn-primary" onclick="saveClosed()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Simpan Perdagangan Selesai</button>
       </div>
     </div>
   </div>
@@ -1017,8 +1022,8 @@ padding:14px;
     "
   >
     <option value="all">Semua</option>
-    <option value="win">Win</option>
-    <option value="loss">Loss</option>
+    <option value="win">Menang</option>
+    <option value="loss">Kalah</option>
   </select>
 
 </div>
@@ -1038,7 +1043,7 @@ padding:14px;
             <th style="width:55px">Modal</th>
             <th style="width:38px">Lev</th>
             <th style="width:45px">R:R</th>
-            <th style="width:78px">Net P&L</th>
+            <th style="width:78px">P&L Bersih</th>
             <th style="width:50px">Hasil</th>
             <th style="width:36px"></th>
           </tr></thead>
@@ -1047,7 +1052,7 @@ padding:14px;
       </div>
       <div id="journal-empty" class="empty-state" style="display:none">
         <i class="ti ti-clipboard-list" aria-hidden="true"></i>
-        <p>Belum ada trade selesai.</p>
+        <p>Belum ada perdagangan selesai.</p>
       </div>
     </div>
   </div>
@@ -1059,22 +1064,22 @@ padding:14px;
   <div class="stat-row top">
 
     <div class="stat-mini">
-      <div class="lb">Net P&L</div>
+      <div class="lb">P&L Bersih</div>
       <div class="vl" id="s-pnl">—</div>
     </div>
 
     <div class="stat-mini">
-      <div class="lb">Total Balance</div>
+      <div class="lb">Saldo Total</div>
       <div class="vl pos" id="s-balance">$0.00</div>
     </div>
 
     <div class="stat-mini">
-      <div class="lb">Winrate</div>
+      <div class="lb">Tingkat Kemenangan</div>
       <div class="vl pos" id="s-wr">—</div>
     </div>
 
     <div class="stat-mini">
-      <div class="lb">Profit Factor</div>
+      <div class="lb">Faktor Keuntungan</div>
       <div class="vl" id="s-pf">—</div>
     </div>
 
@@ -1084,58 +1089,58 @@ padding:14px;
   <div class="stat-row bottom">
 
     <div class="stat-mini">
-      <div class="lb">Total Closed</div>
+      <div class="lb">Total Ditutup</div>
       <div class="vl" id="s-total">0</div>
     </div>
 
     <div class="stat-mini">
-      <div class="lb">Avg R:R</div>
+      <div class="lb">Rata-rata R:R</div>
       <div class="vl" id="s-rr">—</div>
     </div>
 
     <div class="stat-mini">
-      <div class="lb">Total Fee</div>
+      <div class="lb">Total Biaya</div>
       <div class="vl neg" id="s-fee">—</div>
     </div>
 
   </div>
     <div class="card">
-      <div class="card-header"><div class="card-title"><i class="ti ti-trending-up" aria-hidden="true"></i>Equity Curve</div></div>
-      <div style="position:relative;height:210px"><canvas id="eq-chart2" role="img" aria-label="Equity curve">Belum ada data.</canvas></div>
+      <div class="card-header"><div class="card-title"><i class="ti ti-trending-up" aria-hidden="true"></i>Kurva Ekuitas</div></div>
+      <div style="position:relative;height:210px"><canvas id="eq-chart2" role="img" aria-label="Kurva ekuitas">Belum ada data.</canvas></div>
     </div>
     <div class="card" style="margin-bottom:0">
-      <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar" aria-hidden="true"></i>P&L per Trade</div></div>
-      <div style="position:relative;height:160px"><canvas id="pnl-chart" role="img" aria-label="P&L per trade">Belum ada data.</canvas></div>
+      <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar" aria-hidden="true"></i>P&L per Perdagangan</div></div>
+      <div style="position:relative;height:160px"><canvas id="pnl-chart" role="img" aria-label="P&L per perdagangan">Belum ada data.</canvas></div>
     </div>
   </div>
 
   <!-- SETTINGS -->
   <div id="panel-settings" class="panel">
     <div class="card">
-      <div class="card-header"><div class="card-title"><i class="ti ti-settings" aria-hidden="true"></i>Konfigurasi Fee</div></div>
+      <div class="card-header"><div class="card-title"><i class="ti ti-settings" aria-hidden="true"></i>Pengaturan Biaya</div></div>
       <div class="settings-field">
-        <div><div class="sf-label">Fee Maker (%)</div><div class="sf-hint">Order limit / passive</div></div>
+        <div><div class="sf-label">Biaya Maker (%)</div><div class="sf-hint">Order limit / pasif</div></div>
         <input id="s-maker" type="number" value="0.02" step="0.001">
       </div>
       <div class="settings-field">
-        <div><div class="sf-label">Fee Taker (%)</div><div class="sf-hint">Order market / aggressive</div></div>
+        <div><div class="sf-label">Biaya Taker (%)</div><div class="sf-hint">Order market / agresif</div></div>
         <input id="s-taker" type="number" value="0.055" step="0.001">
       </div>
       <div class="settings-field">
-        <div><div class="sf-label">Modal Awal Akun (USDT)</div><div class="sf-hint">Untuk equity curve</div></div>
+        <div><div class="sf-label">Modal Awal Akun (USDT)</div><div class="sf-hint">Untuk kurva ekuitas</div></div>
         <input id="s-equity" type="number" value="100" step="any">
       </div>
       <div class="hint-block">
-        Funding rate Bybit dibayar tiap 8 jam untuk posisi yang ditahan. Nilainya berubah mengikuti pasar — catat di kolom catatan jika posisi kamu overnight.
+        Biaya pendanaan Bybit dibayarkan setiap 8 jam untuk posisi yang ditahan. Nilainya berubah sesuai pasar — catat di kolom catatan jika posisi Anda overnight.
       </div>
       <button class="btn-primary" style="margin-top:14px" onclick="saveSettings()">
-        <i class="ti ti-check" aria-hidden="true"></i> Simpan Settings
+        <i class="ti ti-check" aria-hidden="true"></i> Simpan Pengaturan
       </button>
     </div>
     <div class="card">
       <div class="card-header"><div class="card-title"><i class="ti ti-database" aria-hidden="true"></i>Data</div></div>
       <div style="display:flex;gap:8px">
-        <button class="btn-sm" onclick="exportCSV()"><i class="ti ti-download" aria-hidden="true"></i> Export CSV</button>
+        <button class="btn-sm" onclick="exportCSV()"><i class="ti ti-download" aria-hidden="true"></i> Ekspor CSV</button>
         <button class="btn-danger-sm" onclick="clearAll()"><i class="ti ti-trash" aria-hidden="true"></i> Hapus Semua Data</button>
       </div>
     </div>
@@ -2451,7 +2456,7 @@ function renderJournal(){
       <td style="font-weight:600;color:${(t.pnl||0)>=0 ? '#00BF8F' : '#E84960'}">
         ${(t.pnl||0)>=0?'+':''} $${Number(t.pnl||0).toFixed(3)}
       </td>
-      <td><span class="badge badge-${t.result}">${t.result === 'win' ? 'Win' : 'Loss'}</span></td>
+      <td><span class="badge badge-${t.result}">${t.result === 'win' ? 'Menang' : 'Kalah'}</span></td>
       <td><button onclick="deleteTrade(${t.id})" style="border:none;background:none;cursor:pointer;color:var(--color-text-tertiary)">✕</button></td>
     </tr>
   `).join('')
