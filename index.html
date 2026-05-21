@@ -1427,23 +1427,15 @@ async function closeOpen(id, mode){
       : 0
 
   const { error } = await db
-    .from('trades')
-    .update({
-
-      status: 'CLOSED',
-
-      result: result,
-
-      pnl: pnl,
-
-      donation: donation,
-
-      exit_price: exitPrice,
-
-      closed_at: new Date().toISOString()
-
-    })
-    .eq('id', id)
+  .from('trades')
+  .update({
+    status: 'CLOSED',
+    result: result,
+    pnl: pnl,
+    exit_price: exitPrice,
+    closed_at: new Date().toISOString()
+  })
+  .eq('id', id)
 
   if(error){
 
