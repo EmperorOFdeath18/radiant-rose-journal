@@ -2156,7 +2156,6 @@ barPercentage: 0.9,
     closed.filter(t => {
 
       const d = new Date(t.closed_at)
-
       const now = new Date()
 
       return (
@@ -2236,8 +2235,7 @@ barPercentage: 0.9,
     donationStatus.textContent =
       'Sudah disalurkan'
 
-  } else
-  if(pendingDonation < 5){
+  } else if(pendingDonation < 5){
 
     donationCard.classList.add(
       'donation-yellow'
@@ -2269,7 +2267,7 @@ barPercentage: 0.9,
   alert('Fitur donasi belum aktif')
 
 }
-
+  
 function renderStats(){
 
   const wins =
