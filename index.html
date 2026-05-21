@@ -1846,7 +1846,68 @@ function renderOpen(){
 
   }).join('')
 }
+  
+function renderDonation(){
 
+  const el =
+    document.getElementById('donation-list')
+
+  const wins = trades.filter(
+    t =>
+      t.status === 'CLOSED' &&
+      Number(t.donation || 0) > 0
+  )
+
+  if(wins.length === 0){
+
+    el.innerHTML = `
+      <div class="empty-state">
+        <p>Belum ada donasi tercatat.</p>
+      </div>
+    `
+
+    return
+  }
+
+  const total =
+    wins.reduce(
+      (s,t)=>s + Number(t.donation || 0),
+      0
+    )
+
+  el.innerHTML = `
+
+    <div class="trade-card">
+
+      <div>
+
+        <div class="pair">
+          Total Donasi
+        </div>
+
+        <div class="side">
+          Akumulasi 5% profit
+        </div>
+
+      </div>
+
+      <div class="price-box">
+
+        <div style="
+          color:#00BF8F;
+          font-size:22px;
+          font-weight:700;
+        ">
+          $${total.toFixed(2)}
+        </div>
+
+      </div>
+
+    </div>
+
+  `
+}
+  
   async function markDonationSent(){
 
   alert('Fitur donasi belum aktif')
@@ -1934,9 +1995,9 @@ function renderOpen(){
 
      <td>
   ${
-    t.rr
-      ? '1:' + Number(t.rr).toFixed(2)
-      : '-'
+    Number.isFinite(Number(t.rr))
+  ? '1:' + Number(t.rr).toFixed(2)
+  : '-'
   }
 </td>
 
@@ -2026,12 +2087,25 @@ function buildEqData(){
 }
 
 function makeEqChart(canvasId,existing){
-  if(existing){existing.destroy();}
-  const {labels,vals}=buildEqData();
-  if(vals.length === 0){
-  vals.push(cfg.equity || 0)
-  labels.push('Start')
-}
+
+  const canvas =
+    document.getElementById(canvasId)
+
+  if(!canvas){
+    return null
+  }
+
+  if(existing){
+    existing.destroy()
+  }
+
+  const {labels,vals} =
+    buildEqData()
+
+  if(vals.length <= 1){
+    return null
+  }
+  
   return new Chart(document.getElementById(canvasId),{
     type:'line',
     data:{labels,datasets:[{data:vals,borderColor:'#00BF8F',backgroundColor:'rgba(0,191,143,0.06)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#00BF8F',pointBorderColor:'#07090F',pointBorderWidth:2}]},
@@ -2206,71 +2280,119 @@ const avgRR =
 
   document.getElementById('d-donation').textContent =
     '$' + donationTotal.toFixed(2)
+    
+eqC1 = makeEqChart(
+  'eq-chart1',
+  eqC1
+)
 
-  renderDashboardOpen()
+renderDashboardOpen()
+    
 }
   
 function renderStats(){
 
+  const closed =
+    trades.filter(
+      t => t.status === 'CLOSED'
+    )
+
   const wins =
-    trades.filter(t => t.result === 'win')
+    closed.filter(
+      t => t.result === 'win'
+    )
 
   const losses =
-    trades.filter(t => t.result === 'loss')
+    closed.filter(
+      t => t.result === 'loss'
+    )
 
   const net =
-    trades.reduce((s,t)=>s + Number(t.pnl || 0),0)
+    closed.reduce(
+      (s,t)=>s + Number(t.pnl || 0),
+      0
+    )
 
   const totalBalance =
-    cfg.equity + net
+    Number(cfg.equity || 0) + net
 
   const wr =
-    trades.length
-      ? (wins.length / trades.length) * 100
+    closed.length
+      ? (wins.length / closed.length) * 100
       : 0
 
   const grossWin =
-    wins.reduce((s,t)=>s + Number(t.pnl || 0),0)
+    wins.reduce(
+      (s,t)=>s + Number(t.pnl || 0),
+      0
+    )
 
   const grossLoss =
     Math.abs(
-      losses.reduce((s,t)=>s + Number(t.pnl || 0),0)
+      losses.reduce(
+        (s,t)=>s + Number(t.pnl || 0),
+        0
+      )
     )
 
   const pf =
     grossLoss > 0
       ? grossWin / grossLoss
+      : grossWin
+
+  const rrList = closed
+    .map(t => Number(t.rr))
+    .filter(v =>
+      Number.isFinite(v) &&
+      v > 0
+    )
+
+  const avgRR =
+    rrList.length
+      ? rrList.reduce((a,b)=>a+b,0)
+        / rrList.length
       : 0
 
-  const rrList = trades
-  .map(t => Number(t.rr))
-  .filter(v =>
-    Number.isFinite(v) &&
-    v > 0
-  )
+  const totalFee =
+    closed.reduce(
+      (s,t)=>
+        s + Number(t.fee_total || 0),
+      0
+    )
 
-const avgRR =
-  rrList.length
-    ? rrList.reduce((a,b)=>a+b,0)
-      / rrList.length
-    : 0
+  document.getElementById('s-pnl').textContent =
+    (net >= 0 ? '+' : '') +
+    '$' + net.toFixed(2)
 
-  document.getElementById('s-total').textContent =
-    trades.length
+  document.getElementById('s-pnl').className =
+    'vl ' + (net >= 0 ? 'pos' : 'neg')
+
+  document.getElementById('s-balance').textContent =
+    '$' + totalBalance.toFixed(2)
 
   document.getElementById('s-wr').textContent =
     wr.toFixed(1) + '%'
 
- const totalFee =
-  trades.reduce((s,t)=>s + Number(t.fee_total || 0),0)
+  document.getElementById('s-pf').textContent =
+    pf.toFixed(2)
 
-document.getElementById('s-fee').textContent =
-  '$' + totalFee.toFixed(2)
+  document.getElementById('s-total').textContent =
+    closed.length
 
-  eqC2 = makeEqChart('eq-chart2', eqC2)
-  
-makePnlChart()
-  
+  document.getElementById('s-rr').textContent =
+    avgRR > 0
+      ? '1:' + avgRR.toFixed(2)
+      : '—'
+
+  document.getElementById('s-fee').textContent =
+    '-$' + totalFee.toFixed(4)
+
+  eqC2 = makeEqChart(
+    'eq-chart2',
+    eqC2
+  )
+
+  makePnlChart()
 }
 
 function saveSettings(){
