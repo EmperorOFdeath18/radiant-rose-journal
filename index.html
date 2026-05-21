@@ -806,13 +806,15 @@ padding:14px;
   >
     Belum disalurkan
   </div>
-<button
-  class="btn-sm"
-  style="margin-top:10px"
-  onclick="markDonationSent()"
->
-  Tandai Sudah Disalurkan
-</button>
+
+  <button
+    class="btn-sm"
+    style="margin-top:10px"
+    onclick="markDonationSent()"
+  >
+    Tandai Sudah Disalurkan
+  </button>
+
 </div>
 <div class="metric-card">
   <div class="lbl">Total Balance</div>
@@ -1014,8 +1016,7 @@ padding:14px;
       color:var(--color-text-secondary);
       outline:none;
       font-family:var(--font-sans)
-    "
-  >
+ 
     <option value="all">Semua</option>
     <option value="win">Win</option>
     <option value="loss">Loss</option>
@@ -1907,48 +1908,6 @@ function renderOpen(){
   t.rr
     ? '1:' + Number(t.rr).toFixed(2)
     : '-'
-}
-        </td>
-
-        <td style="
-          font-weight:600;
-          color:${(t.pnl||0)>=0
-            ? '#00BF8F'
-            : '#E84960'}
-        ">
-          ${(t.pnl||0)>=0?'+':''}
-          $${Number(t.pnl||0).toFixed(3)}
-        </td>
-
-        <td>
-          <span class="
-            badge
-            badge-${t.result}
-          ">
-            ${t.result === 'win'
-              ? 'Win'
-              : 'Loss'}
-          </span>
-        </td>
-
-        <td>
-          <button
-            onclick="deleteTrade(${t.id})"
-            style="
-              border:none;
-              background:none;
-              cursor:pointer;
-              color:var(--color-text-tertiary)
-            "
-          >
-            ✕
-          </button>
-        </td>
-
-      </tr>
-
-    `).join('')
-}
 
 async function deleteTrade(id){
 
