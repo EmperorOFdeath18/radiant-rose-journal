@@ -2108,16 +2108,16 @@ const totalDonation =
     (s,t)=>s + Number(t.donation || 0),
     0
   )
-  const donationKey =
-  'rr_donation_' +
-  currentYear +
-  '_' +
-  currentMonth
 
-donatedAmount =
-  Number(
-    localStorage.getItem(donationKey) || 0
+const sentDonation =
+  donations.reduce(
+    (s,d)=>s + Number(d.sent || 0),
+    0
   )
+
+const pendingDonation =
+  totalDonation - sentDonation
+
   const totalBalance =
     cfg.equity + net
 
@@ -2194,14 +2194,15 @@ donatedAmount =
     ? (grossWin / grossLoss).toFixed(2)
     : '0.00'
 
-document.getElementById('d-donation').textContent =
-  '$' + totalDonation.toFixed(2)
+document.getElementById('d-donation')
+.textContent =
+  '$' + pendingDonation.toFixed(2)
 
-const card =
-  document.getElementById('donation-card')
-
-const status =
-  document.getElementById('d-donation-status')
+document.getElementById('d-donation-status')
+.textContent =
+  pendingDonation > 0
+    ? 'Belum disalurkan'
+    : 'Sudah disalurkan'
 
 card.classList.remove(
   'donation-red',
@@ -2565,37 +2566,73 @@ updateBadge()
 
 }
 
-loadTrades()
-  init()
+await loadTrades()
+await loadDonations()
   async function markDonationSent(){
-
-  const amount =
-    prompt('Jumlah yang disalurkan?')
-
-  if(!amount) return
-
-  const proof =
-    prompt('Link bukti penyaluran?')
 
   const now = new Date()
 
-  const month =
-    now.toLocaleString('id-ID',{
-      month:'long',
-      year:'numeric'
+  const currentMonth =
+    now.toLocaleString(
+      'id-ID',
+      {
+        month:'long',
+        year:'numeric'
+      }
+    )
+
+  const monthlyTrades =
+    trades.filter(t => {
+
+      if(!t.closed_at) return false
+
+      const d = new Date(t.closed_at)
+
+      return (
+        d.getMonth() === now.getMonth() &&
+        d.getFullYear() === now.getFullYear()
+      )
+
     })
 
-  const value = Number(amount)
+  const totalDonation =
+    monthlyTrades.reduce(
+      (s,t)=>s + Number(t.donation || 0),
+      0
+    )
+
+  const alreadySent =
+    donations.reduce(
+      (s,d)=>s + Number(d.sent || 0),
+      0
+    )
+
+  const pending =
+    totalDonation - alreadySent
+
+  if(pending <= 0){
+
+    alert(
+      'Tidak ada donasi yang perlu disalurkan.'
+    )
+
+    return
+  }
+
+  const proof =
+    prompt(
+      'Masukkan link bukti penyaluran'
+    )
 
   const { error } = await db
     .from('donations')
     .insert([{
 
-      month: month,
+      month: currentMonth,
 
-      total: value,
+      total: totalDonation,
 
-      sent: value,
+      sent: pending,
 
       pending: 0,
 
@@ -2607,10 +2644,23 @@ loadTrades()
 
     console.error(error)
 
-    alert('Gagal simpan donasi')
+    alert(
+      'Gagal simpan donasi'
+    )
 
     return
   }
+
+  await loadDonations()
+
+  renderDashboard()
+
+  renderDonation()
+
+  alert(
+    'Donasi berhasil disalurkan'
+  )
+}
 
   await loadDonations()
 
