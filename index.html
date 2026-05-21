@@ -1155,7 +1155,7 @@ let opens = []
 let cfg = {
   maker: 0.02,
   taker: 0.055,
-  equity: 1000
+  equity: 100
 }
 let eqC1=null, eqC2=null, pnlC=null;
   let donatedAmount = 0
@@ -1978,23 +1978,38 @@ async function deleteTrade(id){
 }
 
 function buildEqData(){
- const sorted = [...trades]
-  .filter(t => t.status === 'CLOSED')
-  .sort(
-    (a,b) =>
-      new Date(a.closed_at) -
-      new Date(b.closed_at)
-  )
-  const net =
-  trades.reduce(
-    (s,t)=>s + Number(t.pnl || 0),
-    0
-  )
 
-let eq = cfg.equity
-  const labels=['Start'],vals=[parseFloat(eq.toFixed(2))];
-  sorted.forEach(t=>{eq+=(t.pnl||0);labels.push(t.pair);vals.push(parseFloat(eq.toFixed(2)));});
-  return{labels,vals};
+  const sorted = [...trades]
+
+    .filter(t => t.status === 'CLOSED')
+
+    .sort(
+      (a,b) =>
+        new Date(a.closed_at) -
+        new Date(b.closed_at)
+    )
+
+  let eq = Number(cfg.equity || 100)
+
+  const labels = ['Start']
+
+  const vals = [
+    parseFloat(eq.toFixed(2))
+  ]
+
+  sorted.forEach(t => {
+
+    eq += Number(t.pnl || 0)
+
+    labels.push(t.pair)
+
+    vals.push(
+      parseFloat(eq.toFixed(2))
+    )
+
+  })
+
+  return { labels, vals }
 }
 
 function makeEqChart(canvasId,existing){
@@ -2437,16 +2452,19 @@ makePnlChart()
 function saveSettings(){
 
   cfg.maker =
-    parseFloat(document.getElementById('s-maker').value)
-    || 0.02
+    parseFloat(
+      document.getElementById('s-maker').value
+    ) || 0.02
 
   cfg.taker =
-    parseFloat(document.getElementById('s-taker').value)
-    || 0.055
+    parseFloat(
+      document.getElementById('s-taker').value
+    ) || 0.055
 
   cfg.equity =
-    parseFloat(document.getElementById('s-equity').value)
-    || 1000
+    parseFloat(
+      document.getElementById('s-equity').value
+    ) || 100
 
   localStorage.setItem(
     'rr_settings',
@@ -2455,6 +2473,8 @@ function saveSettings(){
 
   renderDashboard()
   renderStats()
+
+  alert('Settings disimpan')
 }
 
 function exportCSV(){
@@ -2736,7 +2756,7 @@ startApp()
   alert(
     'Donasi berhasil disalurkan'
   )
-}
+
 
   async function loadDonations(){
 
@@ -2755,6 +2775,71 @@ startApp()
   donations = data || []
 
   renderDonation()
+    async function markDonationSent(){
+
+  const now = new Date()
+
+  const monthlyTrades =
+    trades.filter(t => {
+
+      if(!t.closed_at) return false
+
+      const d = new Date(t.closed_at)
+
+      return (
+        d.getMonth() === now.getMonth() &&
+        d.getFullYear() === now.getFullYear()
+      )
+
+    })
+
+  const totalDonation =
+    monthlyTrades.reduce(
+      (s,t)=>s + Number(t.donation || 0),
+      0
+    )
+
+  const sentDonation =
+    donations.reduce(
+      (s,d)=>s + Number(d.sent || 0),
+      0
+    )
+
+  const pending =
+    totalDonation - sentDonation
+
+  if(pending <= 0){
+    alert('Tidak ada donasi pending')
+    return
+  }
+
+  const month =
+    now.toLocaleString('id-ID',{
+      month:'long',
+      year:'numeric'
+    })
+
+  const { error } = await db
+    .from('donations')
+    .insert([{
+      month,
+      total: totalDonation,
+      sent: pending,
+      pending: 0,
+      proof: '',
+      note: ''
+    }])
+
+  if(error){
+    console.error(error)
+    alert('Gagal update donasi')
+    return
+  }
+
+  await loadDonations()
+
+  alert('Donasi berhasil disalurkan')
+}
 }
 
 db.channel('trades-live')
@@ -2772,25 +2857,6 @@ db.channel('trades-live')
     }
   )
   .subscribe()
-  function markDonationSent(){
-
-  const now = new Date()
-
-  const key =
-    'rr_donation_' +
-    now.getFullYear() +
-    '_' +
-    now.getMonth()
-
-  localStorage.setItem(
-    key,
-    totalDonation
-  )
-
-  donatedAmount = totalDonation
-
-  renderDashboard()
-}
 </script>
 </body>
 </html>
