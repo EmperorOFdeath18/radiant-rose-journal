@@ -2159,6 +2159,7 @@ barPercentage: 0.9,
 
   document.getElementById('d-wr').textContent =
     wr.toFixed(1) + '%'
+}
 
   document.getElementById('d-wr-sub').textContent =
     wins.length + ' win / ' +
@@ -2256,7 +2257,9 @@ document.getElementById('s-fee').textContent =
   '$' + totalFee.toFixed(2)
 
   eqC2 = makeEqChart('eq-chart2', eqC2)
+  
 makePnlChart()
+  
 }
 
 function saveSettings(){
