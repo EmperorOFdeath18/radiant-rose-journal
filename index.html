@@ -2098,36 +2098,21 @@ barPercentage: 0.9,
 }
 function renderDashboard(){
 
-  const wins =
-    trades.filter(t => t.result === 'win')
+  ...
 
-  const losses =
-    trades.filter(t => t.result === 'loss')
+  pnlEl.textContent =
+    (net >= 0 ? '+' : '') +
+    '$' + net.toFixed(2)
 
-  const net =
-    trades.reduce((s,t)=>s + Number(t.pnl || 0),0)
-  
-const now = new Date()
+  pnlEl.className =
+    'val ' + (net >= 0 ? 'pos' : 'neg')
 
-const currentMonth =
-  now.getMonth()
+  document.getElementById('d-balance').textContent =
+    '$' + totalBalance.toFixed(2)
 
-const currentYear =
-  now.getFullYear()
+  makeEqChart('eq-chart1', eqC1)
 
-const monthlyTrades =
-  trades.filter(t => {
-
-    if(!t.closed_at) return false
-
-    const d = new Date(t.closed_at)
-
-    return (
-      d.getMonth() === currentMonth &&
-      d.getFullYear() === currentYear
-    )
-
-  })
+}
 
 const totalDonation =
   monthlyTrades.reduce(
@@ -2156,6 +2141,7 @@ const pendingDonation =
 
  pnlEl.className =
   net >= 0
+   )
     ? 'val pos'
     : 'val neg'
   
@@ -2287,7 +2273,7 @@ else{
 
 }
 
-  eqC1 = makeEqChart('eq-chart1', eqC1)
+  eqC1 = makeEqChart('eq-chart1', eqC1))
 
   renderDashboardOpen()
   }
@@ -2651,6 +2637,10 @@ startApp()
   
  async function markDonationSent(){
 
+  alert('Fitur donasi belum aktif')
+
+}
+
   const now = new Date()
 
   const monthlyTrades =
@@ -2794,6 +2784,9 @@ startApp()
   renderDonation()
     async function markDonationSent(){
 
+  alert('Fitur donasi belum aktif')
+
+}
   const now = new Date()
 
   const month =
