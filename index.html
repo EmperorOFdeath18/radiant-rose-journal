@@ -2395,44 +2395,6 @@ const db = supabase.createClient(
   updateBadge()
 }
 
-opens = data
-  .filter(t => t.status === 'OPEN')
-  .map(t => {
-
-    const dir = (t.side || '').toLowerCase()
-
-    const margin = Number(t.margin || 0)
-    const leverage = Number(t.leverage || 1)
-
-    const c = calc(
-      Number(t.entry),
-      Number(t.sl),
-      Number(t.tp),
-      margin,
-      leverage,
-      dir,
-      'maker',
-      'taker'
-    )
-
-    return {
-      ...t,
-
-      dir,
-      size: margin,
-      lev: leverage,
-
-      ...c
-    }
-  })
-
-renderOpen()
-renderDashboard()
-renderJournal()
-renderStats()
-updateBadge()
-    populateMonthFilter()
-
 async function startApp(){
 
   await loadTrades()
@@ -2515,76 +2477,10 @@ async function markDonationSent(){
   await loadDonations()
 
   renderDonation()
-
   renderDashboard()
 
   alert('Donasi berhasil ditandai terkirim')
 }
-
-  await loadDonations()
-
-  alert('Donasi berhasil ditandai')
-}
-  donations.push({
-    month: currentMonth,
-    total: totalDonation,
-    sent: totalDonation,
-    pending: 0,
-    proof: ''
-  })
-
-  localStorage.setItem(
-    'rr_donations',
-    JSON.stringify(donations)
-  )
-
-  renderDonation()
-  renderDashboard()
-
-  alert('Donasi ditandai sudah disalurkan')
-}
-  const proof =
-    prompt(
-      'Masukkan link bukti penyaluran'
-    )
-
-  const { error } = await db
-    .from('donations')
-    .insert([{
-
-      month: currentMonth,
-
-      total: totalDonation,
-
-      sent: pending,
-
-      pending: 0,
-
-      proof: proof || ''
-
-    }])
-
-  if(error){
-
-    console.error(error)
-
-    alert(
-      'Gagal simpan donasi'
-    )
-
-    return
-  }
-
-  await loadDonations()
-
-  renderDashboard()
-
-  renderDonation()
-
-  alert(
-    'Donasi berhasil disalurkan'
-  )
-
 
   async function loadDonations(){
 
