@@ -2453,8 +2453,6 @@ startApp()
 
   alert('Fitur donasi belum aktif')
 
-}
-
   const now = new Date()
 
   const monthlyTrades =
@@ -2513,6 +2511,10 @@ startApp()
     alert('Gagal update donasi')
     return
   }
+
+  alert('Donasi berhasil ditandai terkirim')
+
+}
 
   await loadDonations()
 
