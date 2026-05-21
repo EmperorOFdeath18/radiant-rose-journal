@@ -2129,8 +2129,10 @@ const pendingDonation =
     '$' +
     net.toFixed(2)
 
-  pnlEl.className =
-    'val ' + (net >= 0 ? 'pos':'neg')
+ pnlEl.className =
+  net >= 0
+    ? 'val pos'
+    : 'val neg'
 
  document.getElementById('d-balance').textContent =
   '$' + totalBalance.toFixed(2)
@@ -2566,8 +2568,22 @@ updateBadge()
 
 }
 
-await loadTrades()
-await loadDonations()
+async function startApp(){
+
+  await loadTrades()
+  await loadDonations()
+
+  renderDashboard()
+  renderOpen()
+  renderJournal()
+  renderDonation()
+  renderStats()
+  updateBadge()
+
+}
+
+startApp()
+  
   async function markDonationSent(){
 
   const now = new Date()
