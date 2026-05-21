@@ -1254,7 +1254,7 @@ function showPanel(name, btn){
 
 function fee(t){ return (t==='maker'?cfg.maker:cfg.taker)/100; }
 
-function calc(entry,sl,tp,size,lev,dir,et,xt){
+function calc(entry, sl, tp, size, lev, dir, et, xt){
 
   const n = size * lev
 
@@ -1268,7 +1268,7 @@ function calc(entry,sl,tp,size,lev,dir,et,xt){
     fe + fx
 
   const isLong =
-  String(dir).toLowerCase() === 'long'
+    String(dir).toLowerCase() === 'long'
 
   const pRaw = isLong
     ? n * ((tp - entry) / entry)
@@ -1277,6 +1277,17 @@ function calc(entry,sl,tp,size,lev,dir,et,xt){
   const lRaw = isLong
     ? n * ((entry - sl) / entry)
     : n * ((sl - entry) / entry)
+
+  const reward =
+    Math.abs(tp - entry)
+
+  const risk =
+    Math.abs(entry - sl)
+
+  const rr =
+    risk > 0
+      ? reward / risk
+      : 0
 
   return {
 
@@ -1294,30 +1305,7 @@ function calc(entry,sl,tp,size,lev,dir,et,xt){
     lNet:
       lRaw - fee_total,
 
-   const reward =
-  Math.abs(tp - entry)
-
-const risk =
-  Math.abs(entry - sl)
-
-const rr =
-  risk > 0
-    ? reward / risk
-    : 0
-  return {
-
-  n,
-  fe,
-  fx,
-  fee_total,
-
-  pNet: pRaw - fee_total,
-
-  lNet: lRaw - fee_total,
-
-  rr
-
-}
+    rr
 
   }
 
