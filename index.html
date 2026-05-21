@@ -1123,7 +1123,7 @@ padding:14px;
       </div>
       <div class="settings-field">
         <div><div class="sf-label">Modal Awal Akun (USDT)</div><div class="sf-hint">Untuk equity curve</div></div>
-        <input id="s-equity" type="number" value="1000" step="any">
+        <input id="s-equity" type="number" value="100" step="any">
       </div>
       <div class="hint-block">
         Funding rate Bybit dibayar tiap 8 jam untuk posisi yang ditahan. Nilainya berubah mengikuti pasar — catat di kolom catatan jika posisi kamu overnight.
@@ -2538,27 +2538,47 @@ if(lastPanel){
   )
 }
 </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const supabaseUrl = 'https://hmuuiyfkiofymbcosjdb.supabase.co'
-const supabaseKey = 'sb_publishable_qE02gvVbv3ywxuK4CRUX9Q_aBuJahm4'
+const SUPABASE_URL = 'https://hmuuiyfkiofymbcosjdb.supabase.co'
+const SUPABASE_KEY = 'sb_publishable_qE02gvVbv3ywxuK4CRUX9Q_aBuJahm4'
 
-const db = window.supabase.createClient(
-  supabaseUrl,
-  supabaseKey
+const db =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
 )
-  async function loadTrades() {
+  async function loadTrades(){
+
   const { data, error } = await db
     .from('trades')
     .select('*')
-
-  console.log(data)
+    .order('created_at',{
+      ascending:false
+    })
 
   if(error){
     console.error(error)
     return
   }
+
+  trades =
+    data.filter(
+      t => t.status === 'CLOSED'
+    )
+
+  opens =
+    data.filter(
+      t => t.status === 'OPEN'
+    )
+
+  renderDashboard()
+  renderOpen()
+  renderJournal()
+  renderStats()
+  updateBadge()
+}
 
 trades = data
   .filter(t => t.status === 'CLOSED')
@@ -2779,6 +2799,12 @@ startApp()
 
   const now = new Date()
 
+  const month =
+    now.toLocaleString('id-ID',{
+      month:'long',
+      year:'numeric'
+    })
+
   const monthlyTrades =
     trades.filter(t => {
 
@@ -2793,25 +2819,33 @@ startApp()
 
     })
 
-  const totalDonation =
+  const total =
     monthlyTrades.reduce(
       (s,t)=>s + Number(t.donation || 0),
       0
     )
 
-  const sentDonation =
-    donations.reduce(
-      (s,d)=>s + Number(d.sent || 0),
-      0
-    )
+  const { error } = await db
+    .from('donations')
+    .insert([{
+      month,
+      total,
+      sent: total,
+      pending: 0
+    }])
 
-  const pending =
-    totalDonation - sentDonation
-
-  if(pending <= 0){
-    alert('Tidak ada donasi pending')
+  if(error){
+    console.error(error)
+    alert('Gagal update donasi')
     return
   }
+
+  await loadDonations()
+
+  renderDashboard()
+
+  alert('Donasi berhasil disalurkan')
+}
 
   const month =
     now.toLocaleString('id-ID',{
@@ -2853,6 +2887,7 @@ db.channel('trades-live')
     () => {
 
       loadTrades()
+loadDonations()
 
     }
   )
