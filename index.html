@@ -1294,10 +1294,30 @@ function calc(entry,sl,tp,size,lev,dir,et,xt){
     lNet:
       lRaw - fee_total,
 
-   rr:
-  Math.abs(lRaw) > 0
-    ? Math.abs(pRaw / lRaw)
-    : null
+   const reward =
+  Math.abs(tp - entry)
+
+const risk =
+  Math.abs(entry - sl)
+
+const rr =
+  risk > 0
+    ? reward / risk
+    : 0
+  return {
+
+  n,
+  fe,
+  fx,
+  fee_total,
+
+  pNet: pRaw - fee_total,
+
+  lNet: lRaw - fee_total,
+
+  rr
+
+}
 
   }
 
