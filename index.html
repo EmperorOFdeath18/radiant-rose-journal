@@ -1716,6 +1716,48 @@ function renderOpen(){
 
   `).join('')
 }
+
+  function renderDashboardOpen(){
+
+  const el =
+    document.getElementById('dash-open-list')
+
+  if(opens.length === 0){
+
+    el.innerHTML = `
+      <div class="empty-state">
+        <p>Tidak ada open position.</p>
+      </div>
+    `
+
+    return
+  }
+
+  el.innerHTML = opens.slice(0,3).map(o => `
+
+    <div class="trade-card">
+
+      <div>
+        <div class="pair">
+          ${o.pair}
+        </div>
+
+        <div class="side">
+          ${o.side}
+        </div>
+      </div>
+
+      <div class="price-box">
+        <div>Entry: ${o.entry}</div>
+        <div>TP: ${o.tp}</div>
+        <div>SL: ${o.sl}</div>
+      </div>
+
+    </div>
+
+  `).join('')
+}
+  
   function populateMonthFilter(){
 
   const select =
@@ -2008,7 +2050,10 @@ function buildEqData(){
 function makeEqChart(canvasId,existing){
   if(existing){existing.destroy();}
   const {labels,vals}=buildEqData();
-  if(vals.length<2) return null;
+  if(vals.length === 0){
+  vals.push(cfg.equity || 0)
+  labels.push('Start')
+}
   return new Chart(document.getElementById(canvasId),{
     type:'line',
     data:{labels,datasets:[{data:vals,borderColor:'#00BF8F',backgroundColor:'rgba(0,191,143,0.06)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#00BF8F',pointBorderColor:'#07090F',pointBorderWidth:2}]},
@@ -2109,15 +2154,14 @@ barPercentage: 0.9,
   const totalBalance =
     Number(cfg.equity || 0) + net
 
-  const avgRR =
-    closed.length
-      ? (
-          closed.reduce(
-            (s,t)=>s + Number(t.rr || 0),
-            0
-          ) / closed.length
-        )
-      : 0
+  const rrList = closed
+  .map(t => Number(t.rr))
+  .filter(v => Number.isFinite(v) && v > 0)
+
+const avgRR =
+  rrList.length
+    ? rrList.reduce((a,b)=>a+b,0) / rrList.length
+    : 0
 
   const grossWin =
     wins.reduce(
@@ -2169,7 +2213,9 @@ barPercentage: 0.9,
     opens.length + ' open'
 
   document.getElementById('d-rr').textContent =
-    '1:' + avgRR.toFixed(2)
+  avgRR > 0
+    ? '1:' + avgRR.toFixed(2)
+    : '—'
 
   document.getElementById('d-pf').textContent =
     pf.toFixed(2)
@@ -2184,6 +2230,7 @@ barPercentage: 0.9,
     '$' + donationTotal.toFixed(2)
 
   renderOpen()
+    renderDashboardOpen()
 }
   
 function renderStats(){
@@ -2385,8 +2432,11 @@ const db = supabase.createClient(
       exitPrice: t.exit_price
     }))
 
-  opens = data
-    .filter(t => t.status === 'OPEN')
+  opens =
+  data.filter(t => t.status === 'OPEN')
+
+trades =
+  data.filter(t => t.status === 'CLOSED')
 
   renderDashboard()
   renderOpen()
