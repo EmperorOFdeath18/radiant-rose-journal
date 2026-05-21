@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+  <link rel="stylesheet" src="assets/logo.png">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -2143,6 +2143,8 @@ barPercentage: 0.9,
     closed.length
       ? (wins.length / closed.length) * 100
       : 0
+    document.getElementById('d-wr').textContent =
+  wr.toFixed(1) + '%'
 
   const monthlyTrades =
     closed.filter(t => {
@@ -2438,6 +2440,7 @@ if(lastPanel){
   )
 }
 </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
@@ -2445,17 +2448,16 @@ const SUPABASE_URL = 'https://hmuuiyfkiofymbcosjdb.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_qE02gvVbv3ywxuK4CRUX9Q_aBuJahm4'
 
 const db = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
 )
   async function loadTrades(){
 
-  const { data, error } = await db
-    .from('trades')
-    .select('*')
-    .order('created_at',{
-      ascending:false
-    })
+  const { data, error } =
+    await db
+      .from('trades')
+      .select('*')
+      .order('id', { ascending:false })
 
   if(error){
     console.error(error)
@@ -2463,14 +2465,10 @@ const db = supabase.createClient(
   }
 
   trades =
-    data.filter(
-      t => t.status === 'CLOSED'
-    )
+    data.filter(t => t.status === 'CLOSED')
 
   opens =
-    data.filter(
-      t => t.status === 'OPEN'
-    )
+    data.filter(t => t.status === 'OPEN')
 
   renderDashboard()
   renderOpen()
