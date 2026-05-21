@@ -2126,130 +2126,23 @@ barPercentage: 0.9,
     )
 
   const pf =
-    grossLoss > 0
-      ? grossWin / grossLoss
-      : grossWin > 0
-        ? grossWin
-        : 0
+   const pf =
+  grossLoss > 0
+    ? grossWin / grossLoss
+    : grossWin > 0
+      ? grossWin
+      : 0
 
   const wr =
-  closed.length
-    ? (wins.length / closed.length) * 100
-    : 0;
+    closed.length
+      ? (wins.length / closed.length) * 100
+      : 0
 
-document.getElementById('d-pnl').textContent =
- (net >= 0 ? '+' : '') + '$' + net.toFixed(2)
-
-document.getElementById('d-balance').textContent =
-  '$' + totalBalance.toFixed(2)
-
-document.getElementById('d-wr').textContent =
-  closed.length
-    ? wr.toFixed(1) + '%'
-    : '—'
-
-document.getElementById('d-wr-sub').textContent =
-  wins.length + ' win / ' + losses.length + ' loss'
-
-document.getElementById('d-total').textContent =
-  closed.length
-
-document.getElementById('d-open-sub').textContent =
-  opens.length + ' open'
-
-document.getElementById('d-rr').textContent =
-  closed.length
-    ? '1:' + avgRR.toFixed(2)
-    : '—'
-
-document.getElementById('d-pf').textContent =
-  pf
-    ? pf.toFixed(2)
-    : '—'
-
-const donationMonth =
-  closed.reduce(
-    (s,t)=>s + Number(t.donation || 0),
-    0
-  )
-
-document.getElementById('d-donation').textContent =
-  '$' + donationMonth.toFixed(2)
-
-makeEqChart('eq-chart1', eqC1)
-
-const dashOpen =
-  document.getElementById('dash-open-list')
-
-if(opens.length === 0){
-
-  dashOpen.innerHTML = `
-    <div class="empty-state">
-      <i class="ti ti-player-play"></i>
-      <p>Tidak ada posisi aktif.</p>
-    </div>
-  `
-
-}else{
-
-  dashOpen.innerHTML =
-    opens.slice(0,3).map(o => `
-
-      <div class="trade-card">
-
-        <div>
-          <div class="pair">${o.pair}</div>
-          <div class="side">${o.side}</div>
-        </div>
-
-        <div class="price-box">
-          <div>Entry: ${o.entry}</div>
-          <div>TP: ${o.tp}</div>
-          <div>SL: ${o.sl}</div>
-        </div>
-
-      </div>
-
-    `).join('')
-}
-
-}
-
-  const monthlyTrades =
-    closed.filter(t => {
-
-      const d = new Date(t.closed_at)
-      const now = new Date()
-
-      return (
-        d.getMonth() === now.getMonth() &&
-        d.getFullYear() === now.getFullYear()
-      )
-    })
-
-  const totalDonation =
-    monthlyTrades.reduce(
-      (s,t)=>s + Number(t.donation || 0),
-      0
-    )
-
-  const sentDonation =
-    donations.reduce(
-      (s,d)=>s + Number(d.sent || 0),
-      0
-    )
-
-  const pendingDonation =
-    totalDonation - sentDonation
-
-  const pnlEl =
-    document.getElementById('d-pnl')
-
-  pnlEl.textContent =
+  document.getElementById('d-pnl').textContent =
     (net >= 0 ? '+' : '') +
     '$' + net.toFixed(2)
 
-  pnlEl.className =
+  document.getElementById('d-pnl').className =
     'val ' + (net >= 0 ? 'pos' : 'neg')
 
   document.getElementById('d-balance').textContent =
@@ -2274,57 +2167,18 @@ if(opens.length === 0){
   document.getElementById('d-pf').textContent =
     pf.toFixed(2)
 
+  const donationTotal =
+    closed.reduce(
+      (s,t)=>s + Number(t.donation || 0),
+      0
+    )
+
   document.getElementById('d-donation').textContent =
-    '$' + pendingDonation.toFixed(2)
-
-  const donationCard =
-    document.getElementById('donation-card')
-
-  const donationStatus =
-    document.getElementById('d-donation-status')
-
-  donationCard.classList.remove(
-    'donation-red',
-    'donation-yellow',
-    'donation-green'
-  )
-
-  if(pendingDonation <= 0){
-
-    donationCard.classList.add(
-      'donation-green'
-    )
-
-    donationStatus.textContent =
-      'Sudah disalurkan'
-
-  } else if(pendingDonation < 5){
-
-    donationCard.classList.add(
-      'donation-yellow'
-    )
-
-    donationStatus.textContent =
-      'Sebagian terkumpul'
-
-  } else {
-
-    donationCard.classList.add(
-      'donation-red'
-    )
-
-    donationStatus.textContent =
-      'Belum disalurkan'
-  }
+    '$' + donationTotal.toFixed(2)
 
   renderOpen()
-
-  eqC1 =
-    makeEqChart(
-      'eq-chart1',
-      eqC1
-    )
 }
+  
   async function markDonationSent(){
 
   alert('Fitur donasi belum aktif')
