@@ -2151,7 +2151,7 @@ document.getElementById('d-donation-status').textContent =
   pendingDonation > 0
     ? 'Belum disalurkan'
     : 'Sudah disalurkan'
-}
+  
   const wr =
     trades.length
       ? (wins.length / trades.length) * 100
@@ -2693,10 +2693,6 @@ startApp()
   )
 }
 
-  await loadDonations()
-
-  alert('Donasi berhasil disimpan')
-}
   async function loadDonations(){
 
   const { data, error } = await db
