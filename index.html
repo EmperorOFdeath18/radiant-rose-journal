@@ -1159,6 +1159,7 @@ let cfg = {
 }
 let eqC1=null, eqC2=null, pnlC=null;
   let donatedAmount = 0
+  let donations = []
 const savedCfg = localStorage.getItem('rr_settings')
 
 if(savedCfg){
@@ -1295,6 +1296,7 @@ xt: v.xt
   }
 
   await loadTrades()
+await loadDonations()
 
   
 
@@ -1775,32 +1777,7 @@ function renderOpen(){
   const el =
     document.getElementById('donation-list')
 
-  const monthly = {}
-
-  trades.forEach(t => {
-
-    if(!t.closed_at) return
-
-    const d = new Date(t.closed_at)
-
-    const key =
-      d.getFullYear() + '-' +
-      String(d.getMonth()+1).padStart(2,'0')
-
-    if(!monthly[key]){
-      monthly[key] = 0
-    }
-
-    monthly[key] += Number(t.donation || 0)
-
-  })
-
-  const rows =
-    Object.entries(monthly)
-      .sort()
-      .reverse()
-
-  if(rows.length === 0){
+  if(donations.length === 0){
 
     el.innerHTML = `
       <div class="empty-state">
@@ -1813,32 +1790,46 @@ function renderOpen(){
   }
 
   el.innerHTML =
-    rows.map(([month,val]) => {
+    donations.map(d => `
 
-      const [y,m] = month.split('-')
+      <div class="metric-card">
 
-      const name =
-        new Date(y,m-1)
-        .toLocaleString('id-ID',{
-          month:'long',
-          year:'numeric'
-        })
-
-      return `
-        <div class="metric-card">
-
-          <div class="lbl">
-            ${name}
-          </div>
-
-          <div class="val pos">
-            $${val.toFixed(2)}
-          </div>
-
+        <div class="lbl">
+          ${d.month}
         </div>
-      `
 
-    }).join('')
+        <div class="val pos">
+          $${Number(d.total).toFixed(2)}
+        </div>
+
+        <div class="sub">
+          Sudah disalurkan:
+          $${Number(d.sent).toFixed(2)}
+        </div>
+
+        <div class="sub">
+          Belum disalurkan:
+          $${Number(d.pending).toFixed(2)}
+        </div>
+
+        ${
+          d.proof
+          ? `
+            <a
+              href="${d.proof}"
+              target="_blank"
+              class="btn-sm"
+              style="margin-top:10px;display:inline-flex"
+            >
+              Bukti Penyaluran
+            </a>
+          `
+          : ''
+        }
+
+      </div>
+
+    `).join('')
 }
   function renderJournal(){
 
@@ -2575,6 +2566,74 @@ updateBadge()
 }
 
 loadTrades()
+  init()
+  async function markDonationSent(){
+
+  const amount =
+    prompt('Jumlah yang disalurkan?')
+
+  if(!amount) return
+
+  const proof =
+    prompt('Link bukti penyaluran?')
+
+  const now = new Date()
+
+  const month =
+    now.toLocaleString('id-ID',{
+      month:'long',
+      year:'numeric'
+    })
+
+  const value = Number(amount)
+
+  const { error } = await db
+    .from('donations')
+    .insert([{
+
+      month: month,
+
+      total: value,
+
+      sent: value,
+
+      pending: 0,
+
+      proof: proof || ''
+
+    }])
+
+  if(error){
+
+    console.error(error)
+
+    alert('Gagal simpan donasi')
+
+    return
+  }
+
+  await loadDonations()
+
+  alert('Donasi berhasil disimpan')
+}
+  async function loadDonations(){
+
+  const { data, error } = await db
+    .from('donations')
+    .select('*')
+    .order('created_at', {
+      ascending:false
+    })
+
+  if(error){
+    console.error(error)
+    return
+  }
+
+  donations = data || []
+
+  renderDonation()
+}
 
 db.channel('trades-live')
   .on(
