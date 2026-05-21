@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" src="assets/logo.png">
+  <link rel="icon" type="image/png" href="/radiant-rose-journal/assets/logo.png">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -2140,11 +2140,12 @@ barPercentage: 0.9,
         : 0
 
   const wr =
-    closed.length
-      ? (wins.length / closed.length) * 100
-      : 0
-    document.getElementById('d-wr').textContent =
-  wr.toFixed(1) + '%'
+  closed.length
+    ? (wins.length / closed.length) * 100
+    : 0;
+
+document.getElementById('d-pnl').textContent =
+  (net >= 0 ? '+' : '') + '$' + net.toFixed(2);
 
   const monthlyTrades =
     closed.filter(t => {
@@ -2440,7 +2441,6 @@ if(lastPanel){
   )
 }
 </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
