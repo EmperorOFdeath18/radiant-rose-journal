@@ -1452,7 +1452,7 @@ async function saveClosed(){
       pnl: pnl,
 donation: donation,
       fee_total: c.fee_total,
-      rr: c.rr,
+      rr: Number(c.rr.toFixed(2)),
 
       result: result,
 
@@ -1494,9 +1494,9 @@ async function closeOpen(id, mode){
   const o = opens[idx]
 
   const pnl =
-    mode === 'win'
-      ? o.pNet
-      : o.lNet
+  mode === 'win'
+    ? o.pNet
+    : -Math.abs(o.lNet)
 
   const exitPrice =
     mode === 'win'
