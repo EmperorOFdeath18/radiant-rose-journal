@@ -1942,7 +1942,9 @@ function renderOpen(){
 </tr>
 
 `).join('')
+}
 
+async function deleteTrade(id){
   if(!confirm('Hapus trade ini?')){
     return
   }
@@ -2142,7 +2144,9 @@ document.getElementById('d-balance').textContent =
   '$' + totalBalance.toFixed(2)
 
 document.getElementById('d-wr').textContent =
-  wr.toFixed(1) + '%'
+  closed.length
+    ? wr.toFixed(1) + '%'
+    : '—'
 
 document.getElementById('d-wr-sub').textContent =
   wins.length + ' win / ' + losses.length + ' loss'
@@ -2154,12 +2158,76 @@ document.getElementById('d-open-sub').textContent =
   opens.length + ' open'
 
 document.getElementById('d-rr').textContent =
-  '1:' + avgRR.toFixed(2)
+  closed.length
+    ? '1:' + avgRR.toFixed(2)
+    : '—'
 
 document.getElementById('d-pf').textContent =
-  pf.toFixed(2)
+  pf
+    ? pf.toFixed(2)
+    : '—'
 
-eqC1 = makeEqChart('eq-chart1', eqC1)
+const donationMonth =
+  closed.reduce(
+    (s,t)=>s + Number(t.donation || 0),
+    0
+  )
+
+document.getElementById('d-donation').textContent =
+  '$' + donationMonth.toFixed(2)
+
+makeEqChart('eq-chart1', eqC1)
+
+const dashOpen =
+  document.getElementById('dash-open-list')
+
+if(opens.length === 0){
+
+  dashOpen.innerHTML = `
+    <div class="empty-state">
+      <i class="ti ti-player-play"></i>
+      <p>Tidak ada posisi aktif.</p>
+    </div>
+  `
+
+}else{
+
+  dashOpen.innerHTML =
+    opens.slice(0,3).map(o => `
+
+      <div class="trade-card">
+
+        <div>
+
+          <div class="pair">
+            ${o.pair}
+          </div>
+
+          <div class="side">
+            ${o.side}
+          </div>
+
+        </div>
+
+        <div class="price-box">
+
+          <div>
+            Entry: ${o.entry}
+          </div>
+
+          <div>
+            TP: ${o.tp}
+          </div>
+
+          <div>
+            SL: ${o.sl}
+          </div>
+
+        </div>
+
+      </div>
+
+    `).join('')
 }
 
   const monthlyTrades =
@@ -2338,24 +2406,6 @@ function renderStats(){
 
   document.getElementById('s-wr').textContent =
     wr.toFixed(1) + '%'
-
-  const pnlEl =
-    document.getElementById('s-pnl')
-
-  pnlEl.textContent =
-  (net >= 0 ? '+' : '') +
-  '$' + net.toFixed(2)
-
-  pnlEl.className =
-    'vl ' + (net >= 0 ? 'pos':'neg')
-  document.getElementById('s-balance').textContent =
-  '$' + totalBalance.toFixed(2)
-
-  document.getElementById('s-pf').textContent =
-    pf.toFixed(2)
-
-  document.getElementById('s-rr').textContent =
-    '1:' + avgRR.toFixed(2)
 
  const totalFee =
   trades.reduce((s,t)=>s + Number(t.fee_total || 0),0)
