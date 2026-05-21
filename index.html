@@ -776,9 +776,9 @@ padding:14px;
   <div id="panel-dashboard" class="panel active">
   <div class="metrics-row">
     <div class="metric-card">
-      <div class="lbl">LABA BERSIH</div>
+      <div class="lbl">NET PNL</div>
       <div id="d-pnl" class="val">$0.00</div>
-      <div class="sub">Laba yang Terealisasi</div>
+      <div class="sub">Realized Profit</div>
     </div>
     <div class="metric-card">
       <div class="lbl">BULAN INI</div>
@@ -786,9 +786,9 @@ padding:14px;
       <div class="sub">Donasi Tertunda</div>
     </div>
     <div class="metric-card">
-      <div class="lbl">SALDO TOTAL</div>
+      <div class="lbl">Total Balance</div>
       <div id="d-balance" class="val pos">$0.00</div>
-      <div class="sub">Total saldo ekuitas</div>
+      <div class="sub">Total saldo akun</div>
     </div>
   </div>
 </div>
@@ -820,39 +820,39 @@ padding:14px;
 </button>
 </div>
       <div class="metric-card">
-        <div class="lbl">SALDO TOTAL</div>
+        <div class="lbl">Total Balance</div>
         <div class="val pos" id="d-balance">$0.00</div>
         <div class="sub">
           Total saldo akun
         </div>
       </div>
       <div class="metric-card">
-        <div class="lbl">TINGKAT KEMENANGAN</div>
+        <div class="lbl">Winrate</div>
         <div class="val" id="d-wr">—</div>
-        <div class="sub" id="d-wr-sub">0 menang / 0 kalah</div>
+        <div class="sub" id="d-wr-sub">0 win / 0 loss</div>
       </div>
       <div class="metric-card">
-        <div class="lbl">TOTAL PERDAGANGAN</div>
+        <div class="lbl">Total trade</div>
         <div class="val" id="d-total">0</div>
-        <div class="sub" id="d-open-sub">0 terbuka</div>
+        <div class="sub" id="d-open-sub">0 open</div>
       </div>
       <div class="metric-card">
-        <div class="lbl">Rata-rata R:R</div>
+        <div class="lbl">Avg R:R</div>
         <div class="val" id="d-rr">—</div>
-        <div class="sub">FK: <span id="d-pf">—</span></div>
+        <div class="sub">PF: <span id="d-pf">—</span></div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-header">
-        <div class="card-title"><i class="ti ti-trending-up" aria-hidden="true"></i>Kurva Ekuitas</div>
+        <div class="card-title"><i class="ti ti-trending-up" aria-hidden="true"></i>Equity Curve</div>
       </div>
-      <div style="position:relative;height:200px"><canvas id="eq-chart1" role="img" aria-label="Kurva ekuitas">Belum ada data.</canvas></div>
+      <div style="position:relative;height:200px"><canvas id="eq-chart1" role="img" aria-label="Equity curve">Belum ada data.</canvas></div>
     </div>
 
     <div class="card">
       <div class="card-header">
-        <div class="card-title"><i class="ti ti-player-play" aria-hidden="true"></i>Posisi Terbuka</div>
+        <div class="card-title"><i class="ti ti-player-play" aria-hidden="true"></i>Open Positions</div>
         <button class="btn-sm" onclick="showPanel('open',document.querySelectorAll('.nav-btn')[1])">Lihat semua</button>
       </div>
       <div id="dash-open-list"></div>
@@ -1064,22 +1064,22 @@ padding:14px;
   <div class="stat-row top">
 
     <div class="stat-mini">
-      <div class="lb">P&L Bersih</div>
+      <div class="lb">Net P&L</div>
       <div class="vl" id="s-pnl">—</div>
     </div>
 
     <div class="stat-mini">
-      <div class="lb">Saldo Total</div>
+      <div class="lb">Total Balance</div>
       <div class="vl pos" id="s-balance">$0.00</div>
     </div>
 
     <div class="stat-mini">
-      <div class="lb">Tingkat Kemenangan</div>
+      <div class="lb">Winrate</div>
       <div class="vl pos" id="s-wr">—</div>
     </div>
 
     <div class="stat-mini">
-      <div class="lb">Faktor Keuntungan</div>
+      <div class="lb">Profit Factor</div>
       <div class="vl" id="s-pf">—</div>
     </div>
 
@@ -1089,28 +1089,28 @@ padding:14px;
   <div class="stat-row bottom">
 
     <div class="stat-mini">
-      <div class="lb">Total Ditutup</div>
+      <div class="lb">Total Closed</div>
       <div class="vl" id="s-total">0</div>
     </div>
 
     <div class="stat-mini">
-      <div class="lb">Rata-rata R:R</div>
+      <div class="lb">Avg R:R</div>
       <div class="vl" id="s-rr">—</div>
     </div>
 
     <div class="stat-mini">
-      <div class="lb">Total Biaya</div>
+      <div class="lb">Total Fee</div>
       <div class="vl neg" id="s-fee">—</div>
     </div>
 
   </div>
     <div class="card">
-      <div class="card-header"><div class="card-title"><i class="ti ti-trending-up" aria-hidden="true"></i>Kurva Ekuitas</div></div>
-      <div style="position:relative;height:210px"><canvas id="eq-chart2" role="img" aria-label="Kurva ekuitas">Belum ada data.</canvas></div>
+      <div class="card-header"><div class="card-title"><i class="ti ti-trending-up" aria-hidden="true"></i>Equity Curve</div></div>
+      <div style="position:relative;height:210px"><canvas id="eq-chart2" role="img" aria-label="Equity curve">Belum ada data.</canvas></div>
     </div>
     <div class="card" style="margin-bottom:0">
-      <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar" aria-hidden="true"></i>P&L per Perdagangan</div></div>
-      <div style="position:relative;height:160px"><canvas id="pnl-chart" role="img" aria-label="P&L per perdagangan">Belum ada data.</canvas></div>
+      <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar" aria-hidden="true"></i>P&L per Trade</div></div>
+      <div style="position:relative;height:160px"><canvas id="pnl-chart" role="img" aria-label="P&L per trade">Belum ada data.</canvas></div>
     </div>
   </div>
 
