@@ -215,7 +215,7 @@ justify-content:center;
       transition: border-color 0.2s, transform 0.15s;
     }
 
-    .metric-card::afee_totaler {
+    .metric-card::after {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
@@ -626,7 +626,7 @@ border-color .2s,
 transform .15s;
 }
 
-.stat-mini::afee_totaler{
+.stat-mini::after{
 content:'';
 position:absolute;
 top:0;
@@ -2220,7 +2220,9 @@ document.getElementById('d-donation-status')
   pendingDonation > 0
     ? 'Belum disalurkan'
     : 'Sudah disalurkan'
-
+  
+const card = document.getElementById('donation-card')
+  
 card.classList.remove(
   'donation-red',
   'donation-yellow',
