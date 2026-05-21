@@ -2482,7 +2482,7 @@ async function markDonationSent(){
   alert('Donasi berhasil ditandai terkirim')
 }
 
-  async function loadDonations(){
+async function loadDonations(){
 
   const { data, error } = await db
     .from('donations')
@@ -2499,6 +2499,8 @@ async function markDonationSent(){
   donations = data || []
 
   renderDonation()
+}
+  
     async function markDonationSent(){
 
   alert('Fitur donasi belum aktif')
@@ -2554,29 +2556,6 @@ async function markDonationSent(){
 
   alert('Donasi berhasil disalurkan')
 }
-
-  const month =
-    now.toLocaleString('id-ID',{
-      month:'long',
-      year:'numeric'
-    })
-
-  const { error } = await db
-    .from('donations')
-    .insert([{
-      month,
-      total: totalDonation,
-      sent: pending,
-      pending: 0,
-      proof: '',
-      note: ''
-    }])
-
-  if(error){
-    console.error(error)
-    alert('Gagal update donasi')
-    return
-  }
 
   await loadDonations()
 
