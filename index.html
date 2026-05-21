@@ -2133,10 +2133,25 @@ const pendingDonation =
   net >= 0
     ? 'val pos'
     : 'val neg'
+  
 
  document.getElementById('d-balance').textContent =
   '$' + totalBalance.toFixed(2)
 
+document.getElementById('d-total').textContent =
+  trades.length
+
+document.getElementById('d-open-sub').textContent =
+  opens.length + ' open'
+
+document.getElementById('d-donation').textContent =
+  '$' + totalDonation.toFixed(2)
+
+document.getElementById('d-donation-status').textContent =
+  pendingDonation > 0
+    ? 'Belum disalurkan'
+    : 'Sudah disalurkan'
+}
   const wr =
     trades.length
       ? (wins.length / trades.length) * 100
