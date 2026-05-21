@@ -1016,8 +1016,9 @@ padding:14px;
       color:var(--color-text-secondary);
       outline:none;
       font-family:var(--font-sans)
- 
-    <option value="all">Semua</option>
+"
+>
+<option value="all">Semua</option>
     <option value="win">Win</option>
     <option value="loss">Loss</option>
   </select>
@@ -1903,13 +1904,44 @@ function renderOpen(){
 
         <td>${t.leverage}x</td>
 
-        <td>
-          ${
-  t.rr
-    ? '1:' + Number(t.rr).toFixed(2)
-    : '-'
+     <td>
+  ${
+    t.rr
+      ? '1:' + Number(t.rr).toFixed(2)
+      : '-'
+  }
+</td>
 
-async function deleteTrade(id){
+<td
+  style="
+    font-weight:600;
+    color:${Number(t.pnl || 0) >= 0 ? '#00BF8F' : '#E84960'}
+  "
+>
+  ${(Number(t.pnl || 0) >= 0 ? '+' : '') + '$' + Number(t.pnl || 0).toFixed(2)}
+</td>
+
+<td>
+  <span class="
+    badge
+    badge-${t.result === 'win' ? 'win' : 'loss'}
+  ">
+    ${t.result}
+  </span>
+</td>
+
+<td>
+  <button
+    class="btn-danger-sm"
+    onclick="deleteTrade(${t.id})"
+  >
+    ×
+  </button>
+</td>
+
+</tr>
+
+`).join('')
 
   if(!confirm('Hapus trade ini?')){
     return
