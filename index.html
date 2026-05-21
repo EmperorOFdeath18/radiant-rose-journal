@@ -807,14 +807,6 @@ padding:14px;
     Belum disalurkan
   </div>
 
-  <button
-    class="btn-sm"
-    style="margin-top:10px"
-    onclick="markDonationSent()"
-  >
-    Tandai Sudah Disalurkan
-  </button>
-
 </div>
 <div class="metric-card">
   <div class="lbl">Total Balance</div>
@@ -1276,7 +1268,7 @@ function calc(entry,sl,tp,size,lev,dir,et,xt){
     fe + fx
 
   const isLong =
-    dir === 'long'
+  String(dir).toLowerCase() === 'long'
 
   const pRaw = isLong
     ? n * ((tp - entry) / entry)
@@ -1302,10 +1294,10 @@ function calc(entry,sl,tp,size,lev,dir,et,xt){
     lNet:
       lRaw - fee_total,
 
-    rr:
-      lRaw > 0
-        ? pRaw / lRaw
-        : null
+   rr:
+  Math.abs(lRaw) > 0
+    ? Math.abs(pRaw / lRaw)
+    : null
 
   }
 
@@ -1424,7 +1416,7 @@ async function saveClosed(){
   const pnl =
     isWin
       ? c.pNet
-      : c.lNet
+      : -Math.abs(c.lNet)
   const donation =
   pnl > 0
     ? pnl * 0.05
@@ -1975,10 +1967,7 @@ function renderOpen(){
       }
     )
 
-  const current =
-    donations.find(
-      d => d.month === month
-    )
+  const current = donations[0]
 
   if(!current){
 
@@ -2486,8 +2475,17 @@ const avgRR =
   document.getElementById('d-pnl').className =
     'val ' + (net >= 0 ? 'pos' : 'neg')
 
-  document.getElementById('d-balance').textContent =
-    '$' + totalBalance.toFixed(2)
+  const totalPnl =
+  trades.reduce(
+    (a,b)=>a + Number(b.pnl || 0),
+    0
+  )
+
+const balance =
+  Number(cfg.equity) + totalPnl
+
+document.getElementById('d-balance').textContent =
+  '$' + balance.toFixed(2)
 
   document.getElementById('d-wr').textContent =
     wr.toFixed(1) + '%'
