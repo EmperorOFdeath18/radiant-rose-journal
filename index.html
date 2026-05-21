@@ -2150,10 +2150,9 @@ const pendingDonation =
   const pnlEl =
     document.getElementById('d-pnl')
 
-  pnlEl.textContent =
-    (net >= 0 ? '+' : '') +
-    '$' +
-    net.toFixed(2)
+ pnlEl.textContent =
+  (net >= 0 ? '+' : '') +
+  '$' + net.toFixed(2)
 
  pnlEl.className =
   net >= 0
@@ -2424,9 +2423,8 @@ function renderStats(){
     document.getElementById('s-pnl')
 
   pnlEl.textContent =
-    (net >= 0 ? '+' : '') +
-    '$' +
-    net.toFixed(2)
+  (net >= 0 ? '+' : '') +
+  '$' + net.toFixed(2)
 
   pnlEl.className =
     'vl ' + (net >= 0 ? 'pos':'neg')
@@ -2544,8 +2542,7 @@ if(lastPanel){
 const SUPABASE_URL = 'https://hmuuiyfkiofymbcosjdb.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_qE02gvVbv3ywxuK4CRUX9Q_aBuJahm4'
 
-const db =
-  supabase.createClient(
+const db = supabase.createClient(...)
     SUPABASE_URL,
     SUPABASE_KEY
 )
