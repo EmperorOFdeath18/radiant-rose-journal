@@ -2145,7 +2145,31 @@ barPercentage: 0.9,
     : 0;
 
 document.getElementById('d-pnl').textContent =
-  (net >= 0 ? '+' : '') + '$' + net.toFixed(2);
+  (net >= 0 ? '+' : '') + '$' + net.toFixed(2)
+
+document.getElementById('d-balance').textContent =
+  '$' + totalBalance.toFixed(2)
+
+document.getElementById('d-wr').textContent =
+  wr.toFixed(1) + '%'
+
+document.getElementById('d-wr-sub').textContent =
+  wins.length + ' win / ' + losses.length + ' loss'
+
+document.getElementById('d-total').textContent =
+  closed.length
+
+document.getElementById('d-open-sub').textContent =
+  opens.length + ' open'
+
+document.getElementById('d-rr').textContent =
+  '1:' + avgRR.toFixed(2)
+
+document.getElementById('d-pf').textContent =
+  pf.toFixed(2)
+
+eqC1 = makeEqChart('eq-chart1', eqC1)
+}
 
   const monthlyTrades =
     closed.filter(t => {
