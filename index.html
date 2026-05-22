@@ -2172,11 +2172,24 @@ function renderDonation(){
       'donation-list'
     )
 
-  const totalDonation =
-    trades.reduce(
-      (a,t)=>
-        a + Number(t.donation || 0),
-    0)
+  const now = new Date()
+
+const totalDonation = trades
+  .filter(t => {
+
+    if(!t.closed_at) return false
+
+    const d = new Date(t.closed_at)
+
+    return (
+      d.getMonth() === now.getMonth() &&
+      d.getFullYear() === now.getFullYear()
+    )
+  })
+  .reduce(
+    (a,t) => a + Number(t.donation || 0),
+    0
+  )
 
   const totalSent =
     donations.reduce(
