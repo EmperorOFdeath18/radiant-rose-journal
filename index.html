@@ -1321,16 +1321,52 @@ document.querySelectorAll('input[name="dir"]').forEach(r => {
 });
 
 function showPanel(name, btn){
-  localStorage.setItem('rr_last_panel', name)
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('panel-'+name).classList.add('active');
-  btn.classList.add('active');
-  if(name==='dashboard') renderDashboard();
-  if(name==='open')      renderOpen();
-  if(name==='journal')   renderJournal();
-  if(name==='donation') renderDonation();
-  if(name==='stats')     renderStats();
+
+  localStorage.setItem(
+    'rr_last_panel',
+    name
+  )
+
+  document
+    .querySelectorAll('.panel')
+    .forEach(p =>
+      p.classList.remove('active')
+    )
+
+  document
+    .querySelectorAll('.nav-btn')
+    .forEach(b =>
+      b.classList.remove('active')
+    )
+
+  const panel =
+    document.getElementById(
+      'panel-' + name
+    )
+
+  if(panel){
+    panel.classList.add('active')
+  }
+
+  if(btn){
+    btn.classList.add('active')
+  }
+
+  if(name === 'dashboard')
+    renderDashboard()
+
+  if(name === 'open')
+    renderOpen()
+
+  if(name === 'journal')
+    renderJournal()
+
+  if(name === 'donation')
+    renderDonation()
+
+  if(name === 'stats')
+    renderStats()
+
 }
 
 function fee(t){ return (t==='maker'?cfg.maker:cfg.taker)/100; }
