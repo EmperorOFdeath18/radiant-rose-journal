@@ -1981,10 +1981,9 @@ for(const o of opens){
 
   }
 
-  html += 
-    
-    <div class="open-card ${String(o.dir || o.side || '')
-.toLowerCase()}-card">
+  html += `
+  <div class="open-card ${String(o.dir || o.side || '')
+    .toLowerCase()}-card">
 
       <div style="
         display:flex;
@@ -2136,12 +2135,11 @@ for(const o of opens){
 
     </div>
 `
-}
 
 el.innerHTML = html
 
 }
-```js id="jlwm807"
+  
 setInterval(()=>{
 
   renderOpen()
