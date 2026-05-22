@@ -702,6 +702,82 @@ letter-spacing:-0.02em;
       border-left: 2px solid var(--color-border-primary);
     }
     .trade-card{
+      .donation-summary{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.donation-stat{
+  background:var(--color-background-secondary);
+  border:1px solid var(--color-border-secondary);
+  border-radius:14px;
+  padding:16px;
+}
+
+.donation-stat .lb{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--color-text-tertiary);
+  margin-bottom:8px;
+}
+
+.donation-stat .vl{
+  font-size:22px;
+  font-weight:700;
+  font-family:var(--font-mono);
+}
+
+.donation-history{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+
+  max-height:340px;
+  overflow:auto;
+}
+
+.donation-item{
+  background:var(--color-background-secondary);
+  border:1px solid var(--color-border-secondary);
+  border-radius:14px;
+  padding:14px 16px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+}
+
+.donation-item-left{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.donation-name{
+  font-size:14px;
+  font-weight:600;
+}
+
+.donation-note{
+  font-size:12px;
+  color:var(--color-text-secondary);
+}
+
+.donation-date{
+  font-size:11px;
+  color:var(--color-text-tertiary);
+  font-family:var(--font-mono);
+}
+
+.donation-amount{
+  font-size:16px;
+  font-weight:700;
+  color:var(--green);
+  font-family:var(--font-mono);
+}
 background:rgba(20,30,60,.7);
 border:1px solid rgba(120,160,255,.12);
 border-radius:18px;
@@ -2027,20 +2103,35 @@ function renderOpen(){
     Number(current.total || 0)
     - newSent
 
-  const { error } = await db
-    .from('donations')
-    .update({
+  const histories =
+  Array.isArray(current.histories)
+    ? current.histories
+    : []
 
-      sent:newSent,
+histories.push({
 
-      pending:newPending,
+  amount,
 
-      receiver:receiver,
+  receiver,
 
-      note:note
+  note,
 
-    })
-    .eq('id', current.id)
+  date:new Date().toISOString()
+
+})
+
+const { error } = await db
+  .from('donations')
+  .update({
+
+    sent:newSent,
+
+    pending:newPending,
+
+    histories:histories
+
+  })
+  .eq('id', current.id)
 
   if(error){
 
@@ -2090,89 +2181,94 @@ function renderDonation(){
 
   const d = donations[0]
 
-  const status =
-    Number(d.pending) <= 0
+  const histories =
+    d.histories || []
 
   el.innerHTML = `
 
-    <div class="
-      trade-card
-      ${
-        status
-          ? 'donation-green'
-          : 'donation-yellow'
-      }
-    ">
+    <div class="donation-summary">
 
-      <div>
-
-        <div class="pair">
-          ${d.month}
+      <div class="donation-stat">
+        <div class="lb">
+          Total
         </div>
 
-        <div class="side">
-          ${
-            status
-              ? 'Sudah tersalurkan'
-              : 'Belum full tersalurkan'
-          }
+        <div class="vl">
+          $${Number(d.total).toFixed(2)}
         </div>
-
       </div>
 
-      <div class="price-box">
-
-        <div>
-          Total:
-          <b>$${Number(d.total).toFixed(2)}</b>
+      <div class="donation-stat">
+        <div class="lb">
+          Sent
         </div>
 
-        <div>
-          Sent:
-          <b>$${Number(d.sent).toFixed(2)}</b>
+        <div class="vl pos">
+          $${Number(d.sent).toFixed(2)}
+        </div>
+      </div>
+
+      <div class="donation-stat">
+        <div class="lb">
+          Pending
         </div>
 
-        <div>
-          Pending:
-          <b>$${Number(d.pending).toFixed(2)}</b>
+        <div class="vl ${
+          Number(d.pending) <= 0
+            ? 'pos'
+            : 'neg'
+        }">
+          $${Number(d.pending).toFixed(2)}
         </div>
-
       </div>
 
     </div>
 
+    <div class="donation-history">
+
+      ${
+        histories.length
+          ? histories.map(h => `
+
+            <div class="donation-item">
+
+              <div class="donation-item-left">
+
+                <div class="donation-name">
+                  ${h.receiver}
+                </div>
+
+                <div class="donation-note">
+                  ${h.note || '-'}
+                </div>
+
+                <div class="donation-date">
+                  ${new Date(h.date)
+                    .toLocaleDateString('id-ID')}
+                </div>
+
+              </div>
+
+              <div class="donation-amount">
+                -$${Number(h.amount).toFixed(2)}
+              </div>
+
+            </div>
+
+          `).reverse().join('')
+
+          : `
+
+            <div class="empty-state">
+              Belum ada riwayat penyaluran
+            </div>
+
+          `
+      }
+
+    </div>
+
   `
-
-  if(d.receiver){
-
-    el.innerHTML += `
-
-      <div class="trade-card">
-
-        <div>
-
-          <div class="pair">
-            Disalurkan Ke
-          </div>
-
-          <div class="side">
-            ${d.receiver}
-          </div>
-
-        </div>
-
-        <div class="price-box">
-
-          <div>
-            ${d.note || '-'}
-          </div>
-
-        </div>
-
-      </div>
-
-    `
-  }
 }
   
   async function markDonationSent(){
