@@ -3074,16 +3074,17 @@ if(lastPanel){
   )
 }
 </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
   Chart.defaults.font.size = 10;
 const SUPABASE_URL = 'https://hmuuiyfkiofymbcosjdb.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_qE02gvVbv3ywxuK4CRUX9Q_aBuJahm4'
 
-const db = supabase.createClient(
-  'URL_SUPABASE',
-  'KEY_SUPABASE'
+const db =
+supabase.createClient(
+  supabaseUrl,
+  supabaseKey
 )
   
  async function loadTrades(){
