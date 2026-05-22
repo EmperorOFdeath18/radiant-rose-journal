@@ -1311,7 +1311,14 @@ function updatePreview(){
   const lev=parseFloat(document.getElementById('i-lev').value)||1;
   const et=document.getElementById('i-etype').value;
   const xt=document.getElementById('i-xtype').value;
-  if(!entry||!sl||!tp||!size) return;
+  if(
+  !Number.isFinite(entry) ||
+  !Number.isFinite(sl) ||
+  !Number.isFinite(tp) ||
+  !Number.isFinite(size)
+){
+  return
+}
   const c=calc(entry,sl,tp,size,lev,getDir(),et,xt);
   document.getElementById('p-notional').textContent='$'+c.n.toFixed(2);
   document.getElementById('p-fee-e').textContent='-$'+c.fe.toFixed(4);
@@ -2205,7 +2212,7 @@ function renderDonation(){
   empty.style.display = 'none'
 
   body.innerHTML =
-    list.reverse().map(t => `
+    [...list].reverse().map(t =>`
 
       <tr>
 
