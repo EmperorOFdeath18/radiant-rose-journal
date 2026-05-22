@@ -2863,20 +2863,28 @@ async function loadDonations(){
       }
     )
 
-  // total donation dari closed trades
+  // ambil closed trades
+  const closedTrades =
+    trades.filter(
+      t => t.status === 'CLOSED'
+    )
+
+  // hitung total donation realtime
   const totalDonation =
-    trades.reduce((a,t)=>
-      a + Number(t.donation || 0)
+    closedTrades.reduce(
+      (a,t)=>
+        a + Number(t.donation || 0)
     ,0)
 
-  // cek row existing
-  const { data: existing } = await db
-    .from('donations')
-    .select('*')
-    .eq('month', month)
-    .maybeSingle()
+  // cari existing month
+  const { data: existing } =
+    await db
+      .from('donations')
+      .select('*')
+      .eq('month', month)
+      .maybeSingle()
 
-  // kalau belum ada -> insert
+  // kalau belum ada
   if(!existing){
 
     await db
@@ -2895,7 +2903,7 @@ async function loadDonations(){
 
   } else {
 
-    // update existing
+    // update otomatis
     await db
       .from('donations')
       .update({
@@ -2911,11 +2919,12 @@ async function loadDonations(){
 
   }
 
-  // reload state
-  const { data } = await db
-    .from('donations')
-    .select('*')
-    .order('id',{ascending:false})
+  // reload final
+  const { data } =
+    await db
+      .from('donations')
+      .select('*')
+      .order('id',{ascending:false})
 
   donations = data || []
 
