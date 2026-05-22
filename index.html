@@ -2779,13 +2779,52 @@ const db = window.supabase.createClient(
     return
   }
 
-  opens = data.filter(
-    t => t.status === 'OPEN'
-  )
+  opens = data
+  .filter(t => t.status === 'OPEN')
+  .map(t => {
 
-  trades = data.filter(
-    t => t.status === 'CLOSED'
-  )
+    const c = calc(
+      Number(t.entry),
+      Number(t.sl),
+      Number(t.tp),
+      Number(t.margin),
+      Number(t.leverage),
+      t.side,
+      t.et || 'taker',
+      t.xt || 'taker'
+    )
+
+    return {
+      ...t,
+      pNet: c.pNet,
+      lNet: c.lNet,
+      rr: c.rr
+    }
+
+  })
+
+  trades = data
+  .filter(t => t.status === 'CLOSED')
+  .map(t => {
+
+    const c = calc(
+      Number(t.entry),
+      Number(t.sl),
+      Number(t.tp),
+      Number(t.margin),
+      Number(t.leverage),
+      t.side,
+      t.et || 'taker',
+      t.xt || 'taker'
+    )
+
+    return {
+      ...t,
+      rr: Number(t.rr ?? c.rr),
+      pnl: Number(t.pnl ?? 0)
+    }
+
+  })
 
   renderDashboard()
   renderOpen()
