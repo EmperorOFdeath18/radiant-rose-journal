@@ -2854,23 +2854,73 @@ const db = window.supabase.createClient(
   
 async function loadDonations(){
 
-  const { data, error } = await db
+  const month =
+    new Date().toLocaleDateString(
+      'id-ID',
+      {
+        month:'long',
+        year:'numeric'
+      }
+    )
+
+  // total donation dari closed trades
+  const totalDonation =
+    trades.reduce((a,t)=>
+      a + Number(t.donation || 0)
+    ,0)
+
+  // cek row existing
+  const { data: existing } = await db
     .from('donations')
     .select('*')
-    .order('created_at',{
-      ascending:false
-    })
+    .eq('month', month)
+    .maybeSingle()
 
-  if(error){
+  // kalau belum ada -> insert
+  if(!existing){
 
-    console.error(error)
+    await db
+      .from('donations')
+      .insert([{
 
-    return
+        month: month,
+
+        total: totalDonation,
+
+        sent: 0,
+
+        pending: totalDonation
+
+      }])
+
+  } else {
+
+    // update existing
+    await db
+      .from('donations')
+      .update({
+
+        total: totalDonation,
+
+        pending:
+          totalDonation -
+          Number(existing.sent || 0)
+
+      })
+      .eq('id', existing.id)
+
   }
+
+  // reload state
+  const { data } = await db
+    .from('donations')
+    .select('*')
+    .order('id',{ascending:false})
 
   donations = data || []
 
   renderDonation()
+  renderDashboard()
 }
   
 async function startApp(){
@@ -2960,25 +3010,6 @@ async function markDonationSent(){
   alert('Donasi berhasil ditandai terkirim')
 }
 
-async function loadDonations(){
-
-  const { data, error } = await db
-    .from('donations')
-    .select('*')
-    .order('created_at', {
-      ascending:false
-    })
-
-  if(error){
-    console.error(error)
-    return
-  }
-
-  donations = data || []
-
-  renderDonation()
-}
-  
     async function markDonationSent(){
 
   alert('Fitur donasi belum aktif')
