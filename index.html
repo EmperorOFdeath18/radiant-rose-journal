@@ -778,7 +778,7 @@ display:flex;
 flex-direction:column;
 gap:12px;
 
-max-height:340px;
+max-height:240px;
 overflow:auto;
 }
 
@@ -786,7 +786,7 @@ overflow:auto;
 background:var(--color-background-secondary);
 border:1px solid var(--color-border-secondary);
 border-radius:14px;
-padding:14px 16px;
+padding:10px 12px;
 
 display:flex;
 justify-content:space-between;
@@ -1535,9 +1535,12 @@ async function saveClosed(){
       ? 'win'
       : 'loss'
 
-  const { data:newTrade, error } = await db
-  .from('trades')
-  .insert([{
+  const { data:newTrade, error } =
+  await db
+    .from('trades')
+    .insert([{
+
+      .select()
 
       pair: v.pair,
 
@@ -1576,11 +1579,13 @@ xt: v.xt
     .from('donations')
     .insert([{
 
-      trade_id: newTrade[0].id,
+      trade_id:
+        newTrade[0].id,
 
-      amount: donation,
-
-      sent: false
+      amount:
+        Number(
+          donation.toFixed(2)
+        )
 
     }])
 
@@ -2068,127 +2073,76 @@ function renderOpen(){
 
   }).join('')
 }
-  async function submitDonation(){
+ async function submitDonation(){
 
   const amount =
     Number(
-      document.getElementById(
+      document
+      .getElementById(
         'donate-amount'
       ).value
     )
 
   const receiver =
-    document.getElementById(
-      'donate-to'
-    ).value.trim()
+    document
+      .getElementById(
+        'donate-to'
+      )
+      .value
+      .trim()
 
   const note =
-    document.getElementById(
-      'donate-note'
-    ).value.trim()
+    document
+      .getElementById(
+        'donate-note'
+      )
+      .value
+      .trim()
 
-  if(!amount || !receiver){
+  const target =
+    donations.find(
+      d => !d.sent_at
+    )
+
+  if(!target){
 
     alert(
-      'Lengkapi data donasi'
+      'Tidak ada donation pending'
     )
 
     return
   }
 
-  const month =
-    new Date().toLocaleDateString(
-      'id-ID',
-      {
-        month:'long',
-        year:'numeric'
-      }
-    )
+  const { error } =
+    await db
+      .from('donations')
+      .update({
 
-  const current = donations[0]
+        receiver,
+        note,
 
-  if(!current){
-
-    alert(
-      'Data bulan belum ada'
-    )
-
-    return
-  }
-
-  const newSent =
-    Number(current.sent || 0)
-    + amount
-
-  const newPending =
-    Number(current.total || 0)
-    - newSent
-
- const histories =
-  Array.isArray(current.histories)
-
-    ? current.histories.filter(h => {
-
-        return trades.some(
-          t => t.id === h.trade_id
-        )
+        sent_at:
+          new Date()
+            .toISOString()
 
       })
+      .eq('id', target.id)
 
-    : []
-
-histories.push({
-
-  trade_id: current.trade_id,
-
-  amount:Number(amount),
-
-  receiver:receiver,
-
-  note:note,
-
-  date:new Date().toISOString()
-
-})
-
-const { error } = await db
-  .from('donations')
-  .update({
-
-    sent:newSent,
-
-    pending:newPending,
-
-    histories:histories
-
-  })
-  .eq('id', current.id)
   if(error){
 
     console.error(error)
 
-    alert('Gagal update')
+    alert(
+      'Gagal kirim donation'
+    )
 
     return
   }
 
-  alert(
-    'Donasi berhasil disalurkan'
-  )
-
-  document.getElementById(
-    'donate-amount'
-  ).value = ''
-
-  document.getElementById(
-    'donate-to'
-  ).value = ''
-
-  document.getElementById(
-    'donate-note'
-  ).value = ''
-
   await loadDonations()
+
+  renderDonation()
+
 }
   
 function renderDonation(){
@@ -2198,74 +2152,70 @@ function renderDonation(){
       'donation-list'
     )
 
-  const now = new Date()
+  const validDonations =
+    donations.filter(d =>
 
-const totalDonation = trades
-  .filter(t => {
+      trades.some(
+        t => t.id === d.trade_id
+      )
 
-    if(!t.closed_at) return false
-
-    const d = new Date(t.closed_at)
-
-    return (
-      d.getMonth() === now.getMonth() &&
-      d.getFullYear() === now.getFullYear()
     )
-  })
-  .reduce(
-    (a,t) => a + Number(t.donation || 0),
-    0
-  )
 
-  const totalSent =
-  validDonations.reduce(
-    (a,d)=>
-      a + Number(d.amount || 0),
-    0
-  )
-
-  const pending =
-    Math.max(
-      totalDonation - totalSent,
+  const total =
+    validDonations.reduce(
+      (a,d)=>
+        a + Number(d.amount || 0),
       0
     )
 
-  const validDonations = donations.filter(d => {
+  const sent =
+    validDonations
+      .filter(d => d.sent_at)
+      .reduce(
+        (a,d)=>
+          a + Number(d.amount || 0),
+        0
+      )
 
-  return trades.some(
-    t => t.id === d.trade_id
-  )
-
-})
+  const pending =
+    validDonations
+      .filter(d => !d.sent_at)
+      .reduce(
+        (a,d)=>
+          a + Number(d.amount || 0),
+        0
+      )
 
   el.innerHTML = `
 
     <div class="donation-summary">
 
       <div class="donation-stat">
-        <div class="lb">Total</div>
+        <div class="lb">
+          Total
+        </div>
 
         <div class="vl">
-          $${totalDonation.toFixed(2)}
+          $${total.toFixed(2)}
         </div>
       </div>
 
       <div class="donation-stat">
-        <div class="lb">Sent</div>
+        <div class="lb">
+          Sent
+        </div>
 
         <div class="vl pos">
-          $${totalSent.toFixed(2)}
+          $${sent.toFixed(2)}
         </div>
       </div>
 
       <div class="donation-stat">
-        <div class="lb">Pending</div>
+        <div class="lb">
+          Pending
+        </div>
 
-        <div class="vl ${
-          pending > 0
-            ? 'neg'
-            : 'pos'
-        }">
+        <div class="vl">
           $${pending.toFixed(2)}
         </div>
       </div>
@@ -2274,55 +2224,52 @@ const totalDonation = trades
 
     <div class="donation-history">
 
-      ${
-        histories.length > 0
+      ${validDonations
+        .filter(d => d.sent_at)
+        .map(d => `
 
-        ? histories
-            .reverse()
-            .map(h => `
+          <div class="donation-item">
 
-              <div class="donation-item">
+            <div>
 
-                <div class="donation-item-left">
-
-                  <div class="donation-name">
-                    ${h.receiver || '-'}
-                  </div>
-
-                  <div class="donation-note">
-                    ${h.note || '-'}
-                  </div>
-
-                  <div class="donation-date">
-                    ${
-                      new Date(h.date)
-                      .toLocaleDateString('id-ID')
-                    }
-                  </div>
-
-                </div>
-
-                <div class="donation-amount">
-                  $${Number(h.amount || 0)
-                    .toFixed(2)}
-                </div>
-
+              <div
+                class="donation-name"
+              >
+                ${
+                  d.receiver ||
+                  'Donation'
+                }
               </div>
 
-            `).join('')
+              <div
+                class="donation-date"
+              >
+                ${
+                  new Date(
+                    d.sent_at
+                  )
+                  .toLocaleDateString(
+                    'id-ID'
+                  )
+                }
+              </div>
 
-        : `
+            </div>
 
-          <div class="empty-state">
-            <p>
-              Belum ada riwayat penyaluran
-            </p>
+            <div
+              class="donation-amount"
+            >
+              $${Number(
+                d.amount
+              ).toFixed(2)}
+            </div>
+
           </div>
 
-        `
-      }
+        `).join('')}
 
     </div>
+
   `
 }
   
