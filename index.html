@@ -2103,18 +2103,18 @@ function renderOpen(){
     Number(current.total || 0)
     - newSent
 
-  const histories =
+ const histories =
   Array.isArray(current.histories)
     ? current.histories
     : []
 
 histories.push({
 
-  amount,
+  amount:Number(amount),
 
-  receiver,
+  receiver:receiver,
 
-  note,
+  note:note,
 
   date:new Date().toISOString()
 
@@ -2132,7 +2132,6 @@ const { error } = await db
 
   })
   .eq('id', current.id)
-
   if(error){
 
     console.error(error)
