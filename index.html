@@ -1515,10 +1515,21 @@ async function closeOpen(id, mode){
 
   const o = opens[idx]
 
+  const c = calc(
+    Number(o.entry),
+    Number(o.sl),
+    Number(o.tp),
+    Number(o.margin),
+    Number(o.leverage),
+    String(o.side || o.dir).toLowerCase(),
+    o.et || 'taker',
+    o.xt || 'taker'
+  )
+
   const pnl =
-  mode === 'win'
-    ? o.pNet
-    : -Math.abs(o.lNet)
+    mode === 'win'
+      ? c.pNet
+      : -Math.abs(c.lNet)
 
   const exitPrice =
     mode === 'win'
@@ -1536,15 +1547,23 @@ async function closeOpen(id, mode){
       : 0
 
   const { error } = await db
-  .from('trades')
-  .update({
-    status: 'CLOSED',
-    result: result,
-    pnl: pnl,
-    exit_price: exitPrice,
-    closed_at: new Date().toISOString()
-  })
-  .eq('id', id)
+    .from('trades')
+    .update({
+
+      status: 'CLOSED',
+
+      result: result,
+
+      pnl: Number(pnl.toFixed(2)),
+
+      donation: Number(donation.toFixed(2)),
+
+      exit_price: exitPrice,
+
+      closed_at: new Date().toISOString()
+
+    })
+    .eq('id', id)
 
   if(error){
 
