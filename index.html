@@ -2126,10 +2126,20 @@ function renderOpen(){
 
  const histories =
   Array.isArray(current.histories)
-    ? current.histories
+
+    ? current.histories.filter(h => {
+
+        return trades.some(
+          t => t.id === h.trade_id
+        )
+
+      })
+
     : []
 
 histories.push({
+
+  trade_id: current.trade_id,
 
   amount:Number(amount),
 
@@ -2208,10 +2218,11 @@ const totalDonation = trades
   )
 
   const totalSent =
-    donations.reduce(
-      (a,d)=>
-        a + Number(d.sent || 0),
-    0)
+  validDonations.reduce(
+    (a,d)=>
+      a + Number(d.amount || 0),
+    0
+  )
 
   const pending =
     Math.max(
@@ -2219,14 +2230,13 @@ const totalDonation = trades
       0
     )
 
-  const histories =
-    donations.flatMap(d =>
+  const validDonations = donations.filter(d => {
 
-      Array.isArray(d.histories)
-        ? d.histories
-        : []
+  return trades.some(
+    t => t.id === d.trade_id
+  )
 
-    )
+})
 
   el.innerHTML = `
 
