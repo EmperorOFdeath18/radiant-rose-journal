@@ -2748,47 +2748,44 @@ if(lastPanel){
   )
 }
 </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
   Chart.defaults.font.size = 10;
 const SUPABASE_URL = 'https://hmuuiyfkiofymbcosjdb.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_qE02gvVbv3ywxuK4CRUX9Q_aBuJahm4'
 
-const db = supabase.createClient(
+const db = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 )
   
-  async function loadTrades(){
+ async function loadTrades(){
 
-  const { data } = await db
-  .from('trades')
-  .select('*')
-      .order('id', { ascending:false })
+  const {
+    data,
+    error
+  } = await db
+    .from('trades')
+    .select('*')
+
+  console.log(data)
+  console.log(error)
 
   if(error){
+
     console.error(error)
+
     return
   }
 
-  console.log(data)
+  opens = data.filter(
+    t => t.status === 'OPEN'
+  )
 
-  trades = data
-    .filter(t => t.status === 'CLOSED')
-    .map(t => ({
-      ...t,
-      dir: (t.side || '').toLowerCase(),
-      size: Number(t.margin || 0),
-      lev: Number(t.leverage || 1),
-      exitPrice: t.exit_price
-    }))
-
-  opens =
-  data.filter(t => t.status === 'OPEN')
-
-trades =
-  data.filter(t => t.status === 'CLOSED')
+  trades = data.filter(
+    t => t.status === 'CLOSED'
+  )
 
   renderDashboard()
   renderOpen()
@@ -2796,6 +2793,7 @@ trades =
   renderStats()
   updateBadge()
 }
+  
 async function loadDonations(){
 
   const { data, error } = await db
@@ -2987,12 +2985,14 @@ db.channel('trades-live')
     },
     () => {
 
-      loadTrades()
-loadDonations()
-
     }
   )
   .subscribe()
+
+  loadTrades()
+loadDonations()
+updatePreview()
+  
 </script>
 </body>
 </html>
