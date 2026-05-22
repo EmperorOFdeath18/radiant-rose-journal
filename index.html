@@ -1542,42 +1542,7 @@ async function saveClosed(){
 
       pair: v.pair,
 
-      side: v.dir.toUpperCase(),
-
-      status: 'CLOSED',
-
-      entry: v.entry,
-      sl: v.sl,
-      tp: v.tp,
-
-      margin: v.size,
-      leverage: v.lev,
-
-      pnl: pnl,
-      donation: donation,
-
-      fee_total: c.fee_total,
-
-      rr: Number(
-        c.rr.toFixed(2)
-      ),
-
-      result: result,
-
-      exit_price: exitPrice,
-
-      closed_at:
-        new Date().toISOString(),
-
-      timeframe: '4H',
-
-      et: v.et,
-      xt: v.xt
-
-    }])
-    .select()
-
-      side: v.dir.toUpperCase(),
+            side: v.dir.toUpperCase(),
 
       status: 'CLOSED',
 
