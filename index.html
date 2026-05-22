@@ -2950,82 +2950,30 @@ const db = window.supabase.createClient(
   
 async function loadDonations(){
 
-  const month =
-    new Date().toLocaleDateString(
-      'id-ID',
-      {
-        month:'long',
-        year:'numeric'
-      }
+  const {
+    data,
+    error
+  } = await db
+    .from('donations')
+    .select('*')
+    .order(
+      'created_at',
+      { ascending:false }
     )
 
-  // ambil closed trades
-  const closedTrades =
-    trades.filter(
-      t => t.status === 'CLOSED'
-    )
+  if(error){
 
-  // hitung total donation realtime
-  const totalDonation =
-    closedTrades.reduce(
-      (a,t)=>
-        a + Number(t.donation || 0)
-    ,0)
+    console.error(error)
 
-  // cari existing month
-  const { data: existing } =
-    await db
-      .from('donations')
-      .select('*')
-      .eq('month', month)
-      .maybeSingle()
+    donations = []
 
-  // kalau belum ada
-  if(!existing){
-
-    await db
-      .from('donations')
-      .insert([{
-
-        month: month,
-
-        total: totalDonation,
-
-        sent: 0,
-
-        pending: totalDonation
-
-      }])
-
-  } else {
-
-    // update otomatis
-    await db
-      .from('donations')
-      .update({
-
-        total: totalDonation,
-
-        pending:
-          totalDonation -
-          Number(existing.sent || 0)
-
-      })
-      .eq('id', existing.id)
-
+    return
   }
-
-  // reload final
-  const { data } =
-    await db
-      .from('donations')
-      .select('*')
-      .order('id',{ascending:false})
 
   donations = data || []
 
   renderDonation()
-  renderDashboard()
+
 }
   
 async function startApp(){
