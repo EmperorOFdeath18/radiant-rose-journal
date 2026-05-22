@@ -1682,48 +1682,6 @@ async function saveClosed(){
 
     }])
     .select()
-
-         const { data:newTrade, error } =
-  await db
-    .from('trades')
-    .insert([{
-
-      pair: v.pair,
-
-      side: v.dir.toUpperCase(),
-
-      status: 'CLOSED',
-
-      entry: v.entry,
-      sl: v.sl,
-      tp: v.tp,
-
-      margin: v.size,
-      leverage: v.lev,
-
-      pnl: pnl,
-      donation: donation,
-
-      fee_total: c.fee_total,
-
-      rr: Number(
-        c.rr.toFixed(2)
-      ),
-
-      result: result,
-
-      exit_price: exitPrice,
-
-      closed_at:
-        new Date().toISOString(),
-
-      timeframe: '4H',
-
-      et: v.et,
-      xt: v.xt
-
-    }])
-    .select()
   
   if(donation > 0){
 
@@ -2323,6 +2281,7 @@ setInterval(()=>{
 
   }).join('')
 }
+  
  async function submitDonation(){
 
   const amount =
@@ -3122,9 +3081,9 @@ if(lastPanel){
 const SUPABASE_URL = 'https://hmuuiyfkiofymbcosjdb.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_qE02gvVbv3ywxuK4CRUX9Q_aBuJahm4'
 
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+const db = supabase.createClient(
+  'URL_SUPABASE',
+  'KEY_SUPABASE'
 )
   
  async function loadTrades(){
