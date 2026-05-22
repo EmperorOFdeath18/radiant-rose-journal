@@ -1258,26 +1258,29 @@ function calc(entry, sl, tp, size, lev, dir, et, xt){
 
   const n = size * lev
 
-  const fe =
-    n * fee(et)
+  const fe = n * fee(et)
+  const fx = n * fee(xt)
 
-  const fx =
-    n * fee(xt)
-
-  const fee_total =
-    fe + fx
+  const fee_total = fe + fx
 
   const isLong =
     String(dir).toLowerCase() === 'long'
 
-  const pRaw = isLong
+  // PROFIT KOTOR
+  const grossProfit = isLong
     ? n * ((tp - entry) / entry)
     : n * ((entry - tp) / entry)
 
-  const lRaw = isLong
-    ? n * ((entry - sl) / entry)
-    : n * ((sl - entry) / entry)
+  // LOSS KOTOR
+  const grossLoss = isLong
+    ? n * ((sl - entry) / entry)
+    : n * ((entry - sl) / entry)
 
+  // NET
+  const pNet = grossProfit - fee_total
+  const lNet = grossLoss - fee_total
+
+  // RR
   const reward =
     Math.abs(tp - entry)
 
@@ -1290,25 +1293,14 @@ function calc(entry, sl, tp, size, lev, dir, et, xt){
       : 0
 
   return {
-
     n,
-
     fe,
-
     fx,
-
     fee_total,
-
-    pNet:
-      pRaw - fee_total,
-
-    lNet:
-      lRaw - fee_total,
-
+    pNet,
+    lNet,
     rr
-
   }
-
 }
 
 function updatePreview(){
@@ -1326,11 +1318,26 @@ function updatePreview(){
   document.getElementById('p-fee-x').textContent='-$'+c.fx.toFixed(4);
   document.getElementById('p-fee-t').textContent='-$'+c.fee_total.toFixed(4);
   document.getElementById('p-rr').textContent='1 : '+c.rr.toFixed(2);
-  document.getElementById('p-profit').textContent=(c.pNet>=0?'+':'')+' $'+c.pNet.toFixed(4);
-  document.getElementById('p-loss').textContent='$'+c.lNet.toFixed(4);
-  const tot=Math.abs(c.pNet)+Math.abs(c.lNet);
-  const lp=tot>0?(Math.abs(c.lNet)/tot*100):50;
-  const pp=100-lp;
+  document.getElementById('p-profit').textContent =
+  (c.pNet >= 0 ? '+' : '') +
+  '$' + c.pNet.toFixed(2)
+
+document.getElementById('p-loss').textContent =
+  '-$' + Math.abs(c.lNet).toFixed(2)
+  const profitAbs = Math.abs(c.pNet)
+const lossAbs = Math.abs(c.lNet)
+
+const total = profitAbs + lossAbs
+
+const lp =
+  total > 0
+    ? (lossAbs / total) * 100
+    : 50
+
+const pp =
+  total > 0
+    ? (profitAbs / total) * 100
+    : 50
   document.getElementById('rr-l-bar').style.width=lp.toFixed(1)+'%';
   document.getElementById('rr-p-bar').style.width=pp.toFixed(1)+'%';
   document.getElementById('rr-p-bar').style.left=lp.toFixed(1)+'%';
