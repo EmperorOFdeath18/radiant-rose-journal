@@ -1683,7 +1683,14 @@ async function saveClosed(){
     }])
     .select()
 
-            side: v.dir.toUpperCase(),
+         const { data:newTrade, error } =
+  await db
+    .from('trades')
+    .insert([{
+
+      pair: v.pair,
+
+      side: v.dir.toUpperCase(),
 
       status: 'CLOSED',
 
@@ -1695,23 +1702,29 @@ async function saveClosed(){
       leverage: v.lev,
 
       pnl: pnl,
-donation: donation,
+      donation: donation,
+
       fee_total: c.fee_total,
-      rr: Number(c.rr.toFixed(2)),
+
+      rr: Number(
+        c.rr.toFixed(2)
+      ),
 
       result: result,
 
       exit_price: exitPrice,
 
-      closed_at: new Date().toISOString(),
+      closed_at:
+        new Date().toISOString(),
 
       timeframe: '4H',
 
-et: v.et,
-xt: v.xt
+      et: v.et,
+      xt: v.xt
 
     }])
-
+    .select()
+  
   if(donation > 0){
 
   await db
