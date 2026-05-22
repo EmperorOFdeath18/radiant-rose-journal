@@ -1420,6 +1420,76 @@ function calc(entry, sl, tp, size, lev, dir, et, xt){
   }
 }
 
+async function getMarketPrice(pair){
+
+  try{
+
+    const res = await fetch(
+
+      `https://fapi.binance.com/fapi/v1/ticker/price?symbol=${pair}`
+
+    )
+
+    const data = await res.json()
+
+    return Number(data.price)
+
+  }catch(err){
+
+    console.error(
+      'Market price error',
+      err
+    )
+
+    return null
+
+  }
+
+}
+
+function calcLivePNL(
+  trade,
+  price
+){
+
+  const entry =
+    Number(trade.entry)
+
+  const margin =
+    Number(trade.margin)
+
+  const lev =
+    Number(trade.leverage)
+
+  const notional =
+    margin * lev
+
+  let pnl = 0
+
+  if(
+    trade.side === 'LONG'
+  ){
+
+    pnl =
+      (
+        (price - entry)
+        / entry
+      ) * notional
+
+  }else{
+
+    pnl =
+      (
+        (entry - price)
+        / entry
+      ) * notional
+
+  }
+
+  return pnl
+
+}
+  
 function updatePreview(){
   const entry=parseFloat(document.getElementById('i-entry').value);
   const sl=parseFloat(document.getElementById('i-sl').value);
@@ -1848,7 +1918,7 @@ async function deleteOpen(id){
 
 function updateBadge(){ document.getElementById('open-badge').textContent=opens.length; }
 
-function renderOpen(){
+async function renderOpen(){
 
   document.getElementById('open-total-lbl').textContent =
     opens.length + ' posisi'
@@ -1865,7 +1935,53 @@ function renderOpen(){
     return
   }
 
-  el.innerHTML = opens.map(o => `
+let html = ''
+
+for(const o of opens){
+
+  const livePrice =
+    await getMarketPrice(
+      o.pair
+    )
+
+  let livePNL = 0
+
+  if(livePrice){
+
+    const entry =
+      Number(o.entry)
+
+    const margin =
+      Number(o.margin)
+
+    const lev =
+      Number(o.leverage)
+
+    const notional =
+      margin * lev
+
+    const isLong =
+      String(
+        o.dir || o.side
+      ).toUpperCase() === 'LONG'
+
+    livePNL = isLong
+
+      ? (
+          (
+            livePrice - entry
+          ) / entry
+        ) * notional
+
+      : (
+          (
+            entry - livePrice
+          ) / entry
+        ) * notional
+
+  }
+
+  html += 
     
     <div class="open-card ${String(o.dir || o.side || '')
 .toLowerCase()}-card">
@@ -1897,6 +2013,48 @@ function renderOpen(){
           <div>Entry: ${o.entry}</div>
           <div>TP: ${o.tp}</div>
           <div>SL: ${o.sl}</div>
+  
+<div
+  style="
+    margin-top:6px;
+    font-size:12px;
+    color:#00FFC6;
+    font-weight:700;
+  "
+>
+
+  Live:
+  ${
+    livePrice
+      ? livePrice.toFixed(2)
+      : '--'
+  }
+
+</div>
+
+<div
+  style="
+    margin-top:4px;
+    font-size:13px;
+    font-weight:700;
+    color:
+      ${
+        livePNL >= 0
+          ? '#00FFC6'
+          : '#FF4D6D'
+      };
+  "
+>
+
+  ${
+    livePNL >= 0
+      ? '+'
+      : ''
+  }
+
+  $${livePNL.toFixed(2)}
+
+</div>
         </div>
 
       </div>
@@ -1977,9 +2135,20 @@ function renderOpen(){
       </div>
 
     </div>
-
-  `).join('')
+`
 }
+
+el.innerHTML = html
+
+}
+```js id="jlwm807"
+setInterval(()=>{
+
+  renderOpen()
+
+}, 3000)
+
+
 
  function renderDashboardOpen(){
 
