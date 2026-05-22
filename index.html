@@ -2165,7 +2165,6 @@ const { error } = await db
   await loadDonations()
 }
   
-```js
 function renderDonation(){
 
   const el =
@@ -2176,17 +2175,20 @@ function renderDonation(){
   const totalDonation =
     trades.reduce(
       (a,t)=>
-        a + Number(t.donation || 0)
-    ,0)
+        a + Number(t.donation || 0),
+    0)
 
   const totalSent =
     donations.reduce(
       (a,d)=>
-        a + Number(d.sent || 0)
-    ,0)
+        a + Number(d.sent || 0),
+    0)
 
   const pending =
-    totalDonation - totalSent
+    Math.max(
+      totalDonation - totalSent,
+      0
+    )
 
   const histories =
     donations.flatMap(d =>
@@ -2202,9 +2204,7 @@ function renderDonation(){
     <div class="donation-summary">
 
       <div class="donation-stat">
-        <div class="lb">
-          Total
-        </div>
+        <div class="lb">Total</div>
 
         <div class="vl">
           $${totalDonation.toFixed(2)}
@@ -2212,9 +2212,7 @@ function renderDonation(){
       </div>
 
       <div class="donation-stat">
-        <div class="lb">
-          Sent
-        </div>
+        <div class="lb">Sent</div>
 
         <div class="vl pos">
           $${totalSent.toFixed(2)}
@@ -2222,9 +2220,7 @@ function renderDonation(){
       </div>
 
       <div class="donation-stat">
-        <div class="lb">
-          Pending
-        </div>
+        <div class="lb">Pending</div>
 
         <div class="vl ${
           pending > 0
@@ -2240,45 +2236,50 @@ function renderDonation(){
     <div class="donation-history">
 
       ${
-        histories.length
+        histories.length > 0
 
-        ? histories.reverse().map(h => `
+        ? histories
+            .reverse()
+            .map(h => `
 
-          <div class="donation-item">
+              <div class="donation-item">
 
-            <div class="donation-item-left">
+                <div class="donation-item-left">
 
-              <div class="donation-name">
-                ${h.receiver || '-'}
+                  <div class="donation-name">
+                    ${h.receiver || '-'}
+                  </div>
+
+                  <div class="donation-note">
+                    ${h.note || '-'}
+                  </div>
+
+                  <div class="donation-date">
+                    ${
+                      new Date(h.date)
+                      .toLocaleDateString('id-ID')
+                    }
+                  </div>
+
+                </div>
+
+                <div class="donation-amount">
+                  $${Number(h.amount || 0)
+                    .toFixed(2)}
+                </div>
+
               </div>
 
-              <div class="donation-note">
-                ${h.note || '-'}
-              </div>
+            `).join('')
 
-              <div class="donation-date">
-                ${
-                  new Date(h.date)
-                  .toLocaleDateString('id-ID')
-                }
-              </div>
+        : `
 
-            </div>
-
-            <div class="donation-amount">
-              $${Number(h.amount || 0).toFixed(2)}
-            </div>
-
-          </div>
-
-        `).join('')
-
-        :
-
-        `
           <div class="empty-state">
-            Belum ada riwayat penyaluran
+            <p>
+              Belum ada riwayat penyaluran
+            </p>
           </div>
+
         `
       }
 
