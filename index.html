@@ -1425,9 +1425,7 @@ async function getMarketPrice(pair){
   try{
 
     const res = await fetch(
-
-      `https://fapi.binance.com/fapi/v1/ticker/price?symbol=${pair}`
-
+      `https://api.binance.com/api/v3/ticker/price?symbol=${pair}`
     )
 
     const data = await res.json()
