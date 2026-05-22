@@ -1264,7 +1264,7 @@ function calc(entry, sl, tp, size, lev, dir, et, xt){
   const fee_total = fe + fx
 
   const isLong =
-    String(dir).toLowerCase() === 'long'
+  String(dir).toLowerCase() === 'long'
 
   // PROFIT KOTOR
   const grossProfit = isLong
@@ -2211,6 +2211,8 @@ function renderDonation(){
 
   empty.style.display = 'none'
 
+    console.log(list)
+    
   body.innerHTML =
     [...list].reverse().map(t =>`
 
@@ -2760,10 +2762,9 @@ const db = supabase.createClient(
   
   async function loadTrades(){
 
-  const { data, error } =
-    await db
-      .from('trades')
-      .select('*')
+  const { data } = await db
+  .from('trades')
+  .select('*')
       .order('id', { ascending:false })
 
   if(error){
