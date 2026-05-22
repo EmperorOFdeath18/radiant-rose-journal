@@ -1645,6 +1645,9 @@ async function saveClosed(){
   await db
     .from('trades')
     .insert([{
+      ...
+    }])
+    .select()
 
       pair: v.pair,
 
@@ -2135,7 +2138,8 @@ for(const o of opens){
 
     </div>
 `
-
+}
+  
 el.innerHTML = html
 
 }
