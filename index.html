@@ -1440,11 +1440,6 @@ async function getLivePrice(pair){
 
     return null
 
-    const price =
-  await getLivePrice('BTCUSDT')
-
-console.log(price)
-
   }
 
 }
@@ -1948,9 +1943,9 @@ let html = ''
 for(const o of opens){
 
   const livePrice =
-    await getMarketPrice(
-      o.pair
-    )
+  await getLivePrice(
+    o.pair
+  )
 
   let livePNL = 0
 
