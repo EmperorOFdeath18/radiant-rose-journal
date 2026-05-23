@@ -2152,10 +2152,12 @@ setInterval(()=>{
 
 
 
- function renderDashboardOpen(){
+ async function renderDashboardOpen(){
 
   const el =
-    document.getElementById('dash-open-list')
+    document.getElementById(
+      'dash-open-list'
+    )
 
   if(opens.length === 0){
 
@@ -2168,105 +2170,133 @@ setInterval(()=>{
     return
   }
 
-  el.innerHTML = opens.slice(0,3).map(o => {
+  let html = ''
 
-    const side =
-      String(o.side || o.dir).toUpperCase()
+  for(const o of opens.slice(0,3)){
 
-    const isLong =
-      side === 'LONG'
+    const livePrice =
+      await getLivePrice(o.pair)
 
-    return `
+    let livePNL = 0
 
-      <div
-        class="trade-card"
-        style="
-          border-left:4px solid ${
-            isLong
-              ? '#00BF8F'
-              : '#E84960'
-          };
-        "
-      >
+    if(livePrice){
 
-        <div style="
-          display:flex;
-          justify-content:space-between;
-          align-items:flex-start;
-          width:100%;
-          gap:20px;
-        ">
+      const entry =
+        Number(o.entry)
+
+      const margin =
+        Number(o.margin)
+
+      const lev =
+        Number(o.leverage)
+
+      const notional =
+        margin * lev
+
+      const isLong =
+        String(
+          o.dir || o.side
+        ).toUpperCase() === 'LONG'
+
+      livePNL = isLong
+
+        ? (
+            (
+              livePrice - entry
+            ) / entry
+          ) * notional
+
+        : (
+            (
+              entry - livePrice
+            ) / entry
+          ) * notional
+
+    }
+
+    html += `
+
+    <div class="
+      open-card
+      ${String(
+        o.dir || o.side || ''
+      ).toLowerCase()}-card
+    ">
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+      ">
+
+        <div>
+
+          <div style="
+            font-size:15px;
+            font-weight:700;
+          ">
+            ${o.pair}
+          </div>
+
+          <div style="
+            font-size:12px;
+            opacity:.7;
+            margin-top:4px;
+          ">
+            ${o.dir || o.side}
+          </div>
+
+        </div>
+
+        <div style="text-align:right">
 
           <div>
+            Entry: ${o.entry}
+          </div>
 
-            <div style="
-              display:flex;
-              align-items:center;
-              gap:10px;
-              margin-bottom:10px;
-            ">
+          <div>
+            TP: ${o.tp}
+          </div>
 
-              <div class="pair">
-                ${o.pair}
-              </div>
+          <div>
+            SL: ${o.sl}
+          </div>
 
-              <span
-                class="badge ${
-                  isLong
-                    ? 'badge-long'
-                    : 'badge-short'
-                }"
-              >
-                ${side}
-              </span>
+          <div style="
+            margin-top:6px;
+            font-size:12px;
+            color:#00FFC6;
+            font-weight:700;
+          ">
 
-            </div>
-
-            <div style="
-              display:flex;
-              gap:10px;
-              flex-wrap:wrap;
-            ">
-
-              <div class="mini-card">
-                <div class="lb">Margin</div>
-                <div class="lv">$${o.margin}</div>
-              </div>
-
-              <div class="mini-card">
-                <div class="lb">Lev</div>
-                <div class="lv">${o.leverage}x</div>
-              </div>
-
-              <div class="mini-card">
-                <div class="lb">Notional</div>
-                <div class="lv">
-                  $${(
-                    o.margin * o.leverage
-                  ).toFixed(0)}
-                </div>
-              </div>
-
-            </div>
+            Live:
+            ${
+              livePrice
+                ? livePrice.toFixed(2)
+                : '--'
+            }
 
           </div>
 
-          <div class="price-box">
+          <div style="
+            margin-top:4px;
+            font-size:13px;
+            font-weight:700;
+            color:
+              ${
+                livePNL >= 0
+                  ? '#00FFC6'
+                  : '#FF4D6D'
+              };
+          ">
 
-            <div>
-              Entry:
-              <b>${o.entry}</b>
-            </div>
+            ${
+              livePNL >= 0
+                ? '+'
+                : ''
+            }
 
-            <div style="color:#00BF8F">
-              TP:
-              <b>${o.tp}</b>
-            </div>
-
-            <div style="color:#E84960">
-              SL:
-              <b>${o.sl}</b>
-            </div>
+            $${livePNL.toFixed(2)}
 
           </div>
 
@@ -2274,9 +2304,35 @@ setInterval(()=>{
 
       </div>
 
-    `
+      <div class="open-levels">
 
-  }).join('')
+        <div class="level-box">
+          <div class="lb">Margin</div>
+          <div class="lv">$${o.margin}</div>
+        </div>
+
+        <div class="level-box">
+          <div class="lb">Leverage</div>
+          <div class="lv">${o.leverage}x</div>
+        </div>
+
+        <div class="level-box">
+          <div class="lb">Notional</div>
+          <div class="lv">
+            $${(
+              o.margin * o.leverage
+            ).toFixed(0)}
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    `
+  }
+
+  el.innerHTML = html
+
 }
   
  async function submitDonation(){
