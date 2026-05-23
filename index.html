@@ -831,6 +831,38 @@ font-weight:700;
 color:var(--green);
 font-family:var(--font-mono);
 }
+    .trade-info-grid{
+display:flex;
+gap:22px;
+flex-wrap:wrap;
+}
+
+.trade-info-grid div{
+display:flex;
+flex-direction:column;
+gap:2px;
+}
+
+.ti-label{
+font-size:10px;
+opacity:.45;
+text-transform:uppercase;
+letter-spacing:.05em;
+}
+
+.ti-value{
+font-size:13px;
+font-weight:700;
+font-family:var(--font-mono);
+}
+
+.ti-value.pos{
+color:#00BF8F;
+}
+
+.ti-value.neg{
+color:#FF4D6D;
+}
   </style>
 </head>
 <body>
@@ -2025,116 +2057,87 @@ for(const o of opens){
     .toLowerCase()}-card">
 
       <div style="
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-      ">
-
-        <div>
-          <div style="
-            font-size:15px;
-            font-weight:700;
-          ">
-            ${o.pair}
-          </div>
-
-          <div style="
-            font-size:12px;
-            opacity:.7;
-            margin-top:4px;
-          ">
-            ${o.dir || o.side}
-          </div>
-        </div>
-
-        <div style="
-  text-align:right;
-  min-width:140px;
-  font-family:var(--font-mono);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
 ">
 
   <div style="
     display:flex;
-    justify-content:space-between;
-    gap:12px;
-  ">
-
-    <span style="opacity:.65">
-      Entry
-    </span>
-
-    <b>
-      ${Number(o.entry).toLocaleString()}
-    </b>
-
-  </div>
-
-  <div style="
-    display:flex;
-    justify-content:space-between;
-    gap:12px;
-    margin-top:2px;
-  ">
-
-    <span style="
-      opacity:.65;
-      color:#00BF8F;
-    ">
-      TP
-    </span>
-
-    <b style="color:#00BF8F">
-      ${Number(o.tp).toLocaleString()}
-    </b>
-
-  </div>
-
-  <div style="
-    display:flex;
-    justify-content:space-between;
-    gap:12px;
-    margin-top:2px;
-  ">
-
-    <span style="
-      opacity:.65;
-      color:#FF4D6D;
-    ">
-      SL
-    </span>
-
-    <b style="color:#FF4D6D">
-      ${Number(o.sl).toLocaleString()}
-    </b>
-
-  </div>
-
-  <div style="
-    margin-top:10px;
-    padding-top:8px;
-    border-top:1px solid rgba(255,255,255,.06);
+    align-items:center;
+    gap:10px;
   ">
 
     <div style="
-      font-size:10px;
-      opacity:.5;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      margin-bottom:2px;
+      font-size:15px;
+      font-weight:700;
     ">
-      Live Price
+      ${o.pair}
     </div>
 
     <div style="
-      color:#00FFC6;
-      font-size:15px;
-      font-weight:700;
-      line-height:1.1;
-    ">
+      font-size:11px;
+      padding:2px 8px;
+      border-radius:999px;
 
-      ${
-        livePrice
-          ? Number(livePrice)
+      background:
+        ${
+          (
+            o.side || o.dir
+          ).toUpperCase() === 'LONG'
+            ? 'rgba(0,191,143,.12)'
+            : 'rgba(255,77,109,.12)'
+        };
+
+      color:
+        ${
+          (
+            o.side || o.dir
+          ).toUpperCase() === 'LONG'
+            ? '#00BF8F'
+            : '#FF4D6D'
+        };
+
+      font-weight:700;
+    ">
+      ${o.side || o.dir}
+    </div>
+
+    <div style="
+      font-size:11px;
+      opacity:.55;
+    ">
+      ${o.leverage}x
+    </div>
+
+  </div>
+
+  <div class="trade-info-grid">
+
+    <div>
+
+      <span class="ti-label">
+        Entry
+      </span>
+
+      <span class="ti-value">
+        ${Number(o.entry)
+          .toLocaleString()}
+      </span>
+
+    </div>
+
+    <div>
+
+      <span class="ti-label">
+        Mark
+      </span>
+
+      <span class="ti-value pos">
+
+        ${
+          livePrice
+            ? Number(livePrice)
               .toLocaleString(
                 undefined,
                 {
@@ -2142,50 +2145,55 @@ for(const o of opens){
                   maximumFractionDigits:2
                 }
               )
-          : '--'
-      }
+            : '--'
+        }
+
+      </span>
+
+    </div>
+
+    <div>
+
+      <span class="ti-label">
+        Liq
+      </span>
+
+      <span class="ti-value neg">
+        ${liqPrice.toFixed(0)}
+      </span>
+
+    </div>
+
+    <div>
+
+      <span class="ti-label">
+        PNL
+      </span>
+
+      <span class="
+        ti-value
+        ${
+          livePNL >= 0
+            ? 'pos'
+            : 'neg'
+        }
+      ">
+
+        ${
+          livePNL >= 0
+            ? '+'
+            : ''
+        }
+
+        ${
+          livePNL.toFixed(2)
+        }
+
+      </span>
 
     </div>
 
   </div>
-
-  <div style="
-    margin-top:6px;
-    font-size:15px;
-    font-weight:700;
-    color:
-      ${
-        livePNL >= 0
-          ? '#00FFC6'
-          : '#FF4D6D'
-      };
-  ">
-
-    ${
-      livePNL >= 0
-        ? '+'
-        : ''
-    }
-
-    ${
-      Number(livePNL)
-        .toLocaleString(
-          undefined,
-          {
-            minimumFractionDigits:2,
-            maximumFractionDigits:2
-          }
-        )
-    }
-
-    USDT
-
-  </div>
-
-</div>
-        </div>
-
-      </div>
 
       <div class="open-levels">
 
@@ -2356,129 +2364,88 @@ setInterval(()=>{
       ).toLowerCase()}-card
     ">
 
-      <div style="
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-      ">
-
-        <div>
-
-          <div style="
+     <div style="
   display:flex;
   flex-direction:column;
-  justify-content:center;
-  min-height:82px;
-">
-
-  <div style="
-    font-size:13px;
-    font-weight:700;
-    letter-spacing:-0.02em;
-  ">
-    ${o.pair}
-  </div>
-
-  <div style="
-    font-size:11px;
-    opacity:.55;
-    margin-top:2px;
-    text-transform:uppercase;
-    letter-spacing:.04em;
-  ">
-    ${o.dir || o.side}
-  </div>
-
-</div>
-
-        <div style="
-  text-align:right;
-  min-width:120px;
-  font-family:var(--font-mono);
+  gap:14px;
 ">
 
   <div style="
     display:flex;
-    justify-content:space-between;
-    gap:8px;
-  ">
-
-    <span style="opacity:.65">
-      Entry
-    </span>
-
-    <b>
-      ${Number(o.entry).toLocaleString()}
-    </b>
-
-  </div>
-
-  <div style="
-    display:flex;
-    justify-content:space-between;
-    gap:8px;
-    margin-top:2px;
-  ">
-
-    <span style="
-      opacity:.65;
-      color:#00BF8F;
-    ">
-      TP
-    </span>
-
-    <b style="color:#00BF8F">
-      ${Number(o.tp).toLocaleString()}
-    </b>
-
-  </div>
-
-  <div style="
-    display:flex;
-    justify-content:space-between;
-    gap:8px;
-    margin-top:2px;
-  ">
-
-    <span style="
-      opacity:.65;
-      color:#FF4D6D;
-    ">
-      SL
-    </span>
-
-    <b style="color:#FF4D6D">
-      ${Number(o.sl).toLocaleString()}
-    </b>
-
-  </div>
-
-  <div style="
-    margin-top:10px;
-    padding-top:8px;
-    border-top:1px solid rgba(255,255,255,.06);
+    align-items:center;
+    gap:10px;
   ">
 
     <div style="
-      font-size:10px;
-      opacity:.5;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      margin-bottom:2px;
+      font-size:15px;
+      font-weight:700;
     ">
-      Live Price
+      ${o.pair}
     </div>
 
     <div style="
-      color:#00FFC6;
-      font-size:18px;
-      font-weight:700;
-      line-height:1.1;
-    ">
+      font-size:11px;
+      padding:2px 8px;
+      border-radius:999px;
 
-      ${
-        livePrice
-          ? Number(livePrice)
+      background:
+        ${
+          (
+            o.side || o.dir
+          ).toUpperCase() === 'LONG'
+            ? 'rgba(0,191,143,.12)'
+            : 'rgba(255,77,109,.12)'
+        };
+
+      color:
+        ${
+          (
+            o.side || o.dir
+          ).toUpperCase() === 'LONG'
+            ? '#00BF8F'
+            : '#FF4D6D'
+        };
+
+      font-weight:700;
+    ">
+      ${o.side || o.dir}
+    </div>
+
+    <div style="
+      font-size:11px;
+      opacity:.55;
+    ">
+      ${o.leverage}x
+    </div>
+
+  </div>
+
+  <div class="trade-info-grid">
+
+    <div>
+
+      <span class="ti-label">
+        Entry
+      </span>
+
+      <span class="ti-value">
+        ${Number(o.entry)
+          .toLocaleString()}
+      </span>
+
+    </div>
+
+    <div>
+
+      <span class="ti-label">
+        Mark
+      </span>
+
+      <span class="ti-value pos">
+
+        ${
+          livePrice
+            ? Number(livePrice)
               .toLocaleString(
                 undefined,
                 {
@@ -2486,50 +2453,55 @@ setInterval(()=>{
                   maximumFractionDigits:2
                 }
               )
-          : '--'
-      }
+            : '--'
+        }
+
+      </span>
+
+    </div>
+
+    <div>
+
+      <span class="ti-label">
+        Liq
+      </span>
+
+      <span class="ti-value neg">
+        ${liqPrice.toFixed(0)}
+      </span>
+
+    </div>
+
+    <div>
+
+      <span class="ti-label">
+        PNL
+      </span>
+
+      <span class="
+        ti-value
+        ${
+          livePNL >= 0
+            ? 'pos'
+            : 'neg'
+        }
+      ">
+
+        ${
+          livePNL >= 0
+            ? '+'
+            : ''
+        }
+
+        ${
+          livePNL.toFixed(2)
+        }
+
+      </span>
 
     </div>
 
   </div>
-
-  <div style="
-    margin-top:6px;
-    font-size:11px;
-    font-weight:700;
-    color:
-      ${
-        livePNL >= 0
-          ? '#00FFC6'
-          : '#FF4D6D'
-      };
-  ">
-
-    ${
-      livePNL >= 0
-        ? '+'
-        : ''
-    }
-
-    ${
-      Number(livePNL)
-        .toLocaleString(
-          undefined,
-          {
-            minimumFractionDigits:2,
-            maximumFractionDigits:2
-          }
-        )
-    }
-
-    USDT
-
-  </div>
-
-</div>
-        </div>
-
-      </div>
 
       <div class="open-levels">
 
