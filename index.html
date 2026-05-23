@@ -2395,10 +2395,24 @@ for(const o of opens){
       </label>
 
       <input
-        type="text"
-        id="cx-${o.id}"
-        placeholder="65000"
-      >
+  type="text"
+  id="cx-${o.id}"
+
+  value="
+    ${
+      customFormState[o.id]?.price || ''
+    }
+  "
+
+  oninput="
+    customFormState[${o.id}] = {
+      ...(customFormState[${o.id}] || {}),
+      price:this.value
+    }
+  "
+
+  placeholder="65000"
+>
 
     </div>
 
@@ -2408,15 +2422,44 @@ for(const o of opens){
         Exit Type
       </label>
 
-      <select id="cxt-${o.id}">
+      <select
+  id="cxt-${o.id}"
 
-        <option value="taker">
-          Taker
-        </option>
+  onchange="
+    customFormState[${o.id}] = {
+      ...(customFormState[${o.id}] || {}),
+      type:this.value
+    }
+  "
+>
 
-        <option value="maker">
-          Maker
-        </option>
+        <option
+  value="taker"
+
+  ${
+    (
+      customFormState[o.id]?.type
+      || 'taker'
+    ) === 'taker'
+      ? 'selected'
+      : ''
+  }
+>
+  Taker
+</option>
+
+<option
+  value="maker"
+
+  ${
+    customFormState[o.id]?.type
+    === 'maker'
+      ? 'selected'
+      : ''
+  }
+>
+  Maker
+</option>
 
       </select>
 
