@@ -705,11 +705,17 @@ letter-spacing:-0.02em;
 background:rgba(20,30,60,.7);
 border:1px solid rgba(120,160,255,.12);
 border-radius:18px;
-padding:18px;
-margin-bottom:14px;
+
+padding:14px 16px;
+
+margin-bottom:12px;
+
 display:flex;
 justify-content:space-between;
 align-items:center;
+
+min-height:140px;
+
 backdrop-filter:blur(10px);
 transition:.25s;
 }
@@ -720,25 +726,29 @@ border-color:rgba(120,160,255,.28);
 }
 
 .pair{
-font-size:16px;
+font-size:14px;
 font-weight:700;
 color:#fff;
 }
 
 .side{
-font-size:12px;
-margin-top:6px;
+font-size:11px;
+margin-top:2px;
 opacity:.7;
 }
 
 .price-box{
 text-align:right;
-font-size:13px;
-line-height:1.7;
+font-size:12px;
+line-height:1.45;
+
+min-width:130px;
+
+opacity:.92;
 }
 
 .mini-card{
-padding:14px;
+padding:10px;
 }
 
 /* ========================= */
@@ -2322,21 +2332,31 @@ setInterval(()=>{
         <div>
 
           <div style="
-            font-size:12px;
-            font-weight:700;
-          ">
-            ${o.pair}
-          </div>
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-height:82px;
+">
 
-          <div style="
-            font-size:12px;
-            opacity:.7;
-            margin-top:4px;
-          ">
-            ${o.dir || o.side}
-          </div>
+  <div style="
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:-0.02em;
+  ">
+    ${o.pair}
+  </div>
 
-        </div>
+  <div style="
+    font-size:11px;
+    opacity:.55;
+    margin-top:2px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+  ">
+    ${o.dir || o.side}
+  </div>
+
+</div>
 
         <div style="
   text-align:right;
