@@ -2400,7 +2400,9 @@ for(const o of opens){
 
   value="
     ${
-      customFormState[o.id]?.price || ''
+      customFormState[o.id]
+? customFormState[o.id].price
+: '' || ''
     }
   "
 
@@ -2438,7 +2440,9 @@ for(const o of opens){
 
   ${
     (
-      customFormState[o.id]?.type
+      customFormState[o.id]
+? customFormState[o.id].type
+: 'taker'
       || 'taker'
     ) === 'taker'
       ? 'selected'
