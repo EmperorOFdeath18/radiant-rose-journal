@@ -1420,7 +1420,7 @@ function calc(entry, sl, tp, size, lev, dir, et, xt){
   }
 }
 
-async function getMarketPrice(pair){
+async function getLivePrice(pair){
 
   try{
 
@@ -1430,21 +1430,25 @@ async function getMarketPrice(pair){
 
     const data = await res.json()
 
-    return Number(data.price)
+    return Number(
+      data.result.list[0].lastPrice
+    )
 
   }catch(err){
 
-    console.error(
-      'Market price error',
-      err
-    )
+    console.error(err)
 
     return null
+
+    const price =
+  await getLivePrice('BTCUSDT')
+
+console.log(price)
 
   }
 
 }
-
+  
 function calcLivePNL(
   trade,
   price
