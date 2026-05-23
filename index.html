@@ -1496,6 +1496,32 @@ function calcLivePNL(
   return pnl
 
 }
+
+function calcLiquidPrice(entry, leverage, side){
+
+  entry = Number(entry)
+  leverage = Number(leverage)
+
+  if(
+    String(side).toUpperCase()
+    === 'LONG'
+  ){
+
+    return (
+      entry * (
+        1 - (1 / leverage)
+      )
+    )
+
+  }
+
+  return (
+    entry * (
+      1 + (1 / leverage)
+    )
+  )
+
+}
   
 function updatePreview(){
   const entry=parseFloat(document.getElementById('i-entry').value);
@@ -2276,6 +2302,13 @@ setInterval(()=>{
 
     const livePrice =
       await getLivePrice(o.pair)
+
+    const liqPrice =
+  calcLiquidPrice(
+    o.entry,
+    o.leverage,
+    o.side || o.dir
+  )
 
     let livePNL = 0
 
