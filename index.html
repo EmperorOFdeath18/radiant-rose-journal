@@ -2208,82 +2208,39 @@ for(const o of opens){
 
   </div>
 
-      <div class="open-levels">
+      <div class="trade-info-grid">
 
-        <div class="level-box">
-          <div class="lb">Margin</div>
-          <div class="lv">$${o.margin}</div>
-        </div>
+      <div style="
+  display:flex;
+  gap:18px;
+  margin-top:2px;
+  font-size:11px;
+  opacity:.6;
+  font-family:var(--font-mono);
+">
 
-        <div class="level-box">
-          <div class="lb">Leverage</div>
-          <div class="lv">${o.leverage}x</div>
-        </div>
+  <div>
+    Qty:
+    ${
+      (
+        (
+          o.margin * o.leverage
+        ) / livePrice
+      ).toFixed(4)
+    }
 
-        <div class="level-box">
-          <div class="lb">Notional</div>
-          <div class="lv">$${(o.margin * o.leverage).toFixed(0)}</div>
-        </div>
+    ${
+      o.pair
+        .replace('USDT','')
+    }
+  </div>
 
-      </div>
+  <div>
+    Margin:
+    $${o.margin}
+  </div>
 
-      <div class="open-actions">
-
-        <button class="btn-cw"
-          onclick="closeOpen(${o.id},'win')">
-          Hit TP
-        </button>
-
-        <button class="btn-cl"
-          onclick="closeOpen(${o.id},'loss')">
-          Hit SL
-        </button>
-
-       <button class="btn-cc"
-  onclick="
-    document
-      .getElementById('cf-${o.id}')
-      .classList.toggle('visible')
-  ">
-  Custom
-</button>
-
-      </div>
-
-      <div class="close-form" id="cf-${o.id}">
-
-        <div class="close-form-row">
-
-          <div class="field">
-            <label>Harga Exit</label>
-
-            <input
-              type="text"
-              id="cx-${o.id}"
-              placeholder="65000"
-            >
-          </div>
-
-          <div class="field">
-            <label>Exit Type</label>
-
-            <select id="cxt-${o.id}">
-              <option value="taker">Taker</option>
-              <option value="maker">Maker</option>
-            </select>
-          </div>
-
-          <button
-            class="btn-confirm"
-            onclick="confirmCustom(${o.id})">
-            Close
-          </button>
-
-        </div>
-
-      </div>
-
-    </div>
+</div>
 `
 }
   
@@ -2516,30 +2473,39 @@ setInterval(()=>{
 
   </div>
 
-      <div class="open-levels">
+      <div class="trade-info-grid">
 
-        <div class="level-box">
-          <div class="lb">Margin</div>
-          <div class="lv">$${o.margin}</div>
-        </div>
+      <div style="
+  display:flex;
+  gap:18px;
+  margin-top:2px;
+  font-size:11px;
+  opacity:.6;
+  font-family:var(--font-mono);
+">
 
-        <div class="level-box">
-          <div class="lb">Leverage</div>
-          <div class="lv">${o.leverage}x</div>
-        </div>
+  <div>
+    Qty:
+    ${
+      (
+        (
+          o.margin * o.leverage
+        ) / livePrice
+      ).toFixed(4)
+    }
 
-        <div class="level-box">
-          <div class="lb">Notional</div>
-          <div class="lv">
-            $${(
-              o.margin * o.leverage
-            ).toFixed(0)}
-          </div>
-        </div>
+    ${
+      o.pair
+        .replace('USDT','')
+    }
+  </div>
 
-      </div>
+  <div>
+    Margin:
+    $${o.margin}
+  </div>
 
-    </div>
+</div>
     `
   }
 
