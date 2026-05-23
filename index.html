@@ -2334,7 +2334,62 @@ for(const o of opens){
 
 </div>
 `
-  }
+  <div
+  class="close-form"
+  id="cf-${o.id}"
+>
+
+  <div class="close-form-row">
+
+    <div class="field">
+
+      <label>
+        Harga Exit
+      </label>
+
+      <input
+        type="text"
+        id="cx-${o.id}"
+        placeholder="65000"
+      >
+
+    </div>
+
+    <div class="field">
+
+      <label>
+        Exit Type
+      </label>
+
+      <select id="cxt-${o.id}">
+
+        <option value="taker">
+          Taker
+        </option>
+
+        <option value="maker">
+          Maker
+        </option>
+
+      </select>
+
+    </div>
+
+    <button
+      class="btn-confirm"
+      onclick="
+        confirmCustom(
+          ${o.id}
+        )
+      "
+    >
+      Close
+    </button>
+
+  </div>
+
+</div>
+}
   
 el.innerHTML = html
 
