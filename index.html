@@ -2402,7 +2402,7 @@ for(const o of opens){
     ${
       customFormState[o.id]
 ? customFormState[o.id].price
-: '' || ''
+: ''
     }
   "
 
@@ -2443,7 +2443,6 @@ for(const o of opens){
       customFormState[o.id]
 ? customFormState[o.id].type
 : 'taker'
-      || 'taker'
     ) === 'taker'
       ? 'selected'
       : ''
@@ -3206,6 +3205,7 @@ barPercentage: 0.9,
   )
 }
   let openedCustomId = null
+let customFormState = {}
   
   function renderDashboard(){
 
