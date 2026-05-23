@@ -2015,6 +2015,13 @@ for(const o of opens){
     o.pair
   )
 
+  const liqPrice =
+  calcLiquidPrice(
+    o.entry,
+    o.leverage,
+    o.side || o.dir
+  )
+
   let livePNL = 0
 
   if(livePrice){
