@@ -2372,13 +2372,15 @@ for(const o of opens){
 
 <div
   class="
-  close-form
-  ${
-    openedCustomId === o.id
-      ? 'visible'
-      : ''
-  }
-"
+    close-form
+    ${
+      openedCustomId === o.id
+        ? 'visible'
+        : ''
+    }
+  "
+  id="cf-${o.id}"
+>
 
   <div class="close-form-row">
 
