@@ -1425,7 +1425,7 @@ async function getLivePrice(pair){
   try{
 
     const res = await fetch(
-      `https://api.bybit.com/v5/market/tickers?category=linear&symbol=${pair}`
+      `https://api.bybit.id/v5/market/tickers?category=linear&symbol=${pair}`
     )
 
     const data = await res.json()
