@@ -477,13 +477,19 @@ justify-content:center;
 
     /* ── OPEN CARDS ── */
     .open-card {
-      background: var(--color-background-secondary);
-      border: 1px solid var(--color-border-secondary);
-      border-radius: var(--border-radius-lg);
-      padding: 14px 16px;
-      margin-bottom: 10px;
-      transition: border-color 0.2s;
-    }
+
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-lg);
+
+  padding: 18px;
+
+  margin-bottom: 10px;
+
+  min-height:auto;
+
+  transition: border-color 0.2s;
+}
 
     .open-card:hover { border-color: var(--color-border-primary); }
     .open-card.long-card  { border-left: 3px solid var(--green); }
@@ -833,7 +839,7 @@ font-family:var(--font-mono);
 }
     .trade-info-grid{
 display:flex;
-gap:22px;
+gap:16px;
 flex-wrap:wrap;
 }
 
@@ -2238,6 +2244,48 @@ for(const o of opens){
   <div>
     Margin:
     $${o.margin}
+    <div class="open-actions">
+
+  <button
+    class="btn-cw"
+    onclick="
+      closeOpen(
+        ${o.id},
+        'win'
+      )
+    "
+  >
+    Hit TP
+  </button>
+
+  <button
+    class="btn-cl"
+    onclick="
+      closeOpen(
+        ${o.id},
+        'loss'
+      )
+    "
+  >
+    Hit SL
+  </button>
+
+  <button
+    class="btn-cc"
+    onclick="
+      document
+        .getElementById(
+          'cf-${o.id}'
+        )
+        .classList.toggle(
+          'visible'
+        )
+    "
+  >
+    Custom
+  </button>
+
+</div>
   </div>
 
 </div>
