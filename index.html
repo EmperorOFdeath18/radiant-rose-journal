@@ -2011,33 +2011,111 @@ for(const o of opens){
           </div>
         </div>
 
-        <div style="text-align:right">
-          <div>Entry: ${o.entry}</div>
-          <div>TP: ${o.tp}</div>
-          <div>SL: ${o.sl}</div>
-  
-<div
-  style="
+        <div style="
+  text-align:right;
+  min-width:140px;
+  font-family:var(--font-mono);
+">
+
+  <div style="
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+  ">
+
+    <span style="opacity:.65">
+      Entry
+    </span>
+
+    <b>
+      ${Number(o.entry).toLocaleString()}
+    </b>
+
+  </div>
+
+  <div style="
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    margin-top:2px;
+  ">
+
+    <span style="
+      opacity:.65;
+      color:#00BF8F;
+    ">
+      TP
+    </span>
+
+    <b style="color:#00BF8F">
+      ${Number(o.tp).toLocaleString()}
+    </b>
+
+  </div>
+
+  <div style="
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    margin-top:2px;
+  ">
+
+    <span style="
+      opacity:.65;
+      color:#FF4D6D;
+    ">
+      SL
+    </span>
+
+    <b style="color:#FF4D6D">
+      ${Number(o.sl).toLocaleString()}
+    </b>
+
+  </div>
+
+  <div style="
+    margin-top:10px;
+    padding-top:8px;
+    border-top:1px solid rgba(255,255,255,.06);
+  ">
+
+    <div style="
+      font-size:10px;
+      opacity:.5;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin-bottom:2px;
+    ">
+      Live Price
+    </div>
+
+    <div style="
+      color:#00FFC6;
+      font-size:18px;
+      font-weight:700;
+      line-height:1.1;
+    ">
+
+      ${
+        livePrice
+          ? Number(livePrice)
+              .toLocaleString(
+                undefined,
+                {
+                  minimumFractionDigits:2,
+                  maximumFractionDigits:2
+                }
+              )
+          : '--'
+      }
+
+    </div>
+
+  </div>
+
+  <div style="
     margin-top:6px;
-    font-size:12px;
-    color:#00FFC6;
-    font-weight:700;
-  "
->
-
-  Live:
-  ${
-    livePrice
-      ? livePrice.toFixed(2)
-      : '--'
-  }
-
-</div>
-
-<div
-  style="
-    margin-top:4px;
-    font-size:13px;
+    font-size:15px;
     font-weight:700;
     color:
       ${
@@ -2045,16 +2123,28 @@ for(const o of opens){
           ? '#00FFC6'
           : '#FF4D6D'
       };
-  "
->
+  ">
 
-  ${
-    livePNL >= 0
-      ? '+'
-      : ''
-  }
+    ${
+      livePNL >= 0
+        ? '+'
+        : ''
+    }
 
-  $${livePNL.toFixed(2)}
+    ${
+      Number(livePNL)
+        .toLocaleString(
+          undefined,
+          {
+            minimumFractionDigits:2,
+            maximumFractionDigits:2
+          }
+        )
+    }
+
+    USDT
+
+  </div>
 
 </div>
         </div>
@@ -2248,58 +2338,142 @@ setInterval(()=>{
 
         </div>
 
-        <div style="text-align:right">
+        <div style="
+  text-align:right;
+  min-width:140px;
+  font-family:var(--font-mono);
+">
 
-          <div>
-            Entry: ${o.entry}
-          </div>
+  <div style="
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+  ">
 
-          <div>
-            TP: ${o.tp}
-          </div>
+    <span style="opacity:.65">
+      Entry
+    </span>
 
-          <div>
-            SL: ${o.sl}
-          </div>
+    <b>
+      ${Number(o.entry).toLocaleString()}
+    </b>
 
-          <div style="
-            margin-top:6px;
-            font-size:12px;
-            color:#00FFC6;
-            font-weight:700;
-          ">
+  </div>
 
-            Live:
-            ${
-              livePrice
-                ? livePrice.toFixed(2)
-                : '--'
-            }
+  <div style="
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    margin-top:2px;
+  ">
 
-          </div>
+    <span style="
+      opacity:.65;
+      color:#00BF8F;
+    ">
+      TP
+    </span>
 
-          <div style="
-            margin-top:4px;
-            font-size:13px;
-            font-weight:700;
-            color:
-              ${
-                livePNL >= 0
-                  ? '#00FFC6'
-                  : '#FF4D6D'
-              };
-          ">
+    <b style="color:#00BF8F">
+      ${Number(o.tp).toLocaleString()}
+    </b>
 
-            ${
-              livePNL >= 0
-                ? '+'
-                : ''
-            }
+  </div>
 
-            $${livePNL.toFixed(2)}
+  <div style="
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    margin-top:2px;
+  ">
 
-          </div>
+    <span style="
+      opacity:.65;
+      color:#FF4D6D;
+    ">
+      SL
+    </span>
 
+    <b style="color:#FF4D6D">
+      ${Number(o.sl).toLocaleString()}
+    </b>
+
+  </div>
+
+  <div style="
+    margin-top:10px;
+    padding-top:8px;
+    border-top:1px solid rgba(255,255,255,.06);
+  ">
+
+    <div style="
+      font-size:10px;
+      opacity:.5;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin-bottom:2px;
+    ">
+      Live Price
+    </div>
+
+    <div style="
+      color:#00FFC6;
+      font-size:18px;
+      font-weight:700;
+      line-height:1.1;
+    ">
+
+      ${
+        livePrice
+          ? Number(livePrice)
+              .toLocaleString(
+                undefined,
+                {
+                  minimumFractionDigits:2,
+                  maximumFractionDigits:2
+                }
+              )
+          : '--'
+      }
+
+    </div>
+
+  </div>
+
+  <div style="
+    margin-top:6px;
+    font-size:15px;
+    font-weight:700;
+    color:
+      ${
+        livePNL >= 0
+          ? '#00FFC6'
+          : '#FF4D6D'
+      };
+  ">
+
+    ${
+      livePNL >= 0
+        ? '+'
+        : ''
+    }
+
+    ${
+      Number(livePNL)
+        .toLocaleString(
+          undefined,
+          {
+            minimumFractionDigits:2,
+            maximumFractionDigits:2
+          }
+        )
+    }
+
+    USDT
+
+  </div>
+
+</div>
         </div>
 
       </div>
