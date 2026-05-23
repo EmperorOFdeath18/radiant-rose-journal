@@ -869,6 +869,83 @@ color:#00BF8F;
 .ti-value.neg{
 color:#FF4D6D;
 }
+    .trade-head{
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+margin-bottom:18px;
+}
+
+.trade-pair{
+font-size:22px;
+font-weight:700;
+line-height:1;
+}
+
+.trade-side{
+margin-top:5px;
+font-size:12px;
+opacity:.55;
+text-transform:uppercase;
+}
+
+.trade-pnl-box{
+text-align:right;
+}
+
+.trade-pnl{
+font-size:24px;
+font-weight:700;
+font-family:var(--font-mono);
+}
+
+.trade-pnl-label{
+margin-top:3px;
+font-size:11px;
+opacity:.45;
+}
+
+.trade-grid{
+display:grid;
+grid-template-columns:
+repeat(4,1fr);
+
+gap:18px;
+}
+
+.trade-cell{
+display:flex;
+flex-direction:column;
+gap:4px;
+}
+
+.tc-label{
+font-size:11px;
+opacity:.45;
+text-transform:uppercase;
+}
+
+.tc-value{
+font-size:16px;
+font-weight:700;
+font-family:var(--font-mono);
+}
+
+.tc-sub{
+font-size:11px;
+opacity:.55;
+font-family:var(--font-mono);
+}
+
+.open-actions{
+display:grid;
+grid-template-columns:
+repeat(3,1fr);
+
+gap:10px;
+
+margin-top:18px;
+}
   </style>
 </head>
 <body>
@@ -2065,132 +2142,34 @@ for(const o of opens){
 
   }
 
-  html += `
-  <div class="open-card ${String(o.dir || o.side || '')
-    .toLowerCase()}-card">
+ html += `
 
-<div style="
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-">
-      
-      <div style="
-  display:flex;
-  flex-direction:column;
-  gap:14px;
+<div class="
+  open-card
+  ${String(
+    o.dir || o.side || ''
+  ).toLowerCase()}-card
 ">
 
-  <div style="
-    display:flex;
-    align-items:center;
-    gap:10px;
-  ">
-
-    <div style="
-      font-size:15px;
-      font-weight:700;
-    ">
-      ${o.pair}
-    </div>
-
-    <div style="
-      font-size:11px;
-      padding:2px 8px;
-      border-radius:999px;
-
-      background:
-        ${
-          (
-            o.side || o.dir
-          ).toUpperCase() === 'LONG'
-            ? 'rgba(0,191,143,.12)'
-            : 'rgba(255,77,109,.12)'
-        };
-
-      color:
-        ${
-          (
-            o.side || o.dir
-          ).toUpperCase() === 'LONG'
-            ? '#00BF8F'
-            : '#FF4D6D'
-        };
-
-      font-weight:700;
-    ">
-      ${o.side || o.dir}
-    </div>
-
-    <div style="
-      font-size:11px;
-      opacity:.55;
-    ">
-      ${o.leverage}x
-    </div>
-
-  </div>
-
-  <div class="trade-info-grid">
+  <div class="trade-head">
 
     <div>
 
-      <span class="ti-label">
-        Entry
-      </span>
+      <div class="trade-pair">
+        ${o.pair}
+      </div>
 
-      <span class="ti-value">
-        ${Number(o.entry)
-          .toLocaleString()}
-      </span>
-
-    </div>
-
-    <div>
-
-      <span class="ti-label">
-        Mark
-      </span>
-
-      <span class="ti-value pos">
-
-        ${
-          livePrice
-            ? Number(livePrice)
-              .toLocaleString(
-                undefined,
-                {
-                  minimumFractionDigits:2,
-                  maximumFractionDigits:2
-                }
-              )
-            : '--'
-        }
-
-      </span>
+      <div class="trade-side">
+        ${o.side || o.dir}
+        ${o.leverage}x
+      </div>
 
     </div>
 
-    <div>
+    <div class="trade-pnl-box">
 
-      <span class="ti-label">
-        Liq
-      </span>
-
-      <span class="ti-value neg">
-        ${liqPrice.toFixed(0)}
-      </span>
-
-    </div>
-
-    <div>
-
-      <span class="ti-label">
-        PNL
-      </span>
-
-      <span class="
-        ti-value
+      <div class="
+        trade-pnl
         ${
           livePNL >= 0
             ? 'pos'
@@ -2204,93 +2183,158 @@ for(const o of opens){
             : ''
         }
 
-        ${
-          livePNL.toFixed(2)
-        }
+        ${livePNL.toFixed(2)}
 
-      </span>
+      </div>
+
+      <div class="trade-pnl-label">
+        L&R Belum Terealisasi
+      </div>
 
     </div>
 
   </div>
 
-      <div class="trade-info-grid">
+  <div class="trade-grid">
 
-      <div style="
-  display:flex;
-  gap:18px;
-  margin-top:2px;
-  font-size:11px;
-  opacity:.6;
-  font-family:var(--font-mono);
-">
+    <div class="trade-cell">
 
-  <div>
-    Qty:
-    ${
-      (
-        (
-          o.margin * o.leverage
-        ) / livePrice
-      ).toFixed(4)
-    }
+      <div class="tc-label">
+        Jumlah
+      </div>
 
-    ${
-      o.pair
-        .replace('USDT','')
-    }
+      <div class="tc-value">
+
+        ${
+          (
+            (
+              o.margin * o.leverage
+            ) / livePrice
+          ).toFixed(4)
+        }
+
+        ${
+          o.pair.replace(
+            'USDT',
+            ''
+          )
+        }
+
+      </div>
+
+      <div class="tc-sub">
+        Margin:
+        $${o.margin}
+      </div>
+
+    </div>
+
+    <div class="trade-cell">
+
+      <div class="tc-label">
+        Entry
+      </div>
+
+      <div class="tc-value">
+        ${Number(o.entry)
+          .toLocaleString()}
+      </div>
+
+      <div class="tc-sub">
+        TP:
+        ${o.tp}
+      </div>
+
+    </div>
+
+    <div class="trade-cell">
+
+      <div class="tc-label">
+        Live Price
+      </div>
+
+      <div class="tc-value pos">
+
+        ${
+          Number(livePrice)
+            .toLocaleString(
+              undefined,
+              {
+                minimumFractionDigits:2,
+                maximumFractionDigits:2
+              }
+            )
+        }
+
+      </div>
+
+      <div class="tc-sub">
+        SL:
+        ${o.sl}
+      </div>
+
+    </div>
+
+    <div class="trade-cell">
+
+      <div class="tc-label">
+        Liquid Price
+      </div>
+
+      <div class="tc-value neg">
+        ${liqPrice.toFixed(0)}
+      </div>
+
+    </div>
+
   </div>
 
-  <div>
-    Margin:
-    $${o.margin}
-    <div class="open-actions">
+  <div class="open-actions">
 
-  <button
-    class="btn-cw"
-    onclick="
-      closeOpen(
-        ${o.id},
-        'win'
-      )
-    "
-  >
-    Hit TP
-  </button>
-
-  <button
-    class="btn-cl"
-    onclick="
-      closeOpen(
-        ${o.id},
-        'loss'
-      )
-    "
-  >
-    Hit SL
-  </button>
-
-  <button
-    class="btn-cc"
-    onclick="
-      document
-        .getElementById(
-          'cf-${o.id}'
+    <button
+      class="btn-cw"
+      onclick="
+        closeOpen(
+          ${o.id},
+          'win'
         )
-        .classList.toggle(
-          'visible'
-        )
-    "
-  >
-    Custom
-  </button>
+      "
+    >
+      Hit TP
+    </button>
 
-</div>
+    <button
+      class="btn-cl"
+      onclick="
+        closeOpen(
+          ${o.id},
+          'loss'
+        )
+      "
+    >
+      Hit SL
+    </button>
+
+    <button
+      class="btn-cc"
+      onclick="
+        document
+          .getElementById(
+            'cf-${o.id}'
+          )
+          .classList.toggle(
+            'visible'
+          )
+      "
+    >
+      Custom
+    </button>
+
   </div>
 
 </div>
 `
-}
+  }
   
 el.innerHTML = html
 
@@ -2375,129 +2419,32 @@ setInterval(()=>{
 
     html += `
 
-    <div class="
-      open-card
-      ${String(
-        o.dir || o.side || ''
-      ).toLowerCase()}-card
-    ">
-
-     <div style="
-  display:flex;
-  flex-direction:column;
-  gap:14px;
+<div class="
+  open-card
+  ${String(
+    o.dir || o.side || ''
+  ).toLowerCase()}-card
 ">
 
-  <div style="
-    display:flex;
-    align-items:center;
-    gap:10px;
-  ">
-
-    <div style="
-      font-size:15px;
-      font-weight:700;
-    ">
-      ${o.pair}
-    </div>
-
-    <div style="
-      font-size:11px;
-      padding:2px 8px;
-      border-radius:999px;
-
-      background:
-        ${
-          (
-            o.side || o.dir
-          ).toUpperCase() === 'LONG'
-            ? 'rgba(0,191,143,.12)'
-            : 'rgba(255,77,109,.12)'
-        };
-
-      color:
-        ${
-          (
-            o.side || o.dir
-          ).toUpperCase() === 'LONG'
-            ? '#00BF8F'
-            : '#FF4D6D'
-        };
-
-      font-weight:700;
-    ">
-      ${o.side || o.dir}
-    </div>
-
-    <div style="
-      font-size:11px;
-      opacity:.55;
-    ">
-      ${o.leverage}x
-    </div>
-
-  </div>
-
-  <div class="trade-info-grid">
+  <div class="trade-head">
 
     <div>
 
-      <span class="ti-label">
-        Entry
-      </span>
+      <div class="trade-pair">
+        ${o.pair}
+      </div>
 
-      <span class="ti-value">
-        ${Number(o.entry)
-          .toLocaleString()}
-      </span>
-
-    </div>
-
-    <div>
-
-      <span class="ti-label">
-        Mark
-      </span>
-
-      <span class="ti-value pos">
-
-        ${
-          livePrice
-            ? Number(livePrice)
-              .toLocaleString(
-                undefined,
-                {
-                  minimumFractionDigits:2,
-                  maximumFractionDigits:2
-                }
-              )
-            : '--'
-        }
-
-      </span>
+      <div class="trade-side">
+        ${o.side || o.dir}
+        ${o.leverage}x
+      </div>
 
     </div>
 
-    <div>
+    <div class="trade-pnl-box">
 
-      <span class="ti-label">
-        Liq
-      </span>
-
-      <span class="ti-value neg">
-        ${liqPrice.toFixed(0)}
-      </span>
-
-    </div>
-
-    <div>
-
-      <span class="ti-label">
-        PNL
-      </span>
-
-      <span class="
-        ti-value
+      <div class="
+        trade-pnl
         ${
           livePNL >= 0
             ? 'pos'
@@ -2511,50 +2458,114 @@ setInterval(()=>{
             : ''
         }
 
-        ${
-          livePNL.toFixed(2)
-        }
+        ${livePNL.toFixed(2)}
 
-      </span>
+      </div>
+
+      <div class="trade-pnl-label">
+        L&R Belum Terealisasi
+      </div>
 
     </div>
 
   </div>
 
-      <div class="trade-info-grid">
+  <div class="trade-grid">
 
-      <div style="
-  display:flex;
-  gap:18px;
-  margin-top:2px;
-  font-size:11px;
-  opacity:.6;
-  font-family:var(--font-mono);
-">
+    <div class="trade-cell">
 
-  <div>
-    Qty:
-    ${
-      (
-        (
-          o.margin * o.leverage
-        ) / livePrice
-      ).toFixed(4)
-    }
+      <div class="tc-label">
+        Jumlah
+      </div>
 
-    ${
-      o.pair
-        .replace('USDT','')
-    }
-  </div>
+      <div class="tc-value">
 
-  <div>
-    Margin:
-    $${o.margin}
+        ${
+          (
+            (
+              o.margin * o.leverage
+            ) / livePrice
+          ).toFixed(4)
+        }
+
+        ${
+          o.pair.replace(
+            'USDT',
+            ''
+          )
+        }
+
+      </div>
+
+      <div class="tc-sub">
+        Margin:
+        $${o.margin}
+      </div>
+
+    </div>
+
+    <div class="trade-cell">
+
+      <div class="tc-label">
+        Entry
+      </div>
+
+      <div class="tc-value">
+        ${Number(o.entry)
+          .toLocaleString()}
+      </div>
+
+      <div class="tc-sub">
+        TP:
+        ${o.tp}
+      </div>
+
+    </div>
+
+    <div class="trade-cell">
+
+      <div class="tc-label">
+        Live Price
+      </div>
+
+      <div class="tc-value pos">
+
+        ${
+          Number(livePrice)
+            .toLocaleString(
+              undefined,
+              {
+                minimumFractionDigits:2,
+                maximumFractionDigits:2
+              }
+            )
+        }
+
+      </div>
+
+      <div class="tc-sub">
+        SL:
+        ${o.sl}
+      </div>
+
+    </div>
+
+    <div class="trade-cell">
+
+      <div class="tc-label">
+        Liquid Price
+      </div>
+
+      <div class="tc-value neg">
+        ${liqPrice.toFixed(0)}
+      </div>
+
+    </div>
+
   </div>
 
 </div>
-    `
+`
   }
 
   el.innerHTML = html
