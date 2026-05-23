@@ -573,9 +573,20 @@ border-top:1px solid rgba(255,255,255,.05);
 
     .close-form-row{
 display:flex;
+align-items:flex-end;
 gap:12px;
-align-items:end;
-flex-wrap:wrap;
+flex-wrap:nowrap;
+}
+    .close-form-row .field{
+flex:1;
+margin:0;
+}
+
+.close-form-row .btn-confirm{
+height:40px;
+min-width:90px;
+margin:0;
+flex:none;
 }
 
     .btn-confirm {
