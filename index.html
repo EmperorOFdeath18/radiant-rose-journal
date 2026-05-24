@@ -1626,6 +1626,7 @@ Chart.defaults.font.size = 10;
 
 let trades = []
   let PAIRS = []
+  let LIVE_PRICES = {}
 let opens = []
   let pendings = []
   let donations = []
@@ -1801,38 +1802,10 @@ function calc(entry, sl, tp, size, lev, dir, et, xt){
 
 async function getLivePrice(pair){
 
-  try{
-
-    const target =
-      encodeURIComponent(
-        `https://api.bybit.id/v5/market/tickers?category=linear&symbol=${pair}`
-      )
-
-    const res = await fetch(
-      `https://corsproxy.io/?${target}`
-    )
-
-    const text = await res.text()
-
-    const data = JSON.parse(text)
-
-    return parseFloat(
-      data.result.list[0].lastPrice
-    )
-
-  }catch(err){
-
-    console.error(
-      'PRICE ERROR',
-      err
-    )
-
-    return 0
-
-  }
+  return LIVE_PRICES[pair] || 0
 
 }
-
+  
 function formatPairPrice(price){
 
   const p = Number(price)
@@ -2067,6 +2040,50 @@ const favorites = [
 
     console.error(
       'LOAD PAIRS ERROR',
+      err
+    )
+
+  }
+
+}
+
+  async function loadAllPrices(){
+
+  try{
+
+    const target =
+      encodeURIComponent(
+        'https://api.bybit.id/v5/market/tickers?category=linear'
+      )
+
+    const res = await fetch(
+      `https://corsproxy.io/?${target}`
+    )
+
+    const text =
+      await res.text()
+
+    const data =
+      JSON.parse(text)
+
+    LIVE_PRICES = {}
+
+    data.result.list.forEach(item=>{
+
+      LIVE_PRICES[item.symbol] =
+        parseFloat(item.lastPrice)
+
+    })
+
+    console.log(
+      'PRICES LOADED',
+      Object.keys(LIVE_PRICES).length
+    )
+
+  }catch(err){
+
+    console.error(
+      'LOAD PRICE ERROR',
       err
     )
 
@@ -4471,6 +4488,8 @@ tradesChannel.subscribe()
 
   await loadPairs()
 
+  await loadAllPrices()
+
   await loadTrades()
 
   loadDonations()
@@ -4487,6 +4506,8 @@ document.getElementById(
 )
 
 setInterval(async()=>{
+
+  await loadAllPrices()
 
   await loadTrades()
 
