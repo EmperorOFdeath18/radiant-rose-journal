@@ -1976,60 +1976,34 @@ async function suggestPairs(){
   try{
 
     const res = await fetch(
-      'https://api.bybit.id/v5/market/instruments-info?category=linear'
+      'https://api.bybit.com/v5/market/instruments-info?category=linear'
     )
 
     const data = await res.json()
 
     console.log(data)
 
+    if(
+      !data.result ||
+      !data.result.list
+    ){
+      return
+    }
+
     PAIRS =
       data.result.list
 
         .filter(i =>
 
-  i.symbol.endsWith('USDT') &&
-
-  i.status === 'Trading' &&
-
-  !i.symbol.startsWith('1000000') &&
-
-  !i.symbol.startsWith('10000')
-
-)
-
+          i.symbol &&
           i.symbol.endsWith('USDT') &&
-
-          i.status === 'Trading'
+          i.status === 'Trading' &&
+          !i.symbol.startsWith('1000000') &&
+          !i.symbol.startsWith('10000')
 
         )
 
         .map(i => i.symbol)
-
-    console.log(PAIRS)
-
-    const pairSelect =
-  document.getElementById(
-    'i-pair'
-  )
-
-pairSelect.innerHTML =
-`
-<option value="">
-  Pilih Pair
-</option>
-`
-
-PAIRS.forEach(pair => {
-
-  pairSelect.innerHTML +=
-`
-<option value="${pair}">
-  ${pair}
-</option>
-`
-
-})
 
     console.log(
       'PAIRS LOADED',
@@ -2042,12 +2016,6 @@ PAIRS.forEach(pair => {
       'LOAD PAIRS ERROR',
       err
     )
-
-    setTimeout(()=>{
-
-      loadPairs()
-
-    },3000)
 
   }
 
