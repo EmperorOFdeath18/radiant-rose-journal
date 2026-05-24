@@ -1761,6 +1761,8 @@ if(
   ).textContent =
     Number(price).toLocaleString()
 
+    updatePreview()
+    
 }
   
   async function loadPairs(){
@@ -2017,8 +2019,17 @@ function updatePreview(){
   const tp=parseFloat(document.getElementById('i-tp').value);
   const size=parseFloat(document.getElementById('i-size').value);
   const lev=parseFloat(document.getElementById('i-lev').value)||1;
-  const et=document.getElementById('i-etype').value;
-  const xt=document.getElementById('i-xtype').value;
+  const et =
+  document.getElementById(
+    'i-ordertype'
+  ).value === 'market'
+    ? 'taker'
+    : 'maker';
+
+const xt =
+  document.getElementById(
+    'i-xtype'
+  ).value;
   if(
   !Number.isFinite(entry) ||
   !Number.isFinite(sl) ||
@@ -4211,6 +4222,13 @@ db.channel('trades-live')
   loadTrades()
 loadDonations()
 updatePreview()
+
+  document.getElementById(
+  'i-pair'
+).addEventListener(
+  'change',
+  updatePreview
+)
  
   setInterval(async()=>{
 
