@@ -1966,27 +1966,27 @@ async function suggestPairs(){
     console.log(PAIRS)
 
     const pairSelect =
-      document.getElementById(
-        'i-pair'
-      )
+  document.getElementById(
+    'i-pair'
+  )
 
-    pairSelect.innerHTML =
+pairSelect.innerHTML =
 `
 <option value="">
   Pilih Pair
 </option>
 `
 
-    PAIRS.forEach(pair => {
+PAIRS.forEach(pair => {
 
-      pairSelect.innerHTML +=
+  pairSelect.innerHTML +=
 `
 <option value="${pair}">
   ${pair}
 </option>
 `
 
-    })
+})
 
     console.log(
       'PAIRS LOADED',
