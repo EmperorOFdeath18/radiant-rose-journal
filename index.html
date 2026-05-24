@@ -1915,17 +1915,62 @@ async function suggestPairs(){
     return
 
   }
+const favorites = [
 
+  'BTCUSDT',
+  'ETHUSDT',
+  'SOLUSDT',
+  'SUIUSDT',
+  'ADAUSDT',
+  'DOGEUSDT',
+  'XRPUSDT',
+  'SHIBUSDT'
+
+]
   const filtered =
-    PAIRS
 
-      .filter(p =>
+  PAIRS
 
-        p.includes(keyword)
+    .filter(p =>
 
-      )
+      p.startsWith(keyword)
 
-      .slice(0,8)
+    )
+
+    .sort((a,b)=>{
+
+      const majors = [
+
+        'BTCUSDT',
+        'ETHUSDT',
+        'SOLUSDT',
+        'BNBUSDT',
+        'XRPUSDT',
+        'DOGEUSDT',
+        'ADAUSDT',
+        'SUIUSDT',
+        'SHIBUSDT',
+        'AVAXUSDT'
+
+      ]
+
+      const aMajor =
+        majors.includes(a)
+
+      const bMajor =
+        majors.includes(b)
+
+      if(aMajor && !bMajor)
+        return -1
+
+      if(!aMajor && bMajor)
+        return 1
+
+      return a.length - b.length
+
+    })
+
+    .slice(0,8)
 
   if(!filtered.length){
 
