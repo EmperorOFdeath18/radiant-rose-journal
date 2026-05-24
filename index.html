@@ -1809,10 +1809,12 @@ async function getLivePrice(pair){
       )
 
     const res = await fetch(
-      `https://api.allorigins.win/raw?url=${target}`
+      `https://corsproxy.io/?${target}`
     )
 
-    const data = await res.json()
+    const text = await res.text()
+
+    const data = JSON.parse(text)
 
     return parseFloat(
       data.result.list[0].lastPrice
@@ -1989,10 +1991,14 @@ async function suggestPairs(){
       )
 
     const res = await fetch(
-      `https://api.allorigins.win/raw?url=${target}`
+      `https://corsproxy.io/?${target}`
     )
 
-    const data = await res.json()
+    const text = await res.text()
+
+    console.log(text)
+
+    const data = JSON.parse(text)
 
     PAIRS =
       data.result.list
