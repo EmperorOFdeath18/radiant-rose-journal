@@ -4368,10 +4368,17 @@ db.channel('trades-live')
   )
   .subscribe()
 
-  loadPairs()
-  loadTrades()
-loadDonations()
-updatePreview()
+(async()=>{
+
+  await loadPairs()
+
+  await loadTrades()
+
+  loadDonations()
+
+  updatePreview()
+
+})()
 
 document.getElementById(
   'i-pair'
@@ -4379,8 +4386,8 @@ document.getElementById(
   'input',
   updatePreview
 )
- 
-  setInterval(async()=>{
+
+setInterval(async()=>{
 
   await loadTrades()
 
