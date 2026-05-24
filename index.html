@@ -1163,36 +1163,12 @@ margin-bottom:4px;
   </div>
 
 </div>
-         <input
-  id="i-pair"
-  type="text"
-  placeholder="BTCUSDT"
-  autocomplete="off"
-  oninput="
-    this.value=this.value.toUpperCase();
-    suggestPairs();
-    updatePairPrice();
-  "
->
 
-<div
-  id="pair-suggest"
-  style="
-    margin-top:6px;
-    display:none;
-    background:var(--color-background-secondary);
-    border:1px solid var(--color-border-secondary);
-    border-radius:10px;
-    overflow:hidden;
-  "
-></div>
         <div class="field">
 
   <label>Arah Posisi</label>
 
   <div class="dir-wrap">
-
-    ...
   
   </div>
 
@@ -1591,90 +1567,6 @@ setInterval(updateDateDisplay, 60000);
 
 function getDir(){ return document.querySelector('input[name="dir"]:checked').value; }
 
-  function suggestPairs(){
-
-  const input =
-    document
-      .getElementById('i-pair')
-      .value
-      .trim()
-
-  const box =
-    document.getElementById(
-      'pair-suggest'
-    )
-
-  if(!input){
-
-    box.style.display = 'none'
-    return
-
-  }
-
-  const results =
-    PAIRS.filter(
-      p => p.includes(input)
-    ).slice(0,5)
-
-  if(results.length === 0){
-
-    box.style.display = 'none'
-    return
-
-  }
-
-  box.innerHTML =
-    results.map(p => `
-
-<div
-  onclick="selectPair('${p}')"
-  style="
-    padding:10px;
-    cursor:pointer;
-    border-bottom:1px solid rgba(255,255,255,.05);
-  "
->
-
-${p}
-
-</div>
-
-`).join('')
-
-  box.style.display = 'block'
-
-}
-
-document.querySelectorAll('input[name="dir"]').forEach(r => {
-  r.addEventListener('change', function(){
-    const isLong = this.value === 'long';
-    const lblL = document.getElementById('lbl-long');
-    const lblS = document.getElementById('lbl-short');
-    if(isLong){
-      lblL.style.cssText='background:rgba(0,191,143,0.12);color:#00BF8F;border-color:rgba(0,191,143,0.4)';
-      lblS.style.cssText='background:var(--color-background-secondary);color:var(--color-text-secondary);border-color:var(--color-border-secondary)';
-    } else {
-      lblS.style.cssText='background:rgba(232,73,96,0.12);color:#E84960;border-color:rgba(232,73,96,0.4)';
-      lblL.style.cssText='background:var(--color-background-secondary);color:var(--color-text-secondary);border-color:var(--color-border-secondary)';
-    }
-    updatePreview();
-  });
-});
-
-async function selectPair(pair){
-
-  document.getElementById(
-    'i-pair'
-  ).value = pair
-
-  document.getElementById(
-    'pair-suggest'
-  ).style.display = 'none'
-
-  await updatePairPrice()
-
-}
-  
 function showPanel(name, btn){
 
   localStorage.setItem(
