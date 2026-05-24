@@ -1803,21 +1803,29 @@ async function getLivePrice(pair){
 
   try{
 
+    const target =
+      encodeURIComponent(
+        `https://api.bybit.id/v5/market/tickers?category=linear&symbol=${pair}`
+      )
+
     const res = await fetch(
-      `https://api.bybit.com/v5/market/tickers?category=linear&symbol=${pair}`
+      `https://api.allorigins.win/raw?url=${target}`
     )
 
     const data = await res.json()
 
-    return Number(
+    return parseFloat(
       data.result.list[0].lastPrice
     )
 
   }catch(err){
 
-    console.error(err)
+    console.error(
+      'PRICE ERROR',
+      err
+    )
 
-    return null
+    return 0
 
   }
 
@@ -1975,18 +1983,16 @@ async function suggestPairs(){
 
   try{
 
+    const target =
+      encodeURIComponent(
+        'https://api.bybit.id/v5/market/instruments-info?category=linear'
+      )
+
     const res = await fetch(
-      'https://api.bybit.com/v5/market/instruments-info?category=linear'
+      `https://api.allorigins.win/raw?url=${target}`
     )
 
     const data = await res.json()
-
-    if(
-      !data.result ||
-      !data.result.list
-    ){
-      throw new Error('Invalid API')
-    }
 
     PAIRS =
       data.result.list
@@ -1995,9 +2001,7 @@ async function suggestPairs(){
 
           i.symbol &&
           i.symbol.endsWith('USDT') &&
-          i.status === 'Trading' &&
-          !i.symbol.startsWith('1000000') &&
-          !i.symbol.startsWith('10000')
+          i.status === 'Trading'
 
         )
 
@@ -2014,18 +2018,6 @@ async function suggestPairs(){
       'LOAD PAIRS ERROR',
       err
     )
-
-    PAIRS = [
-
-      'BTCUSDT',
-      'ETHUSDT',
-      'SOLUSDT',
-      'XRPUSDT',
-      'DOGEUSDT',
-      'SUIUSDT',
-      'BNBUSDT'
-
-    ]
 
   }
 
