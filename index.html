@@ -3101,13 +3101,18 @@ for(const o of opens){
   type="text"
   id="cx-${o.id}"
 
-  value="
-    ${
-      customFormState[o.id]
-? customFormState[o.id].price
-: ''
-    }
-  "
+  value="${
+  customFormState[o.id]?.price
+  || LIVE_PRICES[o.pair]
+  || o.entry
+}"
+
+${
+  customFormState[o.id]?.type
+  === 'maker'
+    ? 'readonly'
+    : ''
+}
 
   oninput="
     customFormState[${o.id}] = {
