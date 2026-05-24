@@ -1122,8 +1122,47 @@ border-top:1px solid #1C2C45;
       </div>
 
       <div class="form-grid">
-        <div class="field">
-          <label>Pair</label>
+
+  <div class="field">
+
+    <div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:4px;
+">
+
+<label style="margin:0">
+  Pair
+</label>
+
+<div
+  id="live-pair-price"
+  style="
+    font-size:12px;
+    font-family:var(--font-mono);
+    color:var(--green);
+  "
+>
+  —
+</div>
+
+</div>
+
+    <select
+      id="i-pair"
+      onchange="updatePairPrice()"
+    >
+
+      <option value="">
+        Pilih Pair
+      </option>
+
+    </select>
+
+  </div>
+
+</div>
          <input
   id="i-pair"
   type="text"
@@ -1148,8 +1187,16 @@ border-top:1px solid #1C2C45;
   "
 ></div>
         <div class="field">
-          <label>Arah Posisi</label>
-          <div class="dir-wrap">
+
+  <label>Arah Posisi</label>
+
+  <div class="dir-wrap">
+
+    ...
+  
+  </div>
+
+</div>
             <input type="radio" name="dir" id="dir-long" value="long" class="dir-opt" checked onchange="updatePreview()">
             <label for="dir-long" class="dir-label dir-label-long" id="lbl-long" style="background:rgba(0,191,143,0.12);color:#00BF8F;border-color:rgba(0,191,143,0.4)">
               <i class="ti ti-arrow-up" aria-hidden="true"></i> Long
