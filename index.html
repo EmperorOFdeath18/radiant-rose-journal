@@ -2353,7 +2353,12 @@ function getInputs(){
     tp:parseFloat(document.getElementById('i-tp').value),
     size:parseFloat(document.getElementById('i-size').value),
     lev:parseFloat(document.getElementById('i-lev').value)||1,
-    et:document.getElementById('i-etype').value,
+    et:
+  document.getElementById(
+    'i-ordertype'
+  ).value === 'market'
+    ? 'taker'
+    : 'maker',
     xt:document.getElementById('i-xtype').value,
     date:document.getElementById('i-date').value,
     note:document.getElementById('i-note').value,
