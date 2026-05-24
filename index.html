@@ -65,7 +65,74 @@
         radial-gradient(circle at 80% 80%, rgba(59,158,245,0.03) 0%, transparent 50%),
         radial-gradient(rgba(28, 44, 69, 0.45) 1px, transparent 1px);
       background-size: 100% 100%, 100% 100%, 28px 28px;
-    }
+      
+    .pair-suggest{
+
+  position:absolute;
+  top:100%;
+  left:0;
+  right:0;
+
+  background:
+    var(--color-background-secondary);
+
+  border:
+    1px solid var(--color-border-secondary);
+
+  border-radius:12px;
+
+  overflow:hidden;
+
+  margin-top:6px;
+
+  z-index:100;
+
+  display:none;
+
+  max-height:260px;
+
+  overflow-y:auto;
+
+}
+
+.pair-item{
+
+  padding:12px 14px;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  cursor:pointer;
+
+  transition:.15s;
+
+}
+
+.pair-item:hover{
+
+  background:
+    rgba(255,255,255,0.04);
+
+}
+
+.pair-symbol{
+
+  font-weight:600;
+
+}
+
+.pair-price{
+
+  color:var(--green);
+
+  font-size:13px;
+
+  font-family:var(--font-mono);
+
+}
 
     /* ── LAYOUT ── */
     .app {
@@ -1126,40 +1193,47 @@ border-top:1px solid #1C2C45;
   <!-- PAIR -->
   <div class="field">
 
-    <div style="
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:4px;
-    ">
+  <div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:6px;
+  ">
 
-      <label style="margin:0">
-        Pair
-      </label>
+    <label style="margin:0">
+      Pair
+    </label>
 
-      <div
-        id="live-pair-price"
-        style="
-          font-size:12px;
-          font-family:var(--font-mono);
-          color:var(--green);
-        "
-      >
-        —
-      </div>
-
+    <div
+      id="live-pair-price"
+      style="
+        font-size:12px;
+        color:var(--green);
+        font-family:var(--font-mono);
+      "
+    >
+      —
     </div>
 
-    <select
+  </div>
+
+  <div style="position:relative">
+
+    <input
       id="i-pair"
-      onchange="updatePairPrice()"
+      type="text"
+      placeholder="BTCUSDT"
+      autocomplete="off"
+      oninput="
+        this.value=this.value.toUpperCase();
+        suggestPairs();
+      "
     >
 
-      <option value="">
-        Pilih Pair
-      </option>
-
-    </select>
+    <div
+      id="pair-suggest"
+      class="pair-suggest"
+    ></div>
 
   </div>
 
@@ -1728,30 +1802,15 @@ async function getLivePrice(pair){
   async function updatePairPrice(){
 
   const pair =
-    document
-      .getElementById('i-pair')
-      .value
-      .trim()
+    document.getElementById(
+      'i-pair'
+    ).value.trim()
 
   if(!pair)
     return
 
   const price =
     await getLivePrice(pair)
-
-    const entryInput =
-  document.getElementById(
-    'i-entry'
-  )
-
-if(
-  !entryInput.value
-){
-
-  entryInput.value =
-    Number(price).toFixed(2)
-
-}
 
   if(!price)
     return
@@ -1761,8 +1820,98 @@ if(
   ).textContent =
     Number(price).toLocaleString()
 
-    updatePreview()
-    
+  document.getElementById(
+    'i-entry'
+  ).value =
+    Number(price).toFixed(4)
+
+  updatePreview()
+
+}
+
+async function suggestPairs(){
+
+  const keyword =
+    document.getElementById(
+      'i-pair'
+    ).value.trim()
+
+  const box =
+    document.getElementById(
+      'pair-suggest'
+    )
+
+  if(!keyword){
+
+    box.style.display='none'
+
+    return
+
+  }
+
+  const filtered =
+    PAIRS
+
+      .filter(p =>
+
+        p.includes(keyword)
+
+      )
+
+      .slice(0,8)
+
+  if(!filtered.length){
+
+    box.style.display='none'
+
+    return
+
+  }
+
+  let html=''
+
+  for(const pair of filtered){
+
+    const price =
+      await getLivePrice(pair)
+
+    html += `
+<div
+  class="pair-item"
+  onclick="selectPair('${pair}')"
+>
+
+  <div class="pair-symbol">
+    ${pair}
+  </div>
+
+  <div class="pair-price">
+    ${Number(price).toLocaleString()}
+  </div>
+
+</div>
+`
+
+  }
+
+  box.innerHTML = html
+
+  box.style.display='block'
+
+}
+
+  async function selectPair(pair){
+
+  document.getElementById(
+    'i-pair'
+  ).value = pair
+
+  document.getElementById(
+    'pair-suggest'
+  ).style.display='none'
+
+  await updatePairPrice()
+
 }
   
   async function loadPairs(){
@@ -4219,14 +4368,15 @@ db.channel('trades-live')
   )
   .subscribe()
 
+  loadPairs()
   loadTrades()
 loadDonations()
 updatePreview()
 
-  document.getElementById(
+document.getElementById(
   'i-pair'
 ).addEventListener(
-  'change',
+  'input',
   updatePreview
 )
  
