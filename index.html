@@ -1818,12 +1818,13 @@ if(
     console.error(
       'LOAD PAIRS ERROR',
       err
+      await loadPairs()
     )
 
   }
 
 }
-  await loadPairs()
+  
   
 function calcLivePNL(
   trade,
