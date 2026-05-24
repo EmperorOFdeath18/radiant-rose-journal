@@ -1823,6 +1823,39 @@ async function getLivePrice(pair){
 
 }
 
+function formatPairPrice(price){
+
+  const p = Number(price)
+
+  if(!p) return '-'
+
+  if(p >= 1000){
+
+    return p.toLocaleString(
+      undefined,
+      {
+        maximumFractionDigits:2
+      }
+    )
+
+  }
+
+  if(p >= 1){
+
+    return p.toFixed(3)
+
+  }
+
+  if(p >= 0.01){
+
+    return p.toFixed(4)
+
+  }
+
+  return p.toFixed(8)
+
+}
+  
   async function updatePairPrice(){
 
   const pair =
@@ -1910,7 +1943,7 @@ async function suggestPairs(){
   </div>
 
   <div class="pair-price">
-    ${Number(price).toLocaleString()}
+    ${formatPairPrice(price)}
   </div>
 
 </div>
@@ -1954,6 +1987,16 @@ async function suggestPairs(){
       data.result.list
 
         .filter(i =>
+
+  i.symbol.endsWith('USDT') &&
+
+  i.status === 'Trading' &&
+
+  !i.symbol.startsWith('1000000') &&
+
+  !i.symbol.startsWith('10000')
+
+)
 
           i.symbol.endsWith('USDT') &&
 
