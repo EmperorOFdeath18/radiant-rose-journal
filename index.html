@@ -1123,31 +1123,32 @@ border-top:1px solid #1C2C45;
 
       <div class="form-grid">
 
+  <!-- PAIR -->
   <div class="field">
 
     <div style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:4px;
-">
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:4px;
+    ">
 
-<label style="margin:0">
-  Pair
-</label>
+      <label style="margin:0">
+        Pair
+      </label>
 
-<div
-  id="live-pair-price"
-  style="
-    font-size:12px;
-    font-family:var(--font-mono);
-    color:var(--green);
-  "
->
-  —
-</div>
+      <div
+        id="live-pair-price"
+        style="
+          font-size:12px;
+          font-family:var(--font-mono);
+          color:var(--green);
+        "
+      >
+        —
+      </div>
 
-</div>
+    </div>
 
     <select
       id="i-pair"
@@ -1164,67 +1165,81 @@ margin-bottom:4px;
 
 </div>
 
-        <div class="field">
+<!-- ARAH POSISI -->
+<div class="field">
 
   <label>Arah Posisi</label>
 
   <div class="dir-wrap">
-  
+
+    <input
+      type="radio"
+      name="dir"
+      id="dir-long"
+      value="long"
+      class="dir-opt"
+      checked
+      onchange="updatePreview()"
+    >
+
+    <label
+      for="dir-long"
+      class="dir-label dir-label-long"
+      id="lbl-long"
+      style="
+        background:rgba(0,191,143,0.12);
+        color:#00BF8F;
+        border-color:rgba(0,191,143,0.4)
+      "
+    >
+      <i class="ti ti-arrow-up"></i>
+      Long
+    </label>
+
+    <input
+      type="radio"
+      name="dir"
+      id="dir-short"
+      value="short"
+      class="dir-opt"
+      onchange="updatePreview()"
+    >
+
+    <label
+      for="dir-short"
+      class="dir-label dir-label-short"
+      id="lbl-short"
+    >
+      <i class="ti ti-arrow-down"></i>
+      Short
+    </label>
+
   </div>
 
 </div>
-            <input type="radio" name="dir" id="dir-long" value="long" class="dir-opt" checked onchange="updatePreview()">
-            <label for="dir-long" class="dir-label dir-label-long" id="lbl-long" style="background:rgba(0,191,143,0.12);color:#00BF8F;border-color:rgba(0,191,143,0.4)">
-              <i class="ti ti-arrow-up" aria-hidden="true"></i> Long
-            </label>
-            <input type="radio" name="dir" id="dir-short" value="short" class="dir-opt" onchange="updatePreview()">
-            <label for="dir-short" class="dir-label dir-label-short" id="lbl-short">
-              <i class="ti ti-arrow-down" aria-hidden="true"></i> Short
-            </label>
-          </div>
-        </div>
-      </div>
-     
-      <div class="form-grid">
+
+<!-- ORDER TYPE -->
+<div class="form-grid">
 
   <div class="field">
 
-    <div class="field">
-
-  <div style="
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:4px;
-  ">
-
-    <label style="margin:0">
+    <label>
       Order Type
     </label>
 
-    <div id="live-pair-price"
-      style="
-        font-size:12px;
-        font-family:var(--font-mono);
-        color:var(--green);
-      "
-    >
-      —
-    </div>
+    <select id="i-ordertype">
+
+      <option value="market">
+        Market
+      </option>
+
+      <option value="limit">
+        Limit
+      </option>
+
+    </select>
 
   </div>
-
-  <select id="i-ordertype">
-
-    <option value="market">
-      Market
-    </option>
-
-    <option value="limit">
-      Limit
-    </option>
-
-  </select>
 
 </div>
 
