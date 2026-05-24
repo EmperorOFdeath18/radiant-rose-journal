@@ -1883,8 +1883,9 @@ function getInputs(){
     xt:document.getElementById('i-xtype').value,
     date:document.getElementById('i-date').value,
     note:document.getElementById('i-note').value,
-    dir:getDir()
-    orderType:
+    dir:getDir(),
+
+orderType:
   document.getElementById(
     'i-ordertype'
   ).value,
@@ -2262,13 +2263,6 @@ async function deleteOpen(id){
 }
 
 function updateBadge(){ document.getElementById('open-badge').textContent=opens.length; }
-  
-  const pendingEl =
-  document.getElementById(
-    'pending-list'
-  )
-
-let pendingHtml = ''
 
 async function renderOpen(){
 
@@ -2276,6 +2270,13 @@ async function renderOpen(){
     opens.length + ' posisi'
 
   const el = document.getElementById('open-list')
+
+  const pendingEl =
+  document.getElementById(
+    'pending-list'
+  )
+
+let pendingHtml = ''
 
   if(opens.length === 0){
     el.innerHTML = `
@@ -2286,6 +2287,8 @@ async function renderOpen(){
     `
     return
   }
+  
+  pendingHtml = ''
 
   for(const p of pendings){
 
@@ -2704,6 +2707,7 @@ for(const o of opens){
 }
   pendingEl.innerHTML =
   pendingHtml
+  
 el.innerHTML = html
 
 }
