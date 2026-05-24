@@ -1792,7 +1792,7 @@ if(
       )
 
     pairSelect.innerHTML =
-      `
+`
 <option value="">
   Pilih Pair
 </option>
@@ -1800,7 +1800,8 @@ if(
 
     PAIRS.forEach(pair => {
 
-      pairSelect.innerHTML += `
+      pairSelect.innerHTML +=
+`
 <option value="${pair}">
   ${pair}
 </option>
@@ -1818,13 +1819,17 @@ if(
     console.error(
       'LOAD PAIRS ERROR',
       err
-      await loadPairs()
     )
+
+    setTimeout(()=>{
+
+      loadPairs()
+
+    },3000)
 
   }
 
 }
-  
   
 function calcLivePNL(
   trade,
