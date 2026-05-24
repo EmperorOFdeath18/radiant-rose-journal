@@ -1172,47 +1172,27 @@ border-top:1px solid #1C2C45;
 
   <div class="dir-wrap">
 
-    <input
-      type="radio"
-      name="dir"
-      id="dir-long"
-      value="long"
-      class="dir-opt"
-      checked
-      onchange="updatePreview()"
-    >
+  <button
+    type="button"
+    id="btn-long"
+    class="dir-label dir-label-long active"
+    onclick="setDir('LONG')"
+  >
+    <i class="ti ti-arrow-up"></i>
+    LONG
+  </button>
 
-    <label
-      for="dir-long"
-      class="dir-label dir-label-long"
-      id="lbl-long"
-      style="
-        background:rgba(0,191,143,0.12);
-        color:#00BF8F;
-        border-color:rgba(0,191,143,0.4)
-      "
-    >
-      <i class="ti ti-arrow-up"></i>
-      Long
-    </label>
+  <button
+    type="button"
+    id="btn-short"
+    class="dir-label dir-label-short"
+    onclick="setDir('SHORT')"
+  >
+    <i class="ti ti-arrow-down"></i>
+    SHORT
+  </button>
 
-    <input
-      type="radio"
-      name="dir"
-      id="dir-short"
-      value="short"
-      class="dir-opt"
-      onchange="updatePreview()"
-    >
-
-    <label
-      for="dir-short"
-      class="dir-label dir-label-short"
-      id="lbl-short"
-    >
-      <i class="ti ti-arrow-down"></i>
-      Short
-    </label>
+</div>
 
   </div>
 
@@ -1254,13 +1234,6 @@ border-top:1px solid #1C2C45;
         <div class="field"><label>Tanggal</label><input id="i-date" type="date"></div>
       </div>
       <div class="form-grid">
-        <div class="field">
-          <label>Order Entry</label>
-          <select id="i-etype" onchange="updatePreview()">
-            <option value="maker">Limit — maker (0.02%)</option>
-            <option value="taker">Market — taker (0.055%)</option>
-          </select>
-        </div>
         <div class="field">
           <label>Order Exit</label>
           <select id="i-xtype" onchange="updatePreview()">
@@ -1580,7 +1553,53 @@ function updateDateDisplay(){
 updateDateDisplay();
 setInterval(updateDateDisplay, 60000);
 
-function getDir(){ return document.querySelector('input[name="dir"]:checked').value; }
+function getDir(){
+
+  return ACTIVE_DIR
+
+}
+
+  let ACTIVE_DIR = 'LONG'
+
+function setDir(dir){
+
+  ACTIVE_DIR = dir
+
+  const longBtn =
+    document.getElementById(
+      'btn-long'
+    )
+
+  const shortBtn =
+    document.getElementById(
+      'btn-short'
+    )
+
+  longBtn.classList.remove(
+    'active'
+  )
+
+  shortBtn.classList.remove(
+    'active'
+  )
+
+  if(dir === 'LONG'){
+
+    longBtn.classList.add(
+      'active'
+    )
+
+  }else{
+
+    shortBtn.classList.add(
+      'active'
+    )
+
+  }
+
+  updatePreview()
+
+}
 
 function showPanel(name, btn){
 
@@ -1756,15 +1775,38 @@ if(
 
     PAIRS =
       data.result.list
-        .map(i => i.symbol)
+
         .filter(i =>
 
-  i.symbol.endsWith('USDT') &&
+          i.symbol.endsWith('USDT') &&
 
-  i.status === 'Trading'
+          i.status === 'Trading'
 
-)
-.map(i => i.symbol)
+        )
+
+        .map(i => i.symbol)
+
+    const pairSelect =
+      document.getElementById(
+        'i-pair'
+      )
+
+    pairSelect.innerHTML =
+      `
+<option value="">
+  Pilih Pair
+</option>
+`
+
+    PAIRS.forEach(pair => {
+
+      pairSelect.innerHTML += `
+<option value="${pair}">
+  ${pair}
+</option>
+`
+
+    })
 
     console.log(
       'PAIRS LOADED',
@@ -1781,6 +1823,7 @@ if(
   }
 
 }
+  await loadPairs()
   
 function calcLivePNL(
   trade,
@@ -2061,7 +2104,12 @@ async function saveOpen(){
 
       timeframe: '4H',
 
-et: v.et,
+et:
+  document.getElementById(
+    'i-ordertype'
+  ).value === 'market'
+    ? 'taker'
+    : 'maker',
 xt: v.xt
     }])
 
