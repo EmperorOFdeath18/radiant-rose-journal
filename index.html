@@ -2003,33 +2003,49 @@ const favorites = [
 
   try{
 
-    const target =
-      encodeURIComponent(
-        'https://api.bybit.id/v5/market/instruments-info?category=linear'
+    let allPairs = []
+    let cursor = ''
+
+    while(true){
+
+      const url =
+        `https://api.bybit.id/v5/market/instruments-info?category=linear&limit=1000${
+          cursor ? `&cursor=${cursor}` : ''
+        }`
+
+      const target =
+        encodeURIComponent(url)
+
+      const res = await fetch(
+        `https://corsproxy.io/?${target}`
       )
 
-    const res = await fetch(
-      `https://corsproxy.io/?${target}`
-    )
+      const text = await res.text()
 
-    const text = await res.text()
+      const data = JSON.parse(text)
 
-    console.log(text)
+      if(!data?.result?.list){
+  console.error(data)
+  return
+}
 
-    const data = JSON.parse(text)
+      const list = data?.result?.list || []
 
-    PAIRS =
-      data.result.list
+      allPairs.push(...list)
 
-        .filter(i =>
+      cursor = data?.result?.nextPageCursor
 
-          i.symbol &&
-          i.symbol.endsWith('USDT') &&
-          i.status === 'Trading'
+      if(!cursor) break
 
-        )
+    }
 
-        .map(i => i.symbol)
+    PAIRS = allPairs
+      .filter(i =>
+        i.symbol &&
+        i.symbol.endsWith('USDT') &&
+        i.status === 'Trading'
+      )
+      .map(i => i.symbol)
 
     console.log(
       'PAIRS LOADED',
@@ -2046,7 +2062,6 @@ const favorites = [
   }
 
 }
-
   async function loadAllPrices(){
 
   try{
