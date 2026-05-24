@@ -1804,7 +1804,7 @@ async function getLivePrice(pair){
   try{
 
     const res = await fetch(
-      `https://api.bybit.id/v5/market/tickers?category=linear&symbol=${pair}`
+      `https://api.bybit.com/v5/market/tickers?category=linear&symbol=${pair}`
     )
 
     const data = await res.json()
@@ -1981,13 +1981,11 @@ async function suggestPairs(){
 
     const data = await res.json()
 
-    console.log(data)
-
     if(
       !data.result ||
       !data.result.list
     ){
-      return
+      throw new Error('Invalid API')
     }
 
     PAIRS =
@@ -2016,6 +2014,18 @@ async function suggestPairs(){
       'LOAD PAIRS ERROR',
       err
     )
+
+    PAIRS = [
+
+      'BTCUSDT',
+      'ETHUSDT',
+      'SOLUSDT',
+      'XRPUSDT',
+      'DOGEUSDT',
+      'SUIUSDT',
+      'BNBUSDT'
+
+    ]
 
   }
 
