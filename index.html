@@ -1102,7 +1102,15 @@ margin-top:18px;
         <div class="card-title"><i class="ti ti-player-play" aria-hidden="true"></i>Posisi Aktif</div>
         <div style="font-size:11.5px;color:var(--color-text-tertiary);font-family:var(--font-mono)" id="open-total-lbl">0 posisi</div>
       </div>
-      <div id="open-list"></div>
+      <div id="pending-list"></div>
+
+<hr style="
+margin:20px 0;
+border:none;
+border-top:1px solid #1C2C45;
+">
+
+<div id="open-list"></div>
     </div>
   </div>
 
@@ -1132,6 +1140,28 @@ margin-top:18px;
           </div>
         </div>
       </div>
+     
+      <div class="form-grid">
+
+  <div class="field">
+
+    <label>Order Type</label>
+
+    <select id="i-ordertype">
+
+      <option value="market">
+        Market
+      </option>
+
+      <option value="limit">
+        Limit
+      </option>
+
+    </select>
+
+  </div>
+
+</div>
 
       <div class="form-grid3">
         <div class="field"><label>Entry (USDT)</label><input id="i-entry" type="number" placeholder="65000" step="any" oninput="updatePreview()"></div>
@@ -1445,6 +1475,7 @@ Chart.defaults.font.size = 10;
 
 let trades = []
 let opens = []
+  let pendings = []
   let donations = []
 let cfg = {
   maker: 0.02,
@@ -1678,6 +1709,117 @@ function calcLiquidPrice(entry, leverage, side){
   )
 
 }
+
+  async function checkPendingOrders(){
+
+  for(const p of pendings){
+
+    const price =
+      await getLivePrice(
+        p.pair
+      )
+
+    const isLong =
+      p.side === 'LONG'
+
+    let triggered = false
+
+    // LONG LIMIT
+    if(
+      isLong &&
+      price <= p.entry
+    ){
+      triggered = true
+    }
+
+    // SHORT LIMIT
+    if(
+      !isLong &&
+      price >= p.entry
+    ){
+      triggered = true
+    }
+
+    if(triggered){
+
+      await db
+        .from('trades')
+        .update({
+          status:'OPEN'
+        })
+        .eq('id', p.id)
+
+      console.log(
+        'LIMIT TRIGGERED',
+        p.pair
+      )
+
+    }
+
+  }
+
+}
+
+  async function checkAutoClose(){
+
+  for(const o of opens){
+
+    const price =
+      await getLivePrice(
+        o.pair
+      )
+
+    const isLong =
+      o.side === 'LONG'
+
+    let hitTP = false
+    let hitSL = false
+    if(o.status !== 'OPEN')
+  continue
+
+    // LONG
+    if(isLong){
+
+      if(price >= o.tp)
+        hitTP = true
+
+      if(price <= o.sl)
+        hitSL = true
+
+    }
+
+    // SHORT
+    else{
+
+      if(price <= o.tp)
+        hitTP = true
+
+      if(price >= o.sl)
+        hitSL = true
+
+    }
+
+    if(hitTP){
+
+      await closeOpen(
+        o.id,
+        'win'
+      )
+
+    }
+
+    if(hitSL){
+
+      await closeOpen(
+        o.id,
+        'loss'
+      )
+
+    }
+
+  }
+
+}
   
 function updatePreview(){
   const entry=parseFloat(document.getElementById('i-entry').value);
@@ -1729,6 +1871,7 @@ const pp =
 }
 
 function getInputs(){
+  
   return{
     pair:document.getElementById('i-pair').value.toUpperCase().trim(),
     entry:parseFloat(document.getElementById('i-entry').value),
@@ -1741,6 +1884,10 @@ function getInputs(){
     date:document.getElementById('i-date').value,
     note:document.getElementById('i-note').value,
     dir:getDir()
+    orderType:
+  document.getElementById(
+    'i-ordertype'
+  ).value,
   };
 }
 
@@ -1758,7 +1905,10 @@ async function saveOpen(){
     .insert([{
       pair: v.pair,
       side: v.dir.toUpperCase(),
-      status: 'OPEN',
+      status:
+  v.orderType === 'limit'
+    ? 'PENDING'
+    : 'OPEN',
 
       entry: v.entry,
       sl: v.sl,
@@ -2112,6 +2262,13 @@ async function deleteOpen(id){
 }
 
 function updateBadge(){ document.getElementById('open-badge').textContent=opens.length; }
+  
+  const pendingEl =
+  document.getElementById(
+    'pending-list'
+  )
+
+let pendingHtml = ''
 
 async function renderOpen(){
 
@@ -2130,6 +2287,65 @@ async function renderOpen(){
     return
   }
 
+  for(const p of pendings){
+
+  const livePrice =
+    await getLivePrice(
+      p.pair
+    )
+
+  pendingHtml += `
+
+<div class="open-card">
+
+  <div class="trade-head">
+
+    <div>
+
+      <div class="trade-pair">
+        ${p.pair}
+      </div>
+
+      <div class="trade-side">
+        LIMIT PENDING
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="trade-grid">
+
+    <div class="trade-cell">
+
+      <div class="tc-label">
+        Entry Target
+      </div>
+
+      <div class="tc-value">
+        ${p.entry}
+      </div>
+
+    </div>
+
+    <div class="trade-cell">
+
+      <div class="tc-label">
+        Live Price
+      </div>
+
+      <div class="tc-value pos">
+        ${livePrice}
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+`
+}
+  
 let html = ''
 
 for(const o of opens){
@@ -2486,7 +2702,8 @@ for(const o of opens){
 </div>
 `
 }
-  
+  pendingEl.innerHTML =
+  pendingHtml
 el.innerHTML = html
 
 }
@@ -3552,7 +3769,12 @@ supabase.createClient(
 
   opens = data
   .filter(t => t.status === 'OPEN')
+    pendings =
+  data.filter(
+    t => t.status === 'PENDING'
+  )
   .map(t => {
+    
 
     const c = calc(
       Number(t.entry),
@@ -3790,6 +4012,18 @@ db.channel('trades-live')
   loadTrades()
 loadDonations()
 updatePreview()
+ 
+  setInterval(async()=>{
+
+  await loadTrades()
+
+  await checkPendingOrders()
+
+  await checkAutoClose()
+
+  renderOpen()
+
+},3000)
   
 </script>
 </body>
