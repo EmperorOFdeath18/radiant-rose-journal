@@ -1124,8 +1124,29 @@ border-top:1px solid #1C2C45;
       <div class="form-grid">
         <div class="field">
           <label>Pair</label>
-          <input id="i-pair" type="text" placeholder="BTCUSDT" oninput="this.value=this.value.toUpperCase()">
-        </div>
+         <input
+  id="i-pair"
+  type="text"
+  placeholder="BTCUSDT"
+  autocomplete="off"
+  oninput="
+    this.value=this.value.toUpperCase();
+    suggestPairs();
+    updatePairPrice();
+  "
+>
+
+<div
+  id="pair-suggest"
+  style="
+    margin-top:6px;
+    display:none;
+    background:var(--color-background-secondary);
+    border:1px solid var(--color-border-secondary);
+    border-radius:10px;
+    overflow:hidden;
+  "
+></div>
         <div class="field">
           <label>Arah Posisi</label>
           <div class="dir-wrap">
@@ -1145,21 +1166,42 @@ border-top:1px solid #1C2C45;
 
   <div class="field">
 
-    <label>Order Type</label>
+    <div class="field">
 
-    <select id="i-ordertype">
+  <div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:4px;
+  ">
 
-      <option value="market">
-        Market
-      </option>
+    <label style="margin:0">
+      Order Type
+    </label>
 
-      <option value="limit">
-        Limit
-      </option>
-
-    </select>
+    <div id="live-pair-price"
+      style="
+        font-size:12px;
+        font-family:var(--font-mono);
+        color:var(--green);
+      "
+    >
+      —
+    </div>
 
   </div>
+
+  <select id="i-ordertype">
+
+    <option value="market">
+      Market
+    </option>
+
+    <option value="limit">
+      Limit
+    </option>
+
+  </select>
 
 </div>
 
@@ -1474,6 +1516,7 @@ Chart.defaults.font.family = "'JetBrains Mono', monospace";
 Chart.defaults.font.size = 10;
 
 let trades = []
+  let PAIRS = []
 let opens = []
   let pendings = []
   let donations = []
@@ -1501,6 +1544,60 @@ setInterval(updateDateDisplay, 60000);
 
 function getDir(){ return document.querySelector('input[name="dir"]:checked').value; }
 
+  function suggestPairs(){
+
+  const input =
+    document
+      .getElementById('i-pair')
+      .value
+      .trim()
+
+  const box =
+    document.getElementById(
+      'pair-suggest'
+    )
+
+  if(!input){
+
+    box.style.display = 'none'
+    return
+
+  }
+
+  const results =
+    PAIRS.filter(
+      p => p.includes(input)
+    ).slice(0,5)
+
+  if(results.length === 0){
+
+    box.style.display = 'none'
+    return
+
+  }
+
+  box.innerHTML =
+    results.map(p => `
+
+<div
+  onclick="selectPair('${p}')"
+  style="
+    padding:10px;
+    cursor:pointer;
+    border-bottom:1px solid rgba(255,255,255,.05);
+  "
+>
+
+${p}
+
+</div>
+
+`).join('')
+
+  box.style.display = 'block'
+
+}
+
 document.querySelectorAll('input[name="dir"]').forEach(r => {
   r.addEventListener('change', function(){
     const isLong = this.value === 'long';
@@ -1517,6 +1614,20 @@ document.querySelectorAll('input[name="dir"]').forEach(r => {
   });
 });
 
+async function selectPair(pair){
+
+  document.getElementById(
+    'i-pair'
+  ).value = pair
+
+  document.getElementById(
+    'pair-suggest'
+  ).style.display = 'none'
+
+  await updatePairPrice()
+
+}
+  
 function showPanel(name, btn){
 
   localStorage.setItem(
@@ -1636,6 +1747,82 @@ async function getLivePrice(pair){
     console.error(err)
 
     return null
+
+  }
+
+}
+
+  async function updatePairPrice(){
+
+  const pair =
+    document
+      .getElementById('i-pair')
+      .value
+      .trim()
+
+  if(!pair)
+    return
+
+  const price =
+    await getLivePrice(pair)
+
+    const entryInput =
+  document.getElementById(
+    'i-entry'
+  )
+
+if(
+  !entryInput.value
+){
+
+  entryInput.value =
+    Number(price).toFixed(2)
+
+}
+
+  if(!price)
+    return
+
+  document.getElementById(
+    'live-pair-price'
+  ).textContent =
+    Number(price).toLocaleString()
+
+}
+  
+  async function loadPairs(){
+
+  try{
+
+    const res = await fetch(
+      'https://api.bybit.id/v5/market/instruments-info?category=linear'
+    )
+
+    const data = await res.json()
+
+    PAIRS =
+      data.result.list
+        .map(i => i.symbol)
+        .filter(i =>
+
+  i.symbol.endsWith('USDT') &&
+
+  i.status === 'Trading'
+
+)
+.map(i => i.symbol)
+
+    console.log(
+      'PAIRS LOADED',
+      PAIRS.length
+    )
+
+  }catch(err){
+
+    console.error(
+      'LOAD PAIRS ERROR',
+      err
+    )
 
   }
 
