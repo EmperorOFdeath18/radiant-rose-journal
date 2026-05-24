@@ -435,6 +435,30 @@ background:transparent;
       user-select: none;
     }
 
+      .dir-label.active{
+
+  background:
+    rgba(0,191,143,0.12);
+
+  border-color:
+    rgba(0,191,143,0.4);
+
+  color:#00BF8F;
+
+}
+
+.dir-label-short.active{
+
+  background:
+    rgba(232,73,96,0.12);
+
+  border-color:
+    rgba(232,73,96,0.4);
+
+  color:#E84960;
+
+}
+
     /* ── PREVIEW BOX ── */
     .preview-box {
       background: var(--color-background-secondary);
@@ -1924,6 +1948,8 @@ async function suggestPairs(){
 
     const data = await res.json()
 
+    console.log(data)
+
     PAIRS =
       data.result.list
 
@@ -1936,6 +1962,8 @@ async function suggestPairs(){
         )
 
         .map(i => i.symbol)
+
+    console.log(PAIRS)
 
     const pairSelect =
       document.getElementById(
@@ -4354,19 +4382,24 @@ async function markDonationSent(){
   alert('Donasi berhasil disalurkan')
 }
 
-db.channel('trades-live')
-  .on(
-    'postgres_changes',
-    {
-      event: '*',
-      schema: 'public',
-      table: 'trades'
-    },
-    () => {
+const tradesChannel =
+  db.channel('trades-live')
 
-    }
-  )
-  .subscribe()
+tradesChannel.on(
+  'postgres_changes',
+  {
+    event:'*',
+    schema:'public',
+    table:'trades'
+  },
+  ()=>{
+
+    loadTrades()
+
+  }
+)
+
+tradesChannel.subscribe()
 
 (async()=>{
 
