@@ -2631,8 +2631,28 @@ async function saveClosed(){
 
 
 function clearForm(){
-  ['i-pair','i-entry','i-sl','i-tp','i-size','i-note'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('i-lev').value='10';
+
+  [
+    'i-pair',
+    'i-entry',
+    'i-sl',
+    'i-tp',
+    'i-size',
+    'i-note'
+  ].forEach(id => {
+
+    const el = document.getElementById(id)
+
+    if(el){
+      el.value = ''
+    }
+
+  })
+
+  document.getElementById('i-lev').value = 10
+
+  updatePreview()
+
 }
 
 async function closeOpen(id, mode){
@@ -4491,7 +4511,9 @@ tradesChannel.on(
 tradesChannel.subscribe()
 */
 
-(async()=>{
+document.addEventListener(
+  'DOMContentLoaded',
+  async () => {
 
   await loadPairs()
 
