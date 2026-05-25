@@ -4260,8 +4260,11 @@ supabase.createClient(
     return
   }
 
-  opens = data
-  .filter(t => t.status === 'OPEN')
+  opens = data.filter(
+  t =>
+    t.status === 'OPEN' ||
+    t.status === 'PENDING'
+)
     pendings =
   data.filter(
     t => t.status === 'PENDING'
@@ -4314,7 +4317,6 @@ supabase.createClient(
 
   renderDashboard()
   renderOpen()
-   renderPending()
   renderJournal()
   renderStats()
   updateBadge()
