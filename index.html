@@ -2838,11 +2838,21 @@ async function renderOpen(){
       <div class="tc-value neg">
         ${p.sl}
       </div>
-    </div>
+     </div>
+
+  <div class="open-actions">
+
+    <button
+      class="btn-cl"
+      onclick="cancelPending('${p.id}')"
+    >
+      Cancel Order
+    </button>
 
   </div>
 
 </div>
+
 `
 
   }
@@ -2889,6 +2899,46 @@ async function renderOpen(){
 
 }
 
+async function cancelPending(id){
+
+  const yes =
+    confirm(
+      'Batalkan pending order ini?'
+    )
+
+  if(!yes) return
+
+  try{
+
+    const {
+      error
+    } = await supabase
+      .from('trades')
+      .update({
+        status:'CANCELLED'
+      })
+      .eq('id', id)
+
+    if(error) throw error
+
+    await loadTrades()
+
+    await renderOpen()
+
+    renderDashboard()
+
+  }catch(err){
+
+    console.error(err)
+
+    alert(
+      'Gagal cancel order'
+    )
+
+  }
+
+}
+  
  async function renderDashboardOpen(){
 
   const el =
@@ -3944,9 +3994,10 @@ supabase.createClient(
   t => t.status === 'OPEN'
 )
 
-pendings = data.filter(
-  t => t.status === 'PENDING'
-)
+pendings =
+  data.filter(t =>
+    t.status === 'PENDING'
+  )
   .map(t => {
     
 
