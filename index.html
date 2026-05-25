@@ -2751,7 +2751,7 @@ function updateBadge(){ document.getElementById('open-badge').textContent=opens.
 async function renderOpen(){
 
   document.getElementById('open-total-lbl').textContent =
-    opens.length + ' posisi'
+    (opens.length + pendings.length) + ' posisi'
 
   const el = document.getElementById('open-list')
 
@@ -2763,14 +2763,15 @@ async function renderOpen(){
 let pendingHtml = ''
 
   if(opens.length === 0){
-    el.innerHTML = `
-      <div class="empty-state">
-        <i class="ti ti-player-play"></i>
-        <p>Tidak ada open position.</p>
-      </div>
-    `
-    return
-  }
+
+  el.innerHTML = `
+    <div class="empty-state">
+      <i class="ti ti-player-play"></i>
+      <p>Tidak ada open position.</p>
+    </div>
+  `
+
+} else {
   
   pendingHtml = ''
 
@@ -3194,9 +3195,8 @@ ${
 </div>
 `
 }
-  pendingEl.innerHTML =
-  pendingHtml
-  
+
+pendingEl.innerHTML = pendingHtml
 el.innerHTML = html
 
 }
