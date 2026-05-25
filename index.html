@@ -2747,46 +2747,41 @@ function updateBadge(){ document.getElementById('open-badge').textContent=opens.
 
 async function renderOpen(){
 
-  document.getElementById('open-total-lbl').textContent =
-    (opens.length + pendings.length) + ' posisi'
+  document.getElementById(
+    'open-total-lbl'
+  ).textContent =
+    (opens.length + pendings.length)
+    + ' posisi'
 
-  const el = document.getElementById('open-list')
+  const el =
+    document.getElementById(
+      'open-list'
+    )
 
   const pendingEl =
-  document.getElementById(
-    'pending-list'
-  )
+    document.getElementById(
+      'pending-list'
+    )
 
-let pendingHtml = ''
+  let html = ''
+  let pendingHtml = ''
 
-  if(opens.length === 0){
-
-  el.innerHTML = `
-    <div class="empty-state">
-      <i class="ti ti-player-play"></i>
-      <p>Tidak ada open position.</p>
-    </div>
-  `
-
-} else {
-  
-  pendingHtml = ''
+  // =========================
+  // PENDING
+  // =========================
 
   for(const p of pendings){
 
-  const livePrice =
-    await getLivePrice(
-      p.pair
-    )
+    const livePrice =
+      await getLivePrice(p.pair)
 
-  pendingHtml += `
+    pendingHtml += `
 
 <div class="open-card">
 
   <div class="trade-head">
 
     <div>
-
       <div class="trade-pair">
         ${p.pair}
       </div>
@@ -2794,7 +2789,10 @@ let pendingHtml = ''
       <div class="trade-side">
         LIMIT PENDING
       </div>
+    </div>
 
+    <div class="badge badge-open">
+      PENDING
     </div>
 
   </div>
@@ -2802,411 +2800,94 @@ let pendingHtml = ''
   <div class="trade-grid">
 
     <div class="trade-cell">
-
-      <div class="tc-label">
-        Entry Target
-      </div>
-
-      <div class="tc-value">
-        ${p.entry}
-      </div>
-
-    </div>
-
-    <div class="trade-cell">
-
-      <div class="tc-label">
-        Live Price
-      </div>
-
-      <div class="tc-value pos">
-        ${livePrice}
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-`
-}
-  
-let html = ''
-
-for(const o of opens){
-
-  const livePrice =
-  await getLivePrice(
-    o.pair
-  )
-
-  const liqPrice =
-  calcLiquidPrice(
-    o.entry,
-    o.leverage,
-    o.side || o.dir
-  )
-
-  let livePNL = 0
-
-  if(livePrice){
-
-    const entry =
-      Number(o.entry)
-
-    const margin =
-      Number(o.margin)
-
-    const lev =
-      Number(o.leverage)
-
-    const notional =
-      margin * lev
-
-    const isLong =
-      String(
-        o.dir || o.side
-      ).toUpperCase() === 'LONG'
-
-    livePNL = isLong
-
-      ? (
-          (
-            livePrice - entry
-          ) / entry
-        ) * notional
-
-      : (
-          (
-            entry - livePrice
-          ) / entry
-        ) * notional
-
-  }
-
- html += `
-
-<div class="
-  open-card
-  ${String(
-    o.dir || o.side || ''
-  ).toLowerCase()}-card
-">
-
-  <div class="trade-head">
-
-    <div>
-
-      <div class="trade-pair">
-        ${o.pair}
-      </div>
-
-      <div class="trade-side">
-        ${o.side || o.dir}
-        ${o.leverage}x
-      </div>
-
-    </div>
-
-    <div class="trade-pnl-box">
-
-      <div class="
-        trade-pnl
-        ${
-          livePNL >= 0
-            ? 'pos'
-            : 'neg'
-        }
-      ">
-
-        ${
-          livePNL >= 0
-            ? '+'
-            : ''
-        }
-
-        ${livePNL.toFixed(2)}
-
-      </div>
-
-      <div class="trade-pnl-label">
-        L&R Belum Terealisasi
-      </div>
-
-    </div>
-
-  </div>
-
-  <div class="trade-grid">
-
-    <div class="trade-cell">
-
-      <div class="tc-label">
-        Jumlah
-      </div>
-
-      <div class="tc-value">
-
-        ${
-          (
-            (
-              o.margin * o.leverage
-            ) / livePrice
-          ).toFixed(4)
-        }
-
-        ${
-          o.pair.replace(
-            'USDT',
-            ''
-          )
-        }
-
-      </div>
-
-      <div class="tc-sub">
-        Margin:
-        $${o.margin}
-      </div>
-
-    </div>
-
-    <div class="trade-cell">
-
       <div class="tc-label">
         Entry
       </div>
 
       <div class="tc-value">
-        ${Number(o.entry)
-          .toLocaleString()}
+        ${p.entry}
       </div>
-
-      <div class="tc-sub">
-        TP:
-        ${o.tp}
-      </div>
-
     </div>
 
     <div class="trade-cell">
-
       <div class="tc-label">
-        Live Price
+        Live
       </div>
 
       <div class="tc-value pos">
-
-        ${
-          Number(livePrice)
-            .toLocaleString(
-              undefined,
-              {
-                minimumFractionDigits:2,
-                maximumFractionDigits:2
-              }
-            )
-        }
-
+        ${Number(livePrice)
+          .toLocaleString()}
       </div>
-
-      <div class="tc-sub">
-        SL:
-        ${o.sl}
-      </div>
-
     </div>
 
     <div class="trade-cell">
-
       <div class="tc-label">
-        Liquid Price
+        TP
+      </div>
+
+      <div class="tc-value pos">
+        ${p.tp}
+      </div>
+    </div>
+
+    <div class="trade-cell">
+      <div class="tc-label">
+        SL
       </div>
 
       <div class="tc-value neg">
-        ${liqPrice.toFixed(0)}
+        ${p.sl}
       </div>
-
     </div>
 
   </div>
-
-  <div class="open-actions">
-
-    <button
-      class="btn-cw"
-      onclick="
-        closeOpen(
-          ${o.id},
-          'win'
-        )
-      "
-    >
-      Hit TP
-    </button>
-
-    <button
-      class="btn-cl"
-      onclick="
-        closeOpen(
-          ${o.id},
-          'loss'
-        )
-      "
-    >
-      Hit SL
-    </button>
-
-    <button
-      class="btn-cc"
-      onclick="
-  openedCustomId =
-    openedCustomId === ${o.id}
-      ? null
-      : ${o.id};
-
-  renderOpen();
-"
-    >
-      Custom
-    </button>
-
-  </div>
-
-</div>
-
-<div
-  class="
-    close-form
-    ${
-      openedCustomId === o.id
-        ? 'visible'
-        : ''
-    }
-  "
-  id="cf-${o.id}"
->
-
-  <div class="close-form-row">
-
-    <div class="field">
-
-      <label>
-        Harga Exit
-      </label>
-
-      <input
-  type="text"
-  id="cx-${o.id}"
-
-  value="${
-  customFormState[o.id]?.price
-  || LIVE_PRICES[o.pair]
-  || o.entry
-}"
-
-${
-  customFormState[o.id]?.type
-  === 'maker'
-    ? 'readonly'
-    : ''
-}
-
-  oninput="
-    customFormState[${o.id}] = {
-      ...(customFormState[${o.id}] || {}),
-      price:this.value
-    }
-  "
-
-  placeholder="65000"
->
-
-    </div>
-
-    <div class="field">
-
-      <label>
-        Exit Type
-      </label>
-
-      <select
-  id="cxt-${o.id}"
-
-  onchange="
-    customFormState[${o.id}] = {
-      ...(customFormState[${o.id}] || {}),
-      type:this.value
-    }
-  "
->
-
-        <option
-  value="taker"
-
-  ${
-    (
-      customFormState[o.id]
-? customFormState[o.id].type
-: 'taker'
-    ) === 'taker'
-      ? 'selected'
-      : ''
-  }
->
-  Taker
-</option>
-
-<option
-  value="maker"
-
-  ${
-    customFormState[o.id]?.type
-    === 'maker'
-      ? 'selected'
-      : ''
-  }
->
-  Maker
-</option>
-
-      </select>
-
-    </div>
-
-    <button
-      class="btn-confirm"
-      onclick="
-        confirmCustom(
-          ${o.id}
-        )
-      "
-    >
-      Close
-    </button>
-
-  </div>
-
-</div>
 
 </div>
 `
-}
+
+  }
+
+  // =========================
+  // OPEN EMPTY
+  // =========================
+
+  if(opens.length === 0){
+
+    html = `
+      <div class="empty-state">
+        <i class="ti ti-player-play"></i>
+        <p>Tidak ada open position.</p>
+      </div>
+    `
+
+  }
+
+  // =========================
+  // OPEN POSITIONS
+  // =========================
+
+  else{
+
+    for(const o of opens){
+
+      html += `
+
+<div class="open-card">
+  <div class="trade-pair">
+    ${o.pair}
+  </div>
+</div>
+
+`
+
+    }
+
+  }
+
+  pendingEl.innerHTML = pendingHtml
+  el.innerHTML = html
 
 }
-    
-pendingEl.innerHTML = pendingHtml
-el.innerHTML = html
-
-}
-  
-setInterval(()=>{
-
-  renderOpen()
-
-}, 3000)
-
-
 
  async function renderDashboardOpen(){
 
