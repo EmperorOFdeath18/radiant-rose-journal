@@ -2291,8 +2291,16 @@ function calcLiquidPrice(entry, leverage, side){
 
     let hitTP = false
     let hitSL = false
+
     if(o.status !== 'OPEN')
-  continue
+      continue
+
+    if(
+      !o.tp ||
+      !o.sl
+    ){
+      continue
+    }
 
     // LONG
     if(isLong){
@@ -2357,10 +2365,27 @@ const xt =
   ).value;
   if(
   !Number.isFinite(entry) ||
-  !Number.isFinite(sl) ||
-  !Number.isFinite(tp) ||
   !Number.isFinite(size)
 ){
+  return
+}
+  if(
+  !Number.isFinite(sl) ||
+  !Number.isFinite(tp)
+){
+
+  document.getElementById(
+    'p-rr'
+  ).textContent = '—'
+
+  document.getElementById(
+    'p-profit'
+  ).textContent = '—'
+
+  document.getElementById(
+    'p-loss'
+  ).textContent = '—'
+
   return
 }
   const c=calc(entry,sl,tp,size,lev,getDir(),et,xt);
@@ -2427,10 +2452,16 @@ async function saveOpen(){
 
   const v = getInputs()
 
-  if(!v.pair || !v.entry || !v.sl || !v.tp || !v.size){
-    alert('Lengkapi semua field wajib.')
-    return
-  }
+  if(
+  !v.pair ||
+  !v.entry ||
+  !v.size
+){
+  alert(
+    'Pair, Entry, dan Modal wajib diisi.'
+  )
+  return
+}
 
   const { error } = await db
     .from('trades')
@@ -2933,7 +2964,51 @@ async function renderOpen(){
   // =========================
   // OPEN POSITIONS
   // =========================
+<button
+  class="btn-cc"
+  onclick="toggleEdit('${o.id}')"
+>
+  Edit TP/SL
+</button>
 
+<div
+  class="close-form"
+  id="edit-${o.id}"
+>
+
+  <div class="close-form-row">
+
+    <div class="field">
+      <label>SL</label>
+
+      <input
+        id="edit-sl-${o.id}"
+        type="number"
+        value="${o.sl || ''}"
+      >
+    </div>
+
+    <div class="field">
+      <label>TP</label>
+
+      <input
+        id="edit-tp-${o.id}"
+        type="number"
+        value="${o.tp || ''}"
+      >
+    </div>
+
+    <button
+      class="btn-confirm"
+      onclick="saveTPSL('${o.id}')"
+    >
+      Save
+    </button>
+
+  </div>
+
+</div>
+  
   else{
 
     for(const o of opens){
@@ -2957,6 +3032,69 @@ async function renderOpen(){
 
 }
 
+function toggleEdit(id){
+
+  const el =
+    document.getElementById(
+      'edit-' + id
+    )
+
+  el.classList.toggle(
+    'visible'
+  )
+
+}
+
+  async function saveTPSL(id){
+
+  const sl =
+    parseFloat(
+      document.getElementById(
+        'edit-sl-' + id
+      ).value
+    )
+
+  const tp =
+    parseFloat(
+      document.getElementById(
+        'edit-tp-' + id
+      ).value
+    )
+
+  try{
+
+    const { error } =
+      await db
+        .from('trades')
+        .update({
+          sl: Number.isFinite(sl)
+            ? sl
+            : null,
+
+          tp: Number.isFinite(tp)
+            ? tp
+            : null
+        })
+        .eq('id', id)
+
+    if(error) throw error
+
+    await loadTrades()
+
+    renderOpen()
+
+  }catch(err){
+
+    console.error(err)
+
+    alert(
+      'Gagal update TP/SL'
+    )
+
+  }
+
+}
+  
 async function cancelPending(id){
 
   const yes = confirm(
