@@ -4261,14 +4261,12 @@ supabase.createClient(
   }
 
   opens = data.filter(
-  t =>
-    t.status === 'OPEN' ||
-    t.status === 'PENDING'
+  t => t.status === 'OPEN'
 )
-    pendings =
-  data.filter(
-    t => t.status === 'PENDING'
-  )
+
+pendings = data.filter(
+  t => t.status === 'PENDING'
+)
   .map(t => {
     
 
@@ -4320,6 +4318,50 @@ supabase.createClient(
   renderJournal()
   renderStats()
   updateBadge()
+}
+
+  function renderPending(){
+
+  const wrap =
+    document.getElementById(
+      'pending-list'
+    )
+
+  if(!pendings.length){
+
+    wrap.innerHTML = ''
+
+    return
+  }
+
+  wrap.innerHTML =
+    pendings.map(p => `
+
+      <div class="open-card">
+
+        <div class="trade-pair">
+          ${p.pair}
+        </div>
+
+        <div class="trade-side">
+          LIMIT PENDING
+        </div>
+
+        <br>
+
+        Entry:
+        ${p.entry}
+
+      </div>
+
+    `).join('')
+    
+    renderDashboard()
+renderPending()
+renderOpen()
+renderJournal()
+renderStats()
+updateBadge()
 }
   
 async function loadDonations(){
