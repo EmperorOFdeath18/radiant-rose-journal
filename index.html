@@ -2083,15 +2083,21 @@ const favorites = [
 
       const text = await res.text()
 
-try{
-  const data = JSON.parse(text)
+let data
 
-  // lanjut
+try{
+
+  data = JSON.parse(text)
+
 }catch(err){
+
   console.error('INVALID JSON:', text)
+
+  return
+
 }
 
-      if(!data?.result?.list){
+if(!data?.result?.list){
   console.error(data)
   return
 }
@@ -4517,20 +4523,22 @@ tradesChannel.on(
 tradesChannel.subscribe()
 */
 
-document.addEventListener('DOMContentLoaded', init)
+document.addEventListener(
+  'DOMContentLoaded',
   async () => {
 
-  await loadPairs()
+    await loadPairs()
 
-  await loadAllPrices()
+    await loadAllPrices()
 
-  await loadTrades()
+    await loadTrades()
 
-  loadDonations()
+    await loadDonations()
 
-  updatePreview()
+    updatePreview()
 
-})()
+  }
+)
 
 document.getElementById(
   'i-pair'
