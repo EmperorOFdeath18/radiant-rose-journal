@@ -2083,7 +2083,13 @@ const favorites = [
 
       const text = await res.text()
 
-      const data = JSON.parse(text)
+try{
+  const data = JSON.parse(text)
+
+  // lanjut
+}catch(err){
+  console.error('INVALID JSON:', text)
+}
 
       if(!data?.result?.list){
   console.error(data)
@@ -4511,8 +4517,7 @@ tradesChannel.on(
 tradesChannel.subscribe()
 */
 
-document.addEventListener(
-  'DOMContentLoaded',
+document.addEventListener('DOMContentLoaded', init)
   async () => {
 
   await loadPairs()
