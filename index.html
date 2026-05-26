@@ -3002,9 +3002,22 @@ async function renderOpen(){
 
   }
 
-  // =========================
+  
+      // =========================
   // OPEN POSITIONS
   // =========================
+  
+  else{
+
+    for(const o of opens){
+
+      html += `
+
+<div class="open-card">
+  <div class="trade-pair">
+    ${o.pair}
+  </div>
+
 <button
   class="btn-cc"
   onclick="toggleEdit('${o.id}')"
@@ -3028,8 +3041,7 @@ async function renderOpen(){
         value="${o.sl || ''}"
       >
     </div>
-
-    <div class="field">
+  <div class="field">
       <label>TP</label>
 
       <input
@@ -3049,17 +3061,7 @@ async function renderOpen(){
   </div>
 
 </div>
-  
-  else{
 
-    for(const o of opens){
-
-      html += `
-
-<div class="open-card">
-  <div class="trade-pair">
-    ${o.pair}
-  </div>
 </div>
 
 `
