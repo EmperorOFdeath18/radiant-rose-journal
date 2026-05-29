@@ -2151,13 +2151,16 @@ if(!data?.result?.list){
   try{
 
     const target =
-      encodeURIComponent(
-        'https://api.bybit.id/v5/market/tickers?category=linear'
-      )
+  encodeURIComponent(
+    `https://api.bybit.id/v5/market/tickers?category=linear&t=${Date.now()}`
+  )
 
-    const res = await fetch(
-      `https://corsproxy.io/?${target}`
-    )
+const res = await fetch(
+  `https://corsproxy.io/?${target}`,
+  {
+    cache:'no-store'
+  }
+)
 
     const text =
       await res.text()
