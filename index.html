@@ -2080,9 +2080,17 @@ const favorites = [
       const target =
         encodeURIComponent(url)
 
-      const res = await fetch(
-        `https://corsproxy.io/?${target}`
-      )
+     const res = await fetch(
+  `https://corsproxy.io/?${target}`,
+  {
+    cache: 'no-store'
+  }
+)
+
+      const target =
+  encodeURIComponent(
+    `https://api.bybit.id/v5/market/tickers?category=linear&t=${Date.now()}`
+  )
 
       const text = await res.text()
 
@@ -2160,6 +2168,15 @@ if(!data?.result?.list){
     LIVE_PRICES = {}
 
     data.result.list.forEach(item=>{
+
+      if(item.symbol === 'BTCUSDT'){
+
+  console.log(
+    'BTC PRICE FROM API:',
+    item.lastPrice
+  )
+
+}
 
       LIVE_PRICES[item.symbol] =
         parseFloat(item.lastPrice)
