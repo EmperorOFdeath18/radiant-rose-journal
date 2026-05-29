@@ -3161,8 +3161,23 @@ async function renderOpen(){
 
   }
 
-  pendingEl.innerHTML = pendingHtml
-  el.innerHTML = html
+pendingEl.innerHTML = pendingHtml
+el.innerHTML = html
+
+if(activeEditId){
+
+  const form =
+    document.getElementById(
+      'edit-' + activeEditId
+    )
+
+  if(form){
+
+    form.classList.add(
+      'visible'
+    )
+
+  }
 
 }
 
@@ -3173,9 +3188,34 @@ function toggleEdit(id){
       'edit-' + id
     )
 
-  el.classList.toggle(
-    'visible'
-  )
+  const opened =
+    el.classList.contains(
+      'visible'
+    )
+
+  document
+    .querySelectorAll(
+      '.close-form'
+    )
+    .forEach(f =>
+      f.classList.remove(
+        'visible'
+      )
+    )
+
+  if(!opened){
+
+    el.classList.add(
+      'visible'
+    )
+
+    activeEditId = id
+
+  }else{
+
+    activeEditId = null
+
+  }
 
 }
 
