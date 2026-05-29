@@ -3188,6 +3188,8 @@ if(activeEditId){
 
 function toggleEdit(id){
 
+  console.log('EDIT OPEN', id)
+
   const el =
     document.getElementById(
       'edit-' + id
@@ -3199,20 +3201,14 @@ function toggleEdit(id){
     )
 
   document
-    .querySelectorAll(
-      '.close-form'
-    )
+    .querySelectorAll('.close-form')
     .forEach(f =>
-      f.classList.remove(
-        'visible'
-      )
+      f.classList.remove('visible')
     )
 
   if(!opened){
 
-    el.classList.add(
-      'visible'
-    )
+    el.classList.add('visible')
 
     activeEditId = id
 
@@ -4421,10 +4417,14 @@ pendings =
   })
 
   renderDashboard()
+
+if(!activeEditId){
   renderOpen()
-  renderJournal()
-  renderStats()
-  updateBadge()
+}
+
+renderJournal()
+renderStats()
+updateBadge()
 }
 
   function renderPending(){
@@ -4695,7 +4695,16 @@ setInterval(async()=>{
 
   await checkAutoClose()
 
-  renderOpen()
+  const editVisible =
+    document.querySelector(
+      '.close-form.visible'
+    )
+
+  if(!editVisible){
+
+    renderOpen()
+
+  }
 
 },3000)
   
