@@ -1691,6 +1691,9 @@ let trades = []
 let opens = []
   let pendings = []
   let donations = []
+
+  let activeEditId = null
+  
 let cfg = {
   maker: 0.02,
   taker: 0.055,
@@ -3180,6 +3183,8 @@ if(activeEditId){
   }
 
 }
+
+  }
 
 function toggleEdit(id){
 
