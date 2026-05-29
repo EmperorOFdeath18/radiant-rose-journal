@@ -3011,62 +3011,153 @@ async function renderOpen(){
 
     for(const o of opens){
 
-      html += `
+  const livePrice =
+    LIVE_PRICES[o.pair] || 0
+
+  const pnl =
+    calcLivePNL(
+      o,
+      livePrice
+    )
+
+  const liqPrice =
+    calcLiquidPrice(
+      o.entry,
+      o.leverage,
+      o.side
+    )
+
+  html += `
 
 <div class="open-card">
-  <div class="trade-pair">
-    ${o.pair}
+
+  <div class="trade-head">
+
+    <div>
+
+      <div class="trade-pair">
+        ${o.pair}
+      </div>
+
+      <div class="trade-side">
+        ${o.side} ${o.leverage}X
+      </div>
+
+    </div>
+
+    <div class="trade-pnl-box">
+
+      <div class="trade-pnl ${
+        pnl >= 0 ? 'pos' : 'neg'
+      }">
+        ${
+          pnl >= 0 ? '+' : ''
+        }${pnl.toFixed(2)}
+      </div>
+
+      <div class="trade-pnl-label">
+        L&R Belum Terealisasi
+      </div>
+
+    </div>
+
   </div>
 
-<button
-  class="btn-cc"
-  onclick="toggleEdit('${o.id}')"
->
-  Edit TP/SL
-</button>
+  <div class="trade-grid">
 
-<div
-  class="close-form"
-  id="edit-${o.id}"
->
-
-  <div class="close-form-row">
-
-    <div class="field">
-      <label>SL</label>
-
-      <input
-        id="edit-sl-${o.id}"
-        type="number"
-        value="${o.sl || ''}"
-      >
+    <div class="trade-cell">
+      <div class="tc-label">Jumlah</div>
+      <div class="tc-value">
+        ${(
+          (o.margin * o.leverage) /
+          o.entry
+        ).toFixed(4)}
+      </div>
+      <div class="tc-sub">
+        Margin: $${o.margin}
+      </div>
     </div>
-  <div class="field">
-      <label>TP</label>
 
-      <input
-        id="edit-tp-${o.id}"
-        type="number"
-        value="${o.tp || ''}"
-      >
+    <div class="trade-cell">
+      <div class="tc-label">Entry</div>
+      <div class="tc-value">
+        ${Number(o.entry).toLocaleString()}
+      </div>
+      <div class="tc-sub">
+        TP: ${o.tp || '-'}
+      </div>
     </div>
+
+    <div class="trade-cell">
+      <div class="tc-label">Live Price</div>
+      <div class="tc-value pos">
+        ${Number(livePrice).toLocaleString()}
+      </div>
+      <div class="tc-sub">
+        SL: ${o.sl || '-'}
+      </div>
+    </div>
+
+    <div class="trade-cell">
+      <div class="tc-label">Liquid Price</div>
+      <div class="tc-value neg">
+        ${liqPrice.toFixed(0)}
+      </div>
+    </div>
+
+  </div>
+
+  <div class="open-actions">
 
     <button
-      class="btn-confirm"
-      onclick="saveTPSL('${o.id}')"
+      class="btn-cc"
+      onclick="toggleEdit('${o.id}')"
     >
-      Save
+      Edit TP/SL
     </button>
 
   </div>
 
-</div>
+  <div
+    class="close-form"
+    id="edit-${o.id}"
+  >
+
+    <div class="close-form-row">
+
+      <div class="field">
+        <label>SL</label>
+        <input
+          id="edit-sl-${o.id}"
+          type="number"
+          value="${o.sl || ''}"
+        >
+      </div>
+
+      <div class="field">
+        <label>TP</label>
+        <input
+          id="edit-tp-${o.id}"
+          type="number"
+          value="${o.tp || ''}"
+        >
+      </div>
+
+      <button
+        class="btn-confirm"
+        onclick="saveTPSL('${o.id}')"
+      >
+        Save
+      </button>
+
+    </div>
+
+  </div>
 
 </div>
 
 `
-
-    }
+}
 
   }
 
