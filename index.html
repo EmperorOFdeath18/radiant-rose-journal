@@ -4418,7 +4418,20 @@ pendings =
 
   renderDashboard()
 
-if(!activeEditId){
+const openPanel =
+  document.getElementById(
+    'panel-open'
+  )
+
+const editing =
+  document.querySelector(
+    '.close-form.visible'
+  )
+
+if(
+  !editing ||
+  !openPanel.classList.contains('active')
+){
   renderOpen()
 }
 
